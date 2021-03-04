@@ -1,6 +1,5 @@
 package Compiler.View;
 
-import Compiler.Controller.SidebarController;
 import Compiler.Controller.WorkspaceController;
 
 import javax.swing.*;
@@ -28,11 +27,8 @@ public class MainFrame extends JFrame {
 
 
         try {
-            SidebarController sidebarController = new SidebarController();
-            WorkspaceController workspaceController = new WorkspaceController();
+            WorkspaceController workspaceController = new WorkspaceController(this);
 
-            this.add(sidebarController.getView());
-            this.add(workspaceController.getView());
         } catch (IOException e) {
             e.printStackTrace();
         }

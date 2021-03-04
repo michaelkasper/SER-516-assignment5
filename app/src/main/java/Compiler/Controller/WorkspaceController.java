@@ -1,46 +1,47 @@
 package Compiler.Controller;
 
-import Compiler.View.Workspace;
+import Compiler.View.Header;
+import Compiler.View.Sidebar;
+import Compiler.View.Spaces;
 
 import javax.swing.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.io.IOException;
 
 /**
  * The Game board controller handles all logic for the game board view
  */
-public class WorkspaceController extends AbstractController {
+public class WorkspaceController {
+
+    /**
+     * TODO: Add tabs controller that changes the active spaces Model
+     * TODO: Add ArrayList of spaces Models
+     * TODO: Add current active space view linked to the space model
+     */
+
+    private final JFrame theFrame;
+    private final Header headerView;
+    private final Spaces spacesView;
+    private final Sidebar sidebarView;
 
 
-    private final Workspace workspaceView;
+    public WorkspaceController(JFrame theFrame) throws IOException {
+        this.theFrame = theFrame;
+
+        this.headerView = new Header();
+        this.sidebarView = new Sidebar();
+        this.spacesView = new Spaces();
+
+        /**
+         * Dont think this is what we want, just spit balling right now
+         */
+        this.theFrame.add(this.headerView);
+        this.theFrame.add(this.sidebarView);
+        this.theFrame.add(this.spacesView);
+
+        this.theFrame.setVisible(true);
 
 
-    public WorkspaceController() throws IOException {
-        this.workspaceView = new Workspace();
-
-        this.linkEventsToView();
+        //todo: SAMPLE ---> this.headerView.registerSaveAction(e -> this.router.apply("explanation"));
     }
 
-
-    private void linkEventsToView() {
-        //todo: SAMPLE ---> this.workspaceView.explanationBtnAction(e -> this.router.apply("explanation"));
-
-
-        this.workspaceView.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentHidden(ComponentEvent evt) {
-
-            }
-
-            @Override
-            public void componentShown(ComponentEvent evt) {
-
-            }
-        });
-    }
-
-    public JPanel getView() {
-        return this.workspaceView;
-    }
 }

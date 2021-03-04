@@ -6,8 +6,12 @@ import java.awt.*;
 /**
  * Individual pixel used in the grid
  */
+
 public class Element extends JPanel {
 
+    /**
+     * TODO: Make draggable
+     */
     public Element() {
     }
 

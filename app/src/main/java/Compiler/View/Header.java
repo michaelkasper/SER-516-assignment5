@@ -4,9 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class Sidebar extends JPanel {
+public class Header extends JPanel {
 
-    public Sidebar() {
+    /**
+     * TODO: Added buttons here
+     * TODO: Create event listener for each button
+     */
+    public Header() {
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
     }
 

@@ -3,10 +3,13 @@ package Compiler.View;
 import javax.swing.*;
 import java.awt.*;
 
+public class Spaces extends JPanel {
 
-public class Sidebar extends JPanel {
-
-    public Sidebar() {
+    /**
+     * TODO: Render tabs
+     * TODO: Render Active Space Panel
+     */
+    public Spaces() {
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
     }
 
