@@ -14,17 +14,16 @@ import static Compiler.Config.FRAME_WIDTH;
  */
 public class MainFrame extends JFrame {
 
-    private CardLayout cardLayout;
+    private BorderLayout layout;
 
 
     public MainFrame() {
         super("Compiler");
-        this.cardLayout = new CardLayout();
-        this.setLayout(cardLayout);
+        this.layout = new BorderLayout();
+        this.setLayout(layout);
         this.setResizable(false);
         this.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 
         try {
             WorkspaceController workspaceController = new WorkspaceController(this);

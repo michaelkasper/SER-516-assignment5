@@ -1,8 +1,10 @@
 package Compiler.Model;
 
-import Compiler.Model.Elements.AbstractElement;
+import java.util.UUID;
 
-public class Space extends AbstractElement {
+public class Space {
+
+    private final UUID id;
 
     /**
      * TODO: Add ArrayList of AbstractElements
@@ -10,7 +12,7 @@ public class Space extends AbstractElement {
      * TODO: Broadcast view update when list updated
      */
     public Space() {
-        super();
+        this.id = UUID.randomUUID();
     }
 
 }
