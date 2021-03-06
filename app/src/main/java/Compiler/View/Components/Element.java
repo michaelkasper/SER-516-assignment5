@@ -1,5 +1,8 @@
 package Compiler.View.Components;
 
+import Compiler.Controller.ElementController;
+import Compiler.Model.Elements.AbstractElement;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -9,10 +12,13 @@ import java.awt.*;
 
 public class Element extends JPanel {
 
+    private final ElementController elementController;
+
     /**
      * TODO: Make draggable
      */
-    public Element() {
+    public Element(AbstractElement elementModel) {
+        this.elementController = new ElementController(this, elementModel);
     }
 
     @Override

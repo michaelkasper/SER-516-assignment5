@@ -13,6 +13,7 @@ public class Header extends JPanel {
     private final JButton importSpaceBtn;
     private final JButton saveSpaceBtn;
     private final JButton compileBtn;
+    private final WorkspaceController workspaceController;
 
     /**
      * TODO: Added buttons here
@@ -21,6 +22,7 @@ public class Header extends JPanel {
      * @param workspaceController
      */
     public Header(WorkspaceController workspaceController) {
+        this.workspaceController = workspaceController;
         this.setLayout(new FlowLayout());
         this.setPreferredSize(new Dimension(getWidth(), 50));
         this.setBackground(Color.ORANGE);//TODO: set color

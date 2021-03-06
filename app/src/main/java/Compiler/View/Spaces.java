@@ -1,6 +1,7 @@
 package Compiler.View;
 
 import Compiler.Controller.WorkspaceController;
+import Compiler.Model.SpaceModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,6 +9,7 @@ import java.awt.event.ActionListener;
 
 public class Spaces extends JPanel {
 
+    private final JTabbedPane tabbedPane = new JTabbedPane();
     private WorkspaceController workspaceController;
 
     /**
@@ -22,16 +24,35 @@ public class Spaces extends JPanel {
 
         this.setSize(new Dimension(getWidth(), getHeight()));
 
-        //TODO: REMOVE
-        this.add(new JButton("test"));
-        //TODO: REMOVE
+        tabbedPane.setBounds(0, 0, getWidth(), getHeight());
+        tabbedPane.setTabPlacement(JTabbedPane.TOP);
 
 
+//        tabbedPane.setBackground(Color.orange);
+//        tabbedPane.setForeground(Color.white);
+
+        this.add(tabbedPane);
+
+        this.registerListeners();
     }
 
+
     private void registerListeners() {
-        this.workspaceController.addPropertyChangeListener(WorkspaceController.PROPERTY_SPACES, e -> e.getNewValue()); // add tab
-        this.workspaceController.addPropertyChangeListener(WorkspaceController.PROPERTY_ACTIVE_SPACE, e -> e.getNewValue()); // select tab
+        // listen for changes on controller only
+        this.workspaceController.addPropertyChangeListener(WorkspaceController.EVENT_SPACE_ADDED, e -> {
+            if (e.getNewValue() != null) {
+                SpaceModel spaceModel = (SpaceModel) e.getNewValue();
+                this.tabbedPane.add(String.valueOf(this.tabbedPane.getTabCount() + 1), new Space(spaceModel));
+            }
+        }); // add tab
+
+
+        this.workspaceController.addPropertyChangeListener(WorkspaceController.EVENT_ACTIVE_SPACE_CHANGED, e -> {
+            if (e.getNewValue() != null) {
+                int spaceModelIndex = (int) e.getNewValue();
+                tabbedPane.setSelectedIndex(spaceModelIndex);
+            }
+        }); // select tab
     }
 
     public void setTabSelectedListener(ActionListener actionListener) {
@@ -44,8 +65,8 @@ public class Spaces extends JPanel {
         super.paintComponent(g);
 
         //TODO: REMOVE
-        g.setColor(Color.BLUE);
-        g.fillRect(0, 0, getWidth(), getHeight());
+//        g.setColor(Color.BLUE);
+//        g.fillRect(0, 0, getWidth(), getHeight());
         //TODO: REMOVE
 
     }

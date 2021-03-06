@@ -1,24 +1,33 @@
 package Compiler.View;
 
-import Compiler.Model.Elements.AbstractElement;
+import Compiler.Controller.SpaceController;
+import Compiler.Model.SpaceModel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
+import java.awt.event.ActionListener;
 
-public class Space extends JPanel implements Observer {
+public class Space extends JPanel {
+
+
+    private final SpaceController spaceController;
 
     /**
      * TODO: Make drop zone
      * TODO: Make arrayList of AbstractElements
      * TODO: Notify Space View of changes
      * TODO: Listen for connection changes form AbstractElements
-     *
      */
-    public Space() {
+    public Space(SpaceModel spaceModel) {
+        this.spaceController = new SpaceController(this, spaceModel);
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+
+        this.registerListeners();
+    }
+
+
+    private void registerListeners() {
+        // listen for changes on controller only
     }
 
     @Override
@@ -26,13 +35,7 @@ public class Space extends JPanel implements Observer {
         super.paintComponent(g);
     }
 
-    @Override
-    public void update(Observable o, Object arg) {
-        if(o.getClass() == AbstractElement.class) {
-            // Connection change from AbstractElements.
-        }
-        else {
-            // New element dropped in space.
-        }
+    public void setDropListener(ActionListener actionListener) {
+        //todo: link actionListener to drop zone view
     }
 }

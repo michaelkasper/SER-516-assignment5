@@ -1,16 +1,15 @@
 package Compiler.Model.Elements;
 
+import Compiler.Model.AbstractModel;
+import Compiler.Model.Connection;
 import Compiler.View.Components.Element;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.UUID;
 
-public abstract class AbstractElement extends Observable {
+public abstract class AbstractElement extends AbstractModel {
     protected final Element elementView;
-    private final UUID id;
+
+    public static final String EVENT_CONNECTION_MADE = "event_connection_made";
 
     /**
      * TODO: Add ConnectionsIn ArrayList to other AbstractElements
@@ -29,20 +28,18 @@ public abstract class AbstractElement extends Observable {
     private ArrayList<AbstractElement> connectionsOut = new ArrayList<>();
 
     public AbstractElement() {
-        this.id = UUID.randomUUID();
+        super();
 
-        this.elementView = new Element();// TODO: not sure this is where we want this
+        this.elementView = new Element(this);// TODO: not sure this is where we want this
     }
 
     public void addConnectionIn(AbstractElement element) {
         this.connectionsIn.add(element);
-        setChanged();
-        notifyObservers();
+        this.support.firePropertyChange(EVENT_CONNECTION_MADE, null, new Connection(this, element));
     }
 
     public void addConnectionOut(AbstractElement element) {
         this.connectionsOut.add(element);
-        setChanged();
-        notifyObservers();
+        this.support.firePropertyChange(EVENT_CONNECTION_MADE, null, new Connection(element, this));
     }
 }

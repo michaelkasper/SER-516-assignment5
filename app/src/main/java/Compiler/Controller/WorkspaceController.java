@@ -1,25 +1,23 @@
 package Compiler.Controller;
 
+import Compiler.Model.SpaceModel;
 import Compiler.View.Header;
 import Compiler.View.Sidebar;
-import Compiler.View.Space;
 import Compiler.View.Spaces;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.util.ArrayList;
 
 /**
  * The Game board controller handles all logic for the game board view
  */
-public class WorkspaceController {
+public class WorkspaceController extends AbstractController {
 
-    public static final String PROPERTY_SPACES = "spaces";
-    public static final String PROPERTY_ACTIVE_SPACE = "active_space";
+    public static final String EVENT_SPACE_ADDED = "event_space_added";
+    public static final String EVENT_ACTIVE_SPACE_CHANGED = "event_active_space_changed";
     /**
      * TODO: Add tabs controller that changes the active spaces Model
      * TODO: Add ArrayList of spaces Models
@@ -31,8 +29,7 @@ public class WorkspaceController {
     private final Spaces spacesView;
     private final Sidebar sidebarView;
 
-    private PropertyChangeSupport support = new PropertyChangeSupport(this);
-    private ArrayList<Space> spaces = new ArrayList<Space>();
+    private final ArrayList<SpaceModel> spaces = new ArrayList<SpaceModel>();
 
 
     public WorkspaceController(JFrame theFrame) throws IOException {
@@ -46,6 +43,8 @@ public class WorkspaceController {
         this.theFrame.add(this.headerView, BorderLayout.PAGE_START);
         this.theFrame.add(this.sidebarView, BorderLayout.LINE_START);
         this.theFrame.add(this.spacesView, BorderLayout.CENTER);
+
+        this.registerListeners();
     }
 
 
@@ -57,21 +56,11 @@ public class WorkspaceController {
         this.spacesView.setTabSelectedListener(this::onTabSelected);
     }
 
-    public void addPropertyChangeListener(String property, PropertyChangeListener listener) {
-        support.addPropertyChangeListener(property, listener);
-    }
-
-    public void removePropertyChangeListener(String property, PropertyChangeListener listener) {
-        support.removePropertyChangeListener(property, listener);
-    }
-
-
     private void onAddSpace(ActionEvent e) {
-        Space newSpace = new Space();
+        SpaceModel newSpace = new SpaceModel();
         this.spaces.add(newSpace);
-
-        this.support.firePropertyChange(PROPERTY_SPACES, null, newSpace);// add to tabs
-        this.support.firePropertyChange(PROPERTY_ACTIVE_SPACE, null, newSpace);// make active space
+        this.support.firePropertyChange(EVENT_SPACE_ADDED, null, newSpace);// add to tabs
+        this.support.firePropertyChange(EVENT_ACTIVE_SPACE_CHANGED, null, this.spaces.size() - 1);// make active space
     }
 
 
@@ -81,11 +70,11 @@ public class WorkspaceController {
 
 
     private void onImport(ActionEvent e) {
-        Space newSpace = new Space(); // need to pass in loaded info
+        SpaceModel newSpace = new SpaceModel(); // need to pass in loaded info
         this.spaces.add(newSpace);
 
-        this.support.firePropertyChange(PROPERTY_SPACES, null, newSpace);// add to tabs
-        this.support.firePropertyChange(PROPERTY_ACTIVE_SPACE, null, newSpace);// make active space
+        this.support.firePropertyChange(EVENT_SPACE_ADDED, null, newSpace);// add to tabs
+        this.support.firePropertyChange(EVENT_ACTIVE_SPACE_CHANGED, null, newSpace);// make active space
     }
 
     private void onCompile(ActionEvent e) {
