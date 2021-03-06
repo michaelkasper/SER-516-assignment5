@@ -9,7 +9,6 @@ public class SpaceModel extends AbstractModel {
 
     public final static String EVENT_ELEMENT_ADDED = "event_element_added";
 
-    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
     private ArrayList<AbstractElement> elements = new ArrayList<>();
 
     /**

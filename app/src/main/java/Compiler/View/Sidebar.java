@@ -1,6 +1,8 @@
 package Compiler.View;
 
 import Compiler.Controller.WorkspaceController;
+import Compiler.Model.Elements.*;
+import Compiler.View.Components.Element;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,9 +18,13 @@ public class Sidebar extends JPanel {
 
         this.setPreferredSize(new Dimension(250, getHeight()));
 
-        //TODO: REMOVE
-        this.add(new JButton("test"));
-        //TODO: REMOVE
+        this.add(new Element(new OpenIfElement()));
+        this.add(new Element(new CloseIfElement()));
+        this.add(new Element(new MethodStartElement()));
+        this.add(new Element(new MethodEndElement()));
+        this.add(new Element(new CommandElement()));
+        this.add(new Element(new LoopElement()));
+        this.add(new Element(new ThreadElement()));
     }
 
     @Override

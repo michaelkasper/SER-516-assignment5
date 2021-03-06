@@ -22,6 +22,9 @@ public class Space extends JPanel {
         this.spaceController = new SpaceController(this, spaceModel);
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
+
+        this.add(new JLabel(spaceModel.id.toString()));
+
         this.registerListeners();
     }
 

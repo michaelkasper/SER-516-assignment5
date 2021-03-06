@@ -2,15 +2,18 @@ package Compiler.Controller;
 
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
+import Compiler.View.Components.Element;
 import Compiler.View.Space;
 
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 
 public class SpaceController extends AbstractController {
 
     private SpaceModel spaceModel;
     private Space spaceView;
+    private ArrayList<Element> elementViews = new ArrayList<>();
 
     //TODO: Drag and Drop should be setup here, more so the drop
     //TODO: The drop logic would be one listener. The listener would first check to see if the
@@ -37,8 +40,8 @@ public class SpaceController extends AbstractController {
         this.spaceModel.addPropertyChangeListener(SpaceModel.EVENT_ELEMENT_ADDED, e -> {
             if (e.getNewValue() != null) {
                 AbstractElement elementModel = (AbstractElement) e.getNewValue();
+                this.elementViews.add(new Element(elementModel));
                 //TODO: trigger graph to update with new element
-
             }
         });
 

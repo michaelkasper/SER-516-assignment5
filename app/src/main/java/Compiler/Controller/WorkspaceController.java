@@ -32,7 +32,7 @@ public class WorkspaceController extends AbstractController {
     private final ArrayList<SpaceModel> spaces = new ArrayList<SpaceModel>();
 
 
-    public WorkspaceController(JFrame theFrame) throws IOException {
+    public WorkspaceController(JFrame theFrame) {
         this.theFrame = theFrame;
 
 

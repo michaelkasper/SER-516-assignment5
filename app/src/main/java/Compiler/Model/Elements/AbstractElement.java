@@ -1,7 +1,7 @@
 package Compiler.Model.Elements;
 
 import Compiler.Model.AbstractModel;
-import Compiler.Model.Connection;
+import Compiler.Model.ConnectionModel;
 import Compiler.View.Components.Element;
 
 import java.util.ArrayList;
@@ -26,20 +26,29 @@ public abstract class AbstractElement extends AbstractModel {
 
     private ArrayList<AbstractElement> connectionsIn = new ArrayList<>();
     private ArrayList<AbstractElement> connectionsOut = new ArrayList<>();
+    public String symbol;
 
-    public AbstractElement() {
+    public AbstractElement(String symbol) {
         super();
+        this.symbol = symbol;
+
+        this.elementView = new Element(this);// TODO: not sure this is where we want this
+    }
+
+    public AbstractElement(String symbol, int allowedIn, int allowedOut) {
+        super();
+        this.symbol = symbol;
 
         this.elementView = new Element(this);// TODO: not sure this is where we want this
     }
 
     public void addConnectionIn(AbstractElement element) {
         this.connectionsIn.add(element);
-        this.support.firePropertyChange(EVENT_CONNECTION_MADE, null, new Connection(this, element));
+        this.support.firePropertyChange(EVENT_CONNECTION_MADE, null, new ConnectionModel(this, element));
     }
 
     public void addConnectionOut(AbstractElement element) {
         this.connectionsOut.add(element);
-        this.support.firePropertyChange(EVENT_CONNECTION_MADE, null, new Connection(element, this));
+        this.support.firePropertyChange(EVENT_CONNECTION_MADE, null, new ConnectionModel(element, this));
     }
 }
