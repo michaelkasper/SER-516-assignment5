@@ -1,9 +1,14 @@
 package Compiler.View;
 
+import Compiler.Model.Elements.AbstractElement;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
-public class Space extends JPanel {
+public class Space extends JPanel implements Observer {
 
     /**
      * TODO: Make drop zone
@@ -19,5 +24,15 @@ public class Space extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if(o.getClass() == AbstractElement.class) {
+            // Connection change from AbstractElements.
+        }
+        else {
+            // New element dropped in space.
+        }
     }
 }

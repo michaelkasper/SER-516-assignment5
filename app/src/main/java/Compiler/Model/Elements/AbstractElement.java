@@ -1,10 +1,14 @@
 package Compiler.Model.Elements;
 
 import Compiler.View.Components.Element;
+import org.checkerframework.checker.units.qual.A;
 
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.UUID;
 
-public abstract class AbstractElement {
+public abstract class AbstractElement extends Observable {
     protected final Element elementView;
     private final UUID id;
 
@@ -21,9 +25,24 @@ public abstract class AbstractElement {
      * TODO: ????
      */
 
+    private ArrayList<AbstractElement> connectionsIn = new ArrayList<>();
+    private ArrayList<AbstractElement> connectionsOut = new ArrayList<>();
+
     public AbstractElement() {
         this.id = UUID.randomUUID();
 
         this.elementView = new Element();// TODO: not sure this is where we want this
+    }
+
+    public void addConnectionIn(AbstractElement element) {
+        this.connectionsIn.add(element);
+        setChanged();
+        notifyObservers();
+    }
+
+    public void addConnectionOut(AbstractElement element) {
+        this.connectionsOut.add(element);
+        setChanged();
+        notifyObservers();
     }
 }
