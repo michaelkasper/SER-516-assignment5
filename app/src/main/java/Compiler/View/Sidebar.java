@@ -22,18 +22,13 @@ public class Sidebar extends JPanel {
         this.add(new Element(new CloseIfElement()));
         this.add(new Element(new MethodStartElement()));
         this.add(new Element(new MethodEndElement()));
-        this.add(new Element(new CommandElement()));
         this.add(new Element(new LoopElement()));
         this.add(new Element(new ThreadElement()));
+        this.add(new Element(new CommandElement()));
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
-        //TODO: REMOVE
-        g.setColor(Color.GREEN);
-        g.fillRect(0, 0, getWidth(), getHeight());
-        //TODO: REMOVE
     }
 }

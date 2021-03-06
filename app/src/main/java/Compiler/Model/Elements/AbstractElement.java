@@ -27,7 +27,9 @@ public abstract class AbstractElement extends AbstractModel {
     private ArrayList<AbstractElement> connectionsIn = new ArrayList<>();
     private ArrayList<AbstractElement> connectionsOut = new ArrayList<>();
     public String symbol;
-
+    public int inputs;
+    public int outputs;
+    
     public AbstractElement(String symbol) {
         super();
         this.symbol = symbol;
@@ -35,10 +37,11 @@ public abstract class AbstractElement extends AbstractModel {
         this.elementView = new Element(this);// TODO: not sure this is where we want this
     }
 
-    public AbstractElement(String symbol, int allowedIn, int allowedOut) {
+    public AbstractElement(String symbol, int inputs, int outputs) {
         super();
         this.symbol = symbol;
-
+        this.inputs = inputs;
+        this.outputs = outputs;
         this.elementView = new Element(this);// TODO: not sure this is where we want this
     }
 
