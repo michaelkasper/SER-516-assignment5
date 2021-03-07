@@ -2,12 +2,10 @@ package Compiler.Model.Elements;
 
 import Compiler.Model.AbstractModel;
 import Compiler.Model.ConnectionModel;
-import Compiler.View.Components.Element;
 
 import java.util.ArrayList;
 
 public abstract class AbstractElement extends AbstractModel {
-    protected final Element elementView;
 
     public static final String EVENT_CONNECTION_MADE = "event_connection_made";
 
@@ -29,20 +27,12 @@ public abstract class AbstractElement extends AbstractModel {
     public String symbol;
     public int inputs;
     public int outputs;
-    
-    public AbstractElement(String symbol) {
-        super();
-        this.symbol = symbol;
-
-        this.elementView = new Element(this);// TODO: not sure this is where we want this
-    }
 
     public AbstractElement(String symbol, int inputs, int outputs) {
         super();
         this.symbol = symbol;
         this.inputs = inputs;
         this.outputs = outputs;
-        this.elementView = new Element(this);// TODO: not sure this is where we want this
     }
 
     public void addConnectionIn(AbstractElement element) {

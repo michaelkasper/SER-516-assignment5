@@ -4,12 +4,13 @@ import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
 import Compiler.View.Components.Element;
 import Compiler.View.Space;
+import Decorator.PropertyChangeDecorator;
 
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 
-public class SpaceController extends AbstractController {
+public class SpaceController extends PropertyChangeDecorator {
 
     private SpaceModel spaceModel;
     private Space spaceView;

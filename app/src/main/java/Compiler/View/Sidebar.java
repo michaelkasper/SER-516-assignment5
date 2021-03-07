@@ -6,6 +6,7 @@ import Compiler.View.Components.Element;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 
 public class Sidebar extends JPanel {
@@ -15,16 +16,21 @@ public class Sidebar extends JPanel {
     public Sidebar(WorkspaceController workspaceController) {
         this.workspaceController = workspaceController;
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-
+        this.setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
         this.setPreferredSize(new Dimension(250, getHeight()));
 
-        this.add(new Element(new OpenIfElement()));
-        this.add(new Element(new CloseIfElement()));
-        this.add(new Element(new MethodStartElement()));
-        this.add(new Element(new MethodEndElement()));
-        this.add(new Element(new LoopElement()));
-        this.add(new Element(new ThreadElement()));
-        this.add(new Element(new CommandElement()));
+        for (AbstractElement elementModel : Arrays.asList(
+                new OpenIfElement(),
+                new CloseIfElement(),
+                new MethodStartElement(),
+                new MethodEndElement(),
+                new LoopElement(),
+                new ThreadElement(),
+                new CommandElement()
+        )) {
+            this.add(new Element(elementModel));
+            this.add(Box.createRigidArea(new Dimension(getWidth(), 20)));
+        }
     }
 
     @Override

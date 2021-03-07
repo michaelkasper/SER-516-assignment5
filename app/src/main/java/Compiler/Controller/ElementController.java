@@ -2,9 +2,10 @@ package Compiler.Controller;
 
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.View.Components.Element;
+import Decorator.PropertyChangeDecorator;
 
 
-public class ElementController extends AbstractController {
+public class ElementController extends PropertyChangeDecorator {
 
     private AbstractElement elementModel;
     private Element elementView;

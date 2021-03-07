@@ -4,6 +4,7 @@ import Compiler.Model.SpaceModel;
 import Compiler.View.Header;
 import Compiler.View.Sidebar;
 import Compiler.View.Spaces;
+import Decorator.PropertyChangeDecorator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 /**
  * The Game board controller handles all logic for the game board view
  */
-public class WorkspaceController extends AbstractController {
+public class WorkspaceController extends PropertyChangeDecorator {
 
     public static final String EVENT_SPACE_ADDED = "event_space_added";
     public static final String EVENT_ACTIVE_SPACE_CHANGED = "event_active_space_changed";

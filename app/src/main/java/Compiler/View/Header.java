@@ -46,7 +46,6 @@ public class Header extends JPanel {
         this.addSpaceBtn.addActionListener(actionListener);
     }
 
-
     /**
      * @param actionListener Event to run when importSpaceBtn is clicked
      */
