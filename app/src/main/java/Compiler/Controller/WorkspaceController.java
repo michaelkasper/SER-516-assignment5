@@ -28,7 +28,7 @@ public class WorkspaceController extends PropertyChangeDecorator {
     private final JFrame theFrame;
     private final Header headerView;
     private final Spaces spacesView;
-    private final Sidebar sidebarView;
+    public final Sidebar sidebarView;
 
     private final ArrayList<SpaceModel> spaces = new ArrayList<SpaceModel>();
 
@@ -45,7 +45,6 @@ public class WorkspaceController extends PropertyChangeDecorator {
         this.theFrame.add(this.sidebarView, BorderLayout.LINE_START);
         this.theFrame.add(this.spacesView, BorderLayout.CENTER);
 
-        new DragController(this.sidebarView);
         this.registerListeners();
     }
 

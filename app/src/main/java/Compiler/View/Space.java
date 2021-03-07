@@ -37,11 +37,6 @@ public class Space extends JPanel {
         super.paintComponent(g);
     }
 
-    @Override
-    public void update(Graphics g) {
-        super.update(g);
-    }
-
     public void setDropListener(ActionListener actionListener) {
         //todo: link actionListener to drop zone view
     }

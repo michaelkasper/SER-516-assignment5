@@ -50,6 +50,10 @@ public class Element extends JPanel {
 		this.moving = moving;
 	}
 
+	public AbstractElement getElementModel() {
+        return this.elementModel;
+    }
+
 
     @Override
     protected void paintComponent(Graphics g) {

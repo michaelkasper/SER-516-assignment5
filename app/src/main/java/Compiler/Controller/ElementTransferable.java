@@ -1,5 +1,6 @@
 package Compiler.Controller;
 
+import Compiler.Model.Elements.AbstractElement;
 import Compiler.View.Components.Element;
 
 import java.awt.*;
@@ -12,10 +13,10 @@ public class ElementTransferable implements Transferable {
 
     private DataFlavor widgetFlavor = new DataFlavor(Element.class,"Draggable Element");
     private DataFlavor[] flavorArray = { widgetFlavor, DataFlavor.stringFlavor };
-    private Rectangle bounds = null;
+    private Class elementModel;
 
     public ElementTransferable(Element element) {
-        bounds = element.getBounds();
+        elementModel = element.getElementModel().getClass();
     }
 
     public DataFlavor[] getTransferDataFlavors() {
@@ -23,18 +24,14 @@ public class ElementTransferable implements Transferable {
     }
 
     public boolean isDataFlavorSupported(DataFlavor flavor) {
-        System.out.println(flavor.equals(widgetFlavor));
         return flavor.equals(widgetFlavor) ||
                 flavor.equals(DataFlavor.stringFlavor);
     }
 
     public Object getTransferData(DataFlavor flavor)
             throws UnsupportedFlavorException, IOException {
-        System.out.println(flavor.equals(widgetFlavor));
-        if (flavor.equals(DataFlavor.stringFlavor))
-            return this.bounds.toString();
         if (flavor.equals(widgetFlavor))
-            return new Rectangle(this.bounds);
+            return this.elementModel;
         return null;
     }
 }

@@ -1,5 +1,6 @@
 package Compiler.View;
 
+import Compiler.Controller.DragController;
 import Compiler.Controller.WorkspaceController;
 import Compiler.Model.SpaceModel;
 
@@ -11,7 +12,6 @@ public class Spaces extends JPanel {
 
     private final JTabbedPane tabbedPane = new JTabbedPane();
     private WorkspaceController workspaceController;
-    public Space activeSpace;
 
     /**
      * TODO: Render tabs
@@ -33,10 +33,6 @@ public class Spaces extends JPanel {
 //        tabbedPane.setForeground(Color.white);
 
         this.add(tabbedPane);
-        Space newSpace = new Space(new SpaceModel());
-        this.tabbedPane.add(String.valueOf(this.tabbedPane.getTabCount() + 1), newSpace);
-        this.activeSpace = newSpace;
-
         this.registerListeners();
     }
 
@@ -48,7 +44,7 @@ public class Spaces extends JPanel {
                 SpaceModel spaceModel = (SpaceModel) e.getNewValue();
                 Space newSpace = new Space(spaceModel);
                 this.tabbedPane.add(String.valueOf(this.tabbedPane.getTabCount() + 1), newSpace);
-                this.activeSpace = newSpace;
+                new DragController(this.workspaceController.sidebarView, newSpace);
             }
         }); // add tab
 
@@ -57,7 +53,6 @@ public class Spaces extends JPanel {
             if (e.getNewValue() != null) {
                 int spaceModelIndex = (int) e.getNewValue();
                 tabbedPane.setSelectedIndex(spaceModelIndex);
-                this.activeSpace = (Space) tabbedPane.getTabComponentAt(spaceModelIndex);
             }
         }); // select tab
     }

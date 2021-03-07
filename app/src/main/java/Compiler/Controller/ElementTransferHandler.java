@@ -1,6 +1,6 @@
 package Compiler.Controller;
 
-import Compiler.Model.Elements.OpenIfElement;
+import Compiler.Model.Elements.*;
 import Compiler.View.Components.Element;
 import Compiler.View.Sidebar;
 import Compiler.View.Space;
@@ -23,7 +23,6 @@ public class ElementTransferHandler extends TransferHandler {
             if ( comp instanceof Element) {
                 Element element = (Element) comp;
                 if ( element.isMoving() ) {
-                    System.out.println("TransferableCreated");
                     return new ElementTransferable(element);
                 }
             }
@@ -31,49 +30,66 @@ public class ElementTransferHandler extends TransferHandler {
         return null;
     }
 
-    protected void exportDone(JComponent source, Transferable data,
-                              int action) {
-
-        if ( action == TransferHandler.MOVE ) {
-
-            Sidebar sidebar = (Sidebar) source;
-            System.out.println(source instanceof Element);
-            for ( Component comp : source.getComponents() ) {
-                System.out.println(comp.getClass());
-                if ( comp instanceof Element ) {
-                    Element element = (Element) comp;
-                    if ( element.isMoving() ) {
-                        System.out.println("ExportDone");
-                        //canvas.remove(canvasWidget);
-                        //space.repaint();
-                    }
-                }
-            }
-        }
-    }
-
     public boolean importData(TransferHandler.TransferSupport support) {
-        System.out.println("TEST1");
         if ( !canImport(support) )
             return false;
 
-        Sidebar sidebar = (Sidebar) support.getComponent();
-        Rectangle bounds = new Rectangle(0,0,10,10);
+        Space space = (Space) support.getComponent();
+        Rectangle bounds = new Rectangle(0,0,100,50);
+        Class elementModelClass;
         try {
-            bounds = (Rectangle) support.getTransferable().getTransferData(widgetFlavor);
+            elementModelClass = (Class) support.getTransferable().getTransferData(widgetFlavor);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
 
-        Element element = new Element(new OpenIfElement());
+        Element element;
+        if(elementModelClass == OpenIfElement.class) {
+            System.out.println("OpenIf");
+            element = new Element(new OpenIfElement());
+        }
+
+        else if(elementModelClass == CloseIfElement.class) {
+            System.out.println("CloseIf");
+            element = new Element(new CloseIfElement());
+        }
+
+        else if(elementModelClass == CommandElement.class) {
+            System.out.println("Command");
+            element = new Element(new CommandElement());
+        }
+
+        else if(elementModelClass == LoopElement.class) {
+            System.out.println("Loop");
+            element = new Element(new LoopElement());
+        }
+
+        else if(elementModelClass == MethodEndElement.class) {
+            System.out.println("MethodEnd");
+            element = new Element(new MethodEndElement());
+        }
+
+        else if(elementModelClass == MethodStartElement.class) {
+            System.out.println("MethodStart");
+            element = new Element(new MethodStartElement());
+        }
+
+        else if(elementModelClass == ThreadElement.class) {
+            System.out.println("Thread");
+            element = new Element(new ThreadElement());
+        }
+
+        else {
+            System.out.println("Default");
+            element = new Element(new OpenIfElement());
+        }
+
         bounds.setLocation(support.getDropLocation().getDropPoint());
         element.setBounds(bounds);
-        System.out.println("TEST");
-        sidebar.add(element);
-        sidebar.add(Box.createRigidArea(new Dimension(sidebar.getWidth(), 20)));
+        space.add(element);
 
-        sidebar.repaint();
+        space.repaint();
         return true;
     }
 

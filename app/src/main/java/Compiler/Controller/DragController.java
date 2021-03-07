@@ -15,9 +15,13 @@ import java.awt.event.MouseEvent;
 
 public class DragController extends MouseAdapter {
 
-    public DragController(Sidebar sidebar) {
+    public DragController(Sidebar sidebar, Space space) {
         sidebar.addMouseMotionListener(this);
-        sidebar.setTransferHandler(new ElementTransferHandler());
+        //spaces.addMouseMotionListener(this);
+        ElementTransferHandler transferHandler = new ElementTransferHandler();
+        space.setTransferHandler(transferHandler);
+        sidebar.setTransferHandler(transferHandler);
+        //this.space = spaces.activeSpace;
     }
 
     public void mouseDragged(MouseEvent e) {
@@ -25,7 +29,6 @@ public class DragController extends MouseAdapter {
         Component component = sidebar.getComponentAt(e.getPoint());
         if (component != null ) {
             if ( component instanceof Element) {
-                System.out.println("MouseDragged");
                 Element element = (Element) component;
                 element.setMoving(true);
                 sidebar.getParent();
