@@ -20,14 +20,28 @@ public class ElementTransferHandler extends TransferHandler {
     private DataFlavor widgetFlavor = new DataFlavor(Element.class,"Draggable Element");
     protected Transferable createTransferable(JComponent c) {
         for ( Component comp : c.getComponents() ) {
-            if ( comp instanceof Element) {
+            if (comp instanceof Element) {
                 Element element = (Element) comp;
-                if ( element.isMoving() ) {
+                if (element.isMoving()) {
                     return new ElementTransferable(element);
                 }
             }
         }
         return null;
+    }
+
+    protected void exportDone(JComponent source, Transferable data,
+                              int action) {
+        if (action == TransferHandler.MOVE) {
+            for (Component component : source.getComponents()) {
+                if ( component instanceof Element) {
+                    Element element = (Element) component;
+                    if (element.isMoving()) {
+                        element.setMoving(false);
+                    }
+                }
+            }
+        }
     }
 
     public boolean importData(TransferHandler.TransferSupport support) {
@@ -46,42 +60,35 @@ public class ElementTransferHandler extends TransferHandler {
 
         Element element;
         if(elementModelClass == OpenIfElement.class) {
-            System.out.println("OpenIf");
             element = new Element(new OpenIfElement());
         }
 
         else if(elementModelClass == CloseIfElement.class) {
-            System.out.println("CloseIf");
             element = new Element(new CloseIfElement());
         }
 
         else if(elementModelClass == CommandElement.class) {
-            System.out.println("Command");
             element = new Element(new CommandElement());
         }
 
         else if(elementModelClass == LoopElement.class) {
-            System.out.println("Loop");
             element = new Element(new LoopElement());
         }
 
         else if(elementModelClass == MethodEndElement.class) {
-            System.out.println("MethodEnd");
             element = new Element(new MethodEndElement());
         }
 
         else if(elementModelClass == MethodStartElement.class) {
-            System.out.println("MethodStart");
             element = new Element(new MethodStartElement());
         }
 
         else if(elementModelClass == ThreadElement.class) {
-            System.out.println("Thread");
             element = new Element(new ThreadElement());
         }
 
         else {
-            System.out.println("Default");
+            // Default
             element = new Element(new OpenIfElement());
         }
 

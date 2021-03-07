@@ -43,10 +43,8 @@ public class Element extends JPanel {
 	}
 
 	public void setMoving(boolean moving) {
-		if ( moving )
+		if (moving)
 			setBackground(Color.LIGHT_GRAY);
-		else
-			setBackground(Color.DARK_GRAY);
 		this.moving = moving;
 	}
 
