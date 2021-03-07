@@ -1,5 +1,6 @@
 package Compiler.View.Components;
 
+import Compiler.Controller.DragController;
 import Compiler.Controller.ElementController;
 import Compiler.Model.Elements.AbstractElement;
 
@@ -14,6 +15,7 @@ public class Element extends JPanel {
 
     private final ElementController elementController;
     private AbstractElement elementModel;
+	private boolean moving = false;
 
     /**
      * TODO: Make draggable
@@ -35,6 +37,19 @@ public class Element extends JPanel {
         this.add(symbolLabel);
         this.add(outputRepresentation);
     }
+
+	public boolean isMoving() {
+		return moving;
+	}
+
+	public void setMoving(boolean moving) {
+		if ( moving )
+			setBackground(Color.LIGHT_GRAY);
+		else
+			setBackground(Color.DARK_GRAY);
+		this.moving = moving;
+	}
+
 
     @Override
     protected void paintComponent(Graphics g) {

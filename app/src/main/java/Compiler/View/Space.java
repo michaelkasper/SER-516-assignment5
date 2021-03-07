@@ -22,7 +22,6 @@ public class Space extends JPanel {
         this.spaceController = new SpaceController(this, spaceModel);
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-
         this.add(new JLabel(spaceModel.id.toString()));
 
         this.registerListeners();
@@ -36,6 +35,11 @@ public class Space extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+    }
+
+    @Override
+    public void update(Graphics g) {
+        super.update(g);
     }
 
     public void setDropListener(ActionListener actionListener) {

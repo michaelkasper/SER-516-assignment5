@@ -11,6 +11,7 @@ public class Spaces extends JPanel {
 
     private final JTabbedPane tabbedPane = new JTabbedPane();
     private WorkspaceController workspaceController;
+    public Space activeSpace;
 
     /**
      * TODO: Render tabs
@@ -32,6 +33,9 @@ public class Spaces extends JPanel {
 //        tabbedPane.setForeground(Color.white);
 
         this.add(tabbedPane);
+        Space newSpace = new Space(new SpaceModel());
+        this.tabbedPane.add(String.valueOf(this.tabbedPane.getTabCount() + 1), newSpace);
+        this.activeSpace = newSpace;
 
         this.registerListeners();
     }
@@ -42,7 +46,9 @@ public class Spaces extends JPanel {
         this.workspaceController.addPropertyChangeListener(WorkspaceController.EVENT_SPACE_ADDED, e -> {
             if (e.getNewValue() != null) {
                 SpaceModel spaceModel = (SpaceModel) e.getNewValue();
-                this.tabbedPane.add(String.valueOf(this.tabbedPane.getTabCount() + 1), new Space(spaceModel));
+                Space newSpace = new Space(spaceModel);
+                this.tabbedPane.add(String.valueOf(this.tabbedPane.getTabCount() + 1), newSpace);
+                this.activeSpace = newSpace;
             }
         }); // add tab
 
@@ -51,6 +57,7 @@ public class Spaces extends JPanel {
             if (e.getNewValue() != null) {
                 int spaceModelIndex = (int) e.getNewValue();
                 tabbedPane.setSelectedIndex(spaceModelIndex);
+                this.activeSpace = (Space) tabbedPane.getTabComponentAt(spaceModelIndex);
             }
         }); // select tab
     }
