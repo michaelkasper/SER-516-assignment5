@@ -29,10 +29,10 @@ public class Header extends JPanel {
         this.setBorder(BorderFactory.createMatteBorder(0, 0, 5, 0, Color.white));
         this.setBackground(new Color(219, 225, 243));
 
-        this.addSpaceBtn = new JButton("add");
-        this.importSpaceBtn = new JButton("import");
-        this.saveSpaceBtn = new JButton("save");
-        this.compileBtn = new JButton("compile");
+        this.addSpaceBtn = new JButton("New Space");
+        this.importSpaceBtn = new JButton("Load");
+        this.saveSpaceBtn = new JButton("Save");
+        this.compileBtn = new JButton("Compile");
 
         this.add(this.addSpaceBtn);
         this.add(this.importSpaceBtn);
