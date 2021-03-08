@@ -95,7 +95,6 @@ public class ElementTransferHandler extends TransferHandler {
         bounds.setLocation(support.getDropLocation().getDropPoint());
         element.setBounds(bounds);
         space.add(element);
-
         space.repaint();
         return true;
     }
