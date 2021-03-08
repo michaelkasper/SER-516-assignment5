@@ -16,7 +16,6 @@ public class Space extends AbstractDropJPanel {
 
 
     private final SpaceController spaceController;
-    private final DragAndDrop dragController;
     private Consumer<TransferHandler.TransferSupport> onElementDrop;
 
     /**
@@ -27,9 +26,6 @@ public class Space extends AbstractDropJPanel {
      */
     public Space(SpaceModel spaceModel) {
         this.spaceController = new SpaceController(this, spaceModel);
-
-        this.dragController = DragAndDrop.getInstance();
-        this.dragController.registerDropComponent(this);
 
         this.setLayout(null);
         this.registerListeners();

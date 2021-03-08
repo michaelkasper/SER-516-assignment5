@@ -11,4 +11,8 @@ abstract public class AbstractDragJPanel extends JPanel implements Transferable 
     public abstract void onDragStart();
 
     public abstract boolean canDrag();
+
+    public AbstractDragJPanel() {
+        DragAndDrop.getInstance().registerDragComponent(this);
+    }
 }

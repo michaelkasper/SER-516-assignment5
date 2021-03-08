@@ -19,7 +19,6 @@ public class Element extends AbstractDragJPanel {
     public static DataFlavor DRAGGABLE_FLAG = new DataFlavor(Element.class, "Draggable Element");
 
     private final ElementController elementController;
-    private final DragAndDrop dragController;
     private AbstractElement elementModel;
     private boolean moving = false;
 
@@ -29,9 +28,6 @@ public class Element extends AbstractDragJPanel {
     public Element(AbstractElement elementModel) {
         this.elementController = new ElementController(this, elementModel);
         this.elementModel = elementModel;
-
-        this.dragController = DragAndDrop.getInstance();
-        this.dragController.registerDragComponent(this);
 
         IoRepresentation inputsRepresentation = new IoRepresentation(this.elementModel.getInputs());
         IoRepresentation outputRepresentation = new IoRepresentation(this.elementModel.getOutputs());

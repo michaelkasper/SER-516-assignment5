@@ -11,4 +11,8 @@ abstract public class AbstractDropJPanel extends JPanel {
     public abstract void draggingStart();
 
     public abstract void draggingEnd();
+
+    public AbstractDropJPanel() {
+        DragAndDrop.getInstance().registerDropComponent(this);
+    }
 }
