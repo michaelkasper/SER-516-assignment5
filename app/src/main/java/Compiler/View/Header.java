@@ -10,9 +10,6 @@ import java.awt.event.ActionListener;
 public class Header extends JPanel {
 
     private final JButton addSpaceBtn;
-    private final JButton importSpaceBtn;
-    private final JButton saveSpaceBtn;
-    private final JButton compileBtn;
     private final WorkspaceController workspaceController;
 
     /**
@@ -30,14 +27,7 @@ public class Header extends JPanel {
         this.setBackground(new Color(219, 225, 243));
 
         this.addSpaceBtn = new JButton("add");
-        this.importSpaceBtn = new JButton("import");
-        this.saveSpaceBtn = new JButton("save");
-        this.compileBtn = new JButton("compile");
-
         this.add(this.addSpaceBtn);
-        this.add(this.importSpaceBtn);
-        this.add(this.saveSpaceBtn);
-        this.add(this.compileBtn);
     }
 
 
@@ -48,25 +38,5 @@ public class Header extends JPanel {
         this.addSpaceBtn.addActionListener(actionListener);
     }
 
-    /**
-     * @param actionListener Event to run when importSpaceBtn is clicked
-     */
-    public void setImportBtnListener(ActionListener actionListener) {
-        this.importSpaceBtn.addActionListener(actionListener);
-    }
-
-    /**
-     * @param actionListener Event to run when saveSpaceBtn is clicked
-     */
-    public void setSaveBtnListener(ActionListener actionListener) {
-        this.saveSpaceBtn.addActionListener(actionListener);
-    }
-
-    /**
-     * @param actionListener Event to run when compileBtn is clicked
-     */
-    public void setCompileBtnListener(ActionListener actionListener) {
-        this.compileBtn.addActionListener(actionListener);
-    }
 
 }
