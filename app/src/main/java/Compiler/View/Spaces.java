@@ -1,6 +1,5 @@
 package Compiler.View;
 
-import Compiler.Controller.DragController;
 import Compiler.Controller.WorkspaceController;
 import Compiler.Model.SpaceModel;
 
@@ -28,10 +27,6 @@ public class Spaces extends JPanel {
         tabbedPane.setBounds(0, 0, getWidth(), getHeight());
         tabbedPane.setTabPlacement(JTabbedPane.TOP);
 
-
-//        tabbedPane.setBackground(Color.orange);
-//        tabbedPane.setForeground(Color.white);
-
         this.add(tabbedPane);
         this.registerListeners();
     }
@@ -44,7 +39,7 @@ public class Spaces extends JPanel {
                 SpaceModel spaceModel = (SpaceModel) e.getNewValue();
                 Space newSpace = new Space(spaceModel);
                 this.tabbedPane.add(String.valueOf(this.tabbedPane.getTabCount() + 1), newSpace);
-                new DragController(this.workspaceController.sidebarView, newSpace);
+//                new DragController(this.workspaceController.sidebarView, newSpace);
             }
         }); // add tab
 
@@ -58,18 +53,6 @@ public class Spaces extends JPanel {
     }
 
     public void setTabSelectedListener(ActionListener actionListener) {
-
-    }
-
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        //TODO: REMOVE
-//        g.setColor(Color.BLUE);
-//        g.fillRect(0, 0, getWidth(), getHeight());
-        //TODO: REMOVE
 
     }
 }

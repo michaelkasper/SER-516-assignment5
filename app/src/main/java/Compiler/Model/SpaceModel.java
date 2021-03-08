@@ -2,7 +2,6 @@ package Compiler.Model;
 
 import Compiler.Model.Elements.AbstractElement;
 
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 
 public class SpaceModel extends AbstractModel {
@@ -23,12 +22,23 @@ public class SpaceModel extends AbstractModel {
 
     public void addElement(AbstractElement element) {
         this.elements.add(element);
+        element.setSpaceModel(this);
         this.support.firePropertyChange(EVENT_ELEMENT_ADDED, null, element);// add to tabs
     }
 
-    public boolean hasElement(AbstractElement element) {
-        //TODO: check if element is in the ArrayList
-        return false;
+    public boolean hasElementId(String id) {
+        return this.getElementById(id) != null;
     }
 
+
+    public AbstractElement getElementById(String id) {
+        return this.elements.stream()
+                .filter(element -> id.equals(element.getId()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public ArrayList<AbstractElement> getElements() {
+        return this.elements;
+    }
 }

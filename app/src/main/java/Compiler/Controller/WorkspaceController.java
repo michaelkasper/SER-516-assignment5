@@ -4,12 +4,11 @@ import Compiler.Model.SpaceModel;
 import Compiler.View.Header;
 import Compiler.View.Sidebar;
 import Compiler.View.Spaces;
-import Decorator.PropertyChangeDecorator;
+import Services.PropertyChangeDecorator;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -32,10 +31,8 @@ public class WorkspaceController extends PropertyChangeDecorator {
 
     private final ArrayList<SpaceModel> spaces = new ArrayList<SpaceModel>();
 
-
     public WorkspaceController(JFrame theFrame) {
         this.theFrame = theFrame;
-
 
         this.headerView = new Header(this);
         this.sidebarView = new Sidebar(this);
@@ -46,6 +43,11 @@ public class WorkspaceController extends PropertyChangeDecorator {
         this.theFrame.add(this.spacesView, BorderLayout.CENTER);
 
         this.registerListeners();
+
+
+        //TODO: Remove Temp Code
+        this.onAddSpace(new ActionEvent(this, 0, ""));
+        //TODO: Remove Temp Code
     }
 
 
@@ -56,6 +58,7 @@ public class WorkspaceController extends PropertyChangeDecorator {
         this.headerView.setCompileBtnListener(this::onCompile);
         this.spacesView.setTabSelectedListener(this::onTabSelected);
     }
+
 
     private void onAddSpace(ActionEvent e) {
         SpaceModel newSpace = new SpaceModel();

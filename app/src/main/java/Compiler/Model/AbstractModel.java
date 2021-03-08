@@ -1,15 +1,19 @@
 package Compiler.Model;
 
-import Decorator.PropertyChangeDecorator;
+import Services.PropertyChangeDecorator;
 
 import java.util.UUID;
 
 abstract public class AbstractModel extends PropertyChangeDecorator {
 
-    public final UUID id;
+    protected String id;
 
     public AbstractModel() {
         super();
-        this.id = UUID.randomUUID();
+        this.id = UUID.randomUUID().toString();
+    }
+
+    public String getId() {
+        return id;
     }
 }

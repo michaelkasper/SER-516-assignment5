@@ -4,17 +4,17 @@ import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
 import Compiler.View.Components.Element;
 import Compiler.View.Space;
-import Decorator.PropertyChangeDecorator;
+import Services.PropertyChangeDecorator;
 
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
+import javax.swing.*;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 
 
 public class SpaceController extends PropertyChangeDecorator {
 
     private SpaceModel spaceModel;
     private Space spaceView;
-    private ArrayList<Element> elementViews = new ArrayList<>();
 
     //TODO: Drag and Drop should be setup here, more so the drop
     //TODO: The drop logic would be one listener. The listener would first check to see if the
@@ -22,30 +22,45 @@ public class SpaceController extends PropertyChangeDecorator {
     // if its already added it would then update its render position
 
     public SpaceController(Space spaceView, SpaceModel spaceModel) {
-
         this.spaceView = spaceView;
         this.spaceModel = spaceModel;
 
         this.registerListeners();
     }
 
-    public void onDrop(ActionEvent e) {
+    public void onElementDrop(TransferHandler.TransferSupport support) {
+        try {
+            String[] data = (String[]) support.getTransferable().getTransferData(Element.DRAGGABLE_FLAG);
 
+            String id = data[0];
+            String className = data[1];
+
+            if (!this.spaceModel.hasElementId(id)) {
+                AbstractElement elementModel = AbstractElement.Factory(className);
+                elementModel.setPosition(support.getDropLocation().getDropPoint());
+                this.spaceModel.addElement(elementModel);
+
+                elementModel.addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, e -> {
+                    this.spaceView.rebuildMap(this.spaceModel);
+                });
+            } else {
+                AbstractElement elementModel = this.spaceModel.getElementById(id);
+                elementModel.setPosition(support.getDropLocation().getDropPoint());
+            }
+
+        } catch (UnsupportedFlavorException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void registerListeners() {
-        // listen for drop event on Space View
-
-        this.spaceView.setDropListener(this::onDrop);
+        this.spaceView.setOnElementDrop(this::onElementDrop);
 
         this.spaceModel.addPropertyChangeListener(SpaceModel.EVENT_ELEMENT_ADDED, e -> {
             if (e.getNewValue() != null) {
-                AbstractElement elementModel = (AbstractElement) e.getNewValue();
-                this.elementViews.add(new Element(elementModel));
-                //TODO: trigger graph to update with new element
+                this.spaceView.rebuildMap(this.spaceModel);
             }
         });
-
     }
 
 

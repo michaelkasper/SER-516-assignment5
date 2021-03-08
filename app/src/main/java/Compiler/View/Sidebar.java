@@ -1,6 +1,5 @@
 package Compiler.View;
 
-import Compiler.Controller.DragController;
 import Compiler.Controller.WorkspaceController;
 import Compiler.Model.Elements.*;
 import Compiler.View.Components.Element;
