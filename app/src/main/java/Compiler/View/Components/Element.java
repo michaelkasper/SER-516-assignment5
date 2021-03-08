@@ -29,10 +29,10 @@ public class Element extends AbstractDragJPanel {
         this.elementController = new ElementController(this, elementModel);
         this.elementModel = elementModel;
 
-        IoRepresentation inputsRepresentation = new IoRepresentation(this.elementModel.getInputs());
-        IoRepresentation outputRepresentation = new IoRepresentation(this.elementModel.getOutputs());
+        IoRepresentation inputsRepresentation = new IoRepresentation(this.elementModel.inputs);
+        IoRepresentation outputRepresentation = new IoRepresentation(this.elementModel.outputs);
 
-        JLabel symbolLabel = new JLabel(this.elementModel.getSymbol(), SwingConstants.CENTER);
+        JLabel symbolLabel = new JLabel(this.elementModel.symbol, SwingConstants.CENTER);
         symbolLabel.setFont(symbolLabel.getFont().deriveFont(25f));
 
         this.setLayout(new GridLayout(0, 3));

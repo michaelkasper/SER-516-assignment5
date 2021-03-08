@@ -5,7 +5,6 @@ import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
 import Compiler.View.Components.Element;
 import Services.DragAndDrop.AbstractDropJPanel;
-import Services.DragAndDrop.DragAndDrop;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,16 +25,8 @@ public class Space extends AbstractDropJPanel {
      */
     public Space(SpaceModel spaceModel) {
         this.spaceController = new SpaceController(this, spaceModel);
-
         this.setLayout(null);
-        this.registerListeners();
     }
-
-
-    private void registerListeners() {
-        // listen for changes on controller only
-    }
-
 
     public void rebuildMap(SpaceModel spaceModel) {
         this.removeAll();

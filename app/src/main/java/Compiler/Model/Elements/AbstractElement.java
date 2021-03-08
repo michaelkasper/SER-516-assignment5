@@ -29,13 +29,10 @@ public abstract class AbstractElement extends AbstractModel {
     private ArrayList<AbstractElement> connectionsIn = new ArrayList<>();
     private ArrayList<AbstractElement> connectionsOut = new ArrayList<>();
     private SpaceModel spaceModel;
-    private String symbol;
-    private int inputs;
-    private int outputs;
+    public final String symbol;
+    public final int inputs;
+    public final int outputs;
     private Point position = new Point(-1, -1);
-
-    public AbstractElement() {
-    }
 
     public AbstractElement(String symbol, int inputs, int outputs) {
         super();
@@ -68,18 +65,6 @@ public abstract class AbstractElement extends AbstractModel {
 
     public Point getPosition() {
         return this.position;
-    }
-
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public int getInputs() {
-        return inputs;
-    }
-
-    public int getOutputs() {
-        return outputs;
     }
 
     public void setSpaceModel(SpaceModel spaceModel) {

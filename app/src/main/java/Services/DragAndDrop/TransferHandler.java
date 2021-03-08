@@ -1,24 +1,24 @@
 package Services.DragAndDrop;
 
+import Services.Image;
+
 import javax.swing.*;
-import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.InputEvent;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 
 public class TransferHandler extends javax.swing.TransferHandler {
     private ArrayList<AbstractDropJPanel> dropZones;
 
+    @Override
     public int getSourceActions(JComponent sourceComponent) {
         return javax.swing.TransferHandler.MOVE;
     }
 
-    /**
-     * Drag started
-     */
+
     @Override
     protected Transferable createTransferable(JComponent dragComponent) {
         if (dragComponent instanceof AbstractDragJPanel) {
@@ -37,14 +37,7 @@ public class TransferHandler extends javax.swing.TransferHandler {
             if (component instanceof AbstractDragJPanel) {
                 AbstractDragJPanel dragComponent = (AbstractDragJPanel) component;
 
-                for (AbstractDropJPanel dropzone : this.dropZones) {
-                    for (DataFlavor flavor : dropzone.getAllowedDraggableFlags()) {
-                        if (dragComponent.getTransferDataFlavors()[0].equals(flavor)) {
-                            dropzone.draggingEnd();
-                        }
-                    }
-                }
-
+                this.loopRelatedDropZones(dragComponent.getTransferDataFlavors()[0], AbstractDropJPanel::draggingEnd);
                 dragComponent.onDragComplete();
             }
         }
@@ -81,36 +74,26 @@ public class TransferHandler extends javax.swing.TransferHandler {
         return false;
     }
 
-
-    @Override
-    public void setDragImage(Image img) {
-        super.setDragImage(img);
-    }
-
-    public void exportAsDrag(AbstractDragJPanel component, InputEvent e, int action, ArrayList<AbstractDropJPanel> dropZones) {
-        this.dropZones = dropZones;
-
+    private void loopRelatedDropZones(DataFlavor allowedFlavor, Consumer<AbstractDropJPanel> callback) {
         for (AbstractDropJPanel dropzone : this.dropZones) {
             for (DataFlavor flavor : dropzone.getAllowedDraggableFlags()) {
-                if (component.getTransferDataFlavors()[0].equals(flavor)) {
-                    dropzone.draggingStart();
+                if (allowedFlavor.equals(flavor)) {
+                    callback.accept(dropzone);
                 }
             }
         }
-        this.setDragImage(this.createImage(component));
-        component.onDragStart();
+    }
 
+    /**
+     * Drag started
+     */
+    public void exportAsDrag(AbstractDragJPanel component, InputEvent e, int action, ArrayList<AbstractDropJPanel> dropZones) {
+        this.dropZones = dropZones;
+
+        this.loopRelatedDropZones(component.getTransferDataFlavors()[0], AbstractDropJPanel::draggingStart);
+        this.setDragImage(Image.createImage(component));
+        component.onDragStart();
         super.exportAsDrag(component, e, action);
     }
 
-
-    public BufferedImage createImage(JPanel panel) {
-        int w = panel.getWidth();
-        int h = panel.getHeight();
-        BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = bi.createGraphics();
-        panel.paint(g);
-        g.dispose();
-        return bi;
-    }
 }

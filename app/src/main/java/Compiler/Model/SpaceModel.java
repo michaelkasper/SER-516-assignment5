@@ -21,8 +21,8 @@ public class SpaceModel extends AbstractModel {
 
 
     public void addElement(AbstractElement element) {
-        this.elements.add(element);
         element.setSpaceModel(this);
+        this.elements.add(element);
         this.support.firePropertyChange(EVENT_ELEMENT_ADDED, null, element);// add to tabs
     }
 

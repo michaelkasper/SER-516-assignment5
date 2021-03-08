@@ -39,7 +39,6 @@ public class Spaces extends JPanel {
                 SpaceModel spaceModel = (SpaceModel) e.getNewValue();
                 Space newSpace = new Space(spaceModel);
                 this.tabbedPane.add(String.valueOf(this.tabbedPane.getTabCount() + 1), newSpace);
-//                new DragController(this.workspaceController.sidebarView, newSpace);
             }
         }); // add tab
 
