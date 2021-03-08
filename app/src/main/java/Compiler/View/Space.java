@@ -67,7 +67,7 @@ public class Space extends AbstractDropJPanel {
 
     @Override
     public void draggingEnd() {
-        this.setBorder(BorderFactory.createLineBorder(Color.gray));
+        this.setBorder(BorderFactory.createEmptyBorder());
     }
 
     @Override
