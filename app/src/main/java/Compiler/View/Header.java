@@ -25,7 +25,9 @@ public class Header extends JPanel {
         this.workspaceController = workspaceController;
         this.setLayout(new FlowLayout());
         this.setPreferredSize(new Dimension(getWidth(), 50));
-        this.setBackground(Color.ORANGE);//TODO: set color
+
+        this.setBorder(BorderFactory.createMatteBorder(0, 0, 5, 0, Color.white));
+        this.setBackground(new Color(219, 225, 243));
 
         this.addSpaceBtn = new JButton("add");
         this.importSpaceBtn = new JButton("import");

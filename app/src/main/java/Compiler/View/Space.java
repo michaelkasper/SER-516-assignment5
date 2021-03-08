@@ -25,6 +25,7 @@ public class Space extends AbstractDropJPanel {
      */
     public Space(SpaceModel spaceModel) {
         this.spaceController = new SpaceController(this, spaceModel);
+        this.setBorder(null);
         this.setLayout(null);
     }
 

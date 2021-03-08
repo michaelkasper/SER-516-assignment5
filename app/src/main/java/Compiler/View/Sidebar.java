@@ -5,6 +5,8 @@ import Compiler.Model.Elements.*;
 import Compiler.View.Components.Element;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.Arrays;
 
@@ -16,8 +18,14 @@ public class Sidebar extends JPanel {
     public Sidebar(WorkspaceController workspaceController) {
         this.workspaceController = workspaceController;
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-        this.setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
         this.setPreferredSize(new Dimension(250, getHeight()));
+
+        this.setBackground(new Color(219, 225, 243));
+        this.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 10));
+
+        JPanel innerBox = new JPanel();
+        innerBox.setBorder(BorderFactory.createCompoundBorder(new LineBorder(Color.gray), new EmptyBorder(20, 20, 0, 20)));
+        innerBox.setLayout(new BoxLayout(innerBox, BoxLayout.PAGE_AXIS));
 
         for (AbstractElement elementModel : Arrays.asList(
                 new OpenIfElement(),
@@ -28,9 +36,11 @@ public class Sidebar extends JPanel {
                 new ThreadElement(),
                 new CommandElement()
         )) {
-            this.add(new Element(elementModel));
-            this.add(Box.createRigidArea(new Dimension(getWidth(), 20)));
+            innerBox.add(new Element(elementModel));
+            innerBox.add(Box.createRigidArea(new Dimension(getWidth(), 20)));
         }
+
+        this.add(innerBox);
     }
 
     @Override

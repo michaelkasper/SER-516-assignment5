@@ -23,9 +23,12 @@ public class Spaces extends JPanel {
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
         this.setSize(new Dimension(getWidth(), getHeight()));
+        this.setBackground(new Color(219, 225, 243));
+        this.setBorder(BorderFactory.createEmptyBorder(10, 10, 20, 10));
 
         tabbedPane.setBounds(0, 0, getWidth(), getHeight());
         tabbedPane.setTabPlacement(JTabbedPane.TOP);
+        tabbedPane.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
         this.add(tabbedPane);
         this.registerListeners();
@@ -38,7 +41,7 @@ public class Spaces extends JPanel {
             if (e.getNewValue() != null) {
                 SpaceModel spaceModel = (SpaceModel) e.getNewValue();
                 Space newSpace = new Space(spaceModel);
-                this.tabbedPane.add(String.valueOf(this.tabbedPane.getTabCount() + 1), newSpace);
+                this.tabbedPane.add("Space " + (this.tabbedPane.getTabCount() + 1), newSpace);
             }
         }); // add tab
 
