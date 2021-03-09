@@ -5,10 +5,15 @@ import Compiler.Model.Elements.*;
 import Compiler.View.Components.Element;
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.util.Arrays;
+
+import static Compiler.Config.BLUE_BG_COLOR;
+import static Compiler.Config.GRAY_BG_COLOR;
 
 
 public class Sidebar extends JPanel {
@@ -20,12 +25,8 @@ public class Sidebar extends JPanel {
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         this.setPreferredSize(new Dimension(250, getHeight()));
 
-        this.setBackground(new Color(219, 225, 243));
-        this.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 10));
-
-        JPanel innerBox = new JPanel();
-        innerBox.setBorder(BorderFactory.createCompoundBorder(new LineBorder(Color.gray), new EmptyBorder(20, 20, 0, 20)));
-        innerBox.setLayout(new BoxLayout(innerBox, BoxLayout.PAGE_AXIS));
+        this.setBackground(GRAY_BG_COLOR);
+        this.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(10, 20, 20, 10, BLUE_BG_COLOR), new CompoundBorder(new LineBorder(Color.gray), new EmptyBorder(20, 20, 0, 20))));
 
         for (AbstractElement elementModel : Arrays.asList(
                 new OpenIfElement(),
@@ -36,15 +37,8 @@ public class Sidebar extends JPanel {
                 new ThreadElement(),
                 new CommandElement()
         )) {
-            innerBox.add(new Element(elementModel));
-            innerBox.add(Box.createRigidArea(new Dimension(getWidth(), 20)));
+            this.add(new Element(elementModel));
+            this.add(Box.createRigidArea(new Dimension(getWidth(), 20)));
         }
-
-        this.add(innerBox);
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
     }
 }

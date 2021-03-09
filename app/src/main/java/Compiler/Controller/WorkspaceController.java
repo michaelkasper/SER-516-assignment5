@@ -42,52 +42,18 @@ public class WorkspaceController extends PropertyChangeDecorator {
         this.theFrame.add(this.sidebarView, BorderLayout.LINE_START);
         this.theFrame.add(this.spacesView, BorderLayout.CENTER);
         this.registerListeners();
-
-
-        //TODO: Remove Temp Code
-        this.onAddSpace(new ActionEvent(this, 0, ""));
-        //TODO: Remove Temp Code
     }
 
 
     private void registerListeners() {
         this.headerView.setAddSpaceBtnListener(this::onAddSpace);
-        this.headerView.setImportBtnListener(this::onImport);
-        this.headerView.setSaveBtnListener(this::onSave);
-        this.headerView.setCompileBtnListener(this::onCompile);
-        this.spacesView.setTabSelectedListener(this::onTabSelected);
     }
 
-
+    
     private void onAddSpace(ActionEvent e) {
         SpaceModel newSpace = new SpaceModel();
         this.spaces.add(newSpace);
         this.support.firePropertyChange(EVENT_SPACE_ADDED, null, newSpace);// add to tabs
         this.support.firePropertyChange(EVENT_ACTIVE_SPACE_CHANGED, null, this.spaces.size() - 1);// make active space
     }
-
-
-    private void onSave(ActionEvent e) {
-        // grab active space
-    }
-
-
-    private void onImport(ActionEvent e) {
-        SpaceModel newSpace = new SpaceModel(); // need to pass in loaded info
-        this.spaces.add(newSpace);
-
-        this.support.firePropertyChange(EVENT_SPACE_ADDED, null, newSpace);// add to tabs
-        this.support.firePropertyChange(EVENT_ACTIVE_SPACE_CHANGED, null, newSpace);// make active space
-    }
-
-    private void onCompile(ActionEvent e) {
-        // grab active space
-    }
-
-    private void onTabSelected(ActionEvent e) {
-        // need to get selected space id from e
-        // this.support.firePropertyChange(PROPERTY_ACTIVE_SPACE, null, newSpace);// make active space
-    }
-
-
 }

@@ -3,7 +3,6 @@ package Compiler.View.Components;
 import Compiler.Controller.ElementController;
 import Compiler.Model.Elements.AbstractElement;
 import Services.DragAndDrop.AbstractDragJPanel;
-import Services.DragAndDrop.DragAndDrop;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,7 +34,7 @@ public class Element extends AbstractDragJPanel {
         JLabel symbolLabel = new JLabel(this.elementModel.symbol, SwingConstants.CENTER);
         symbolLabel.setFont(symbolLabel.getFont().deriveFont(25f));
 
-        this.setLayout(new GridLayout(0, 3));
+        this.setLayout(new GridLayout(1, 3));
         this.setBorder(BorderFactory.createLineBorder(Color.black));
 
         this.add(inputsRepresentation);
@@ -92,6 +91,4 @@ public class Element extends AbstractDragJPanel {
 
         return null;
     }
-
-
 }

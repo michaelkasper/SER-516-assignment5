@@ -33,13 +33,11 @@ public class TransferHandler extends javax.swing.TransferHandler {
      */
     @Override
     protected void exportDone(JComponent component, Transferable data, int action) {
-        if (action == javax.swing.TransferHandler.MOVE) {
-            if (component instanceof AbstractDragJPanel) {
-                AbstractDragJPanel dragComponent = (AbstractDragJPanel) component;
+        if (component instanceof AbstractDragJPanel) {
+            AbstractDragJPanel dragComponent = (AbstractDragJPanel) component;
 
-                this.loopRelatedDropZones(dragComponent.getTransferDataFlavors()[0], AbstractDropJPanel::draggingEnd);
-                dragComponent.onDragComplete();
-            }
+            this.loopRelatedDropZones(dragComponent.getTransferDataFlavors()[0], AbstractDropJPanel::draggingEnd);
+            dragComponent.onDragComplete();
         }
     }
 
