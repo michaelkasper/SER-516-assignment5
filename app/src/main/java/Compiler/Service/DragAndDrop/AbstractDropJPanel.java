@@ -1,4 +1,4 @@
-package Services.DragAndDrop;
+package Compiler.Service.DragAndDrop;
 
 import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;

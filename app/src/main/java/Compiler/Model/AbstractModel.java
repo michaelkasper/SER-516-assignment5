@@ -1,6 +1,6 @@
 package Compiler.Model;
 
-import Services.PropertyChangeDecorator;
+import Compiler.Service.PropertyChangeDecorator;
 
 import java.util.UUID;
 

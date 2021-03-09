@@ -2,7 +2,7 @@ package Compiler.View.Components;
 
 import Compiler.Controller.ElementController;
 import Compiler.Model.Elements.AbstractElement;
-import Services.DragAndDrop.AbstractDragJPanel;
+import Compiler.Service.DragAndDrop.AbstractDragJPanel;
 
 import javax.swing.*;
 import java.awt.*;

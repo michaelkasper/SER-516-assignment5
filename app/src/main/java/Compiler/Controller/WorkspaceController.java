@@ -4,7 +4,7 @@ import Compiler.Model.SpaceModel;
 import Compiler.View.Header;
 import Compiler.View.Sidebar;
 import Compiler.View.Spaces;
-import Services.PropertyChangeDecorator;
+import Compiler.Service.PropertyChangeDecorator;
 
 import javax.swing.*;
 import java.awt.*;

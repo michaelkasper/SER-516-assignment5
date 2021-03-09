@@ -2,7 +2,7 @@ package Compiler.Controller;
 
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.View.Components.Element;
-import Services.PropertyChangeDecorator;
+import Compiler.Service.PropertyChangeDecorator;
 
 
 public class ElementController extends PropertyChangeDecorator {
