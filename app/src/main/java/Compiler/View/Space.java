@@ -4,7 +4,7 @@ import Compiler.Controller.SpaceController;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
 import Compiler.View.Components.Element;
-import Services.DragAndDrop.AbstractDropJPanel;
+import Compiler.Service.DragAndDrop.AbstractDropJPanel;
 
 import javax.swing.*;
 import java.awt.*;

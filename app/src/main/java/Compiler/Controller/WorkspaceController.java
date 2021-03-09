@@ -1,10 +1,10 @@
 package Compiler.Controller;
 
 import Compiler.Model.SpaceModel;
+import Compiler.Service.PropertyChangeDecorator;
 import Compiler.View.Header;
 import Compiler.View.Sidebar;
 import Compiler.View.Spaces;
-import Services.PropertyChangeDecorator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,6 +42,10 @@ public class WorkspaceController extends PropertyChangeDecorator {
         this.theFrame.add(this.sidebarView, BorderLayout.LINE_START);
         this.theFrame.add(this.spacesView, BorderLayout.CENTER);
         this.registerListeners();
+
+
+        // Create default tab
+        this.onAddSpace(new ActionEvent(this, 0, ""));
     }
 
 
@@ -49,7 +53,7 @@ public class WorkspaceController extends PropertyChangeDecorator {
         this.headerView.setAddSpaceBtnListener(this::onAddSpace);
     }
 
-    
+
     private void onAddSpace(ActionEvent e) {
         SpaceModel newSpace = new SpaceModel();
         this.spaces.add(newSpace);

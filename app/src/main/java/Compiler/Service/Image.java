@@ -1,4 +1,4 @@
-package Services;
+package Compiler.Service;
 
 import javax.swing.*;
 import java.awt.*;

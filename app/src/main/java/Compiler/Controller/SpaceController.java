@@ -2,9 +2,9 @@ package Compiler.Controller;
 
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
+import Compiler.Service.PropertyChangeDecorator;
 import Compiler.View.Components.Element;
 import Compiler.View.Space;
-import Services.PropertyChangeDecorator;
 
 import javax.swing.*;
 import java.awt.datatransfer.UnsupportedFlavorException;

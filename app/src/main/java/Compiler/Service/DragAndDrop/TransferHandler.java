@@ -1,6 +1,6 @@
-package Services.DragAndDrop;
+package Compiler.Service.DragAndDrop;
 
-import Services.Image;
+import Compiler.Service.*;
 
 import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;
