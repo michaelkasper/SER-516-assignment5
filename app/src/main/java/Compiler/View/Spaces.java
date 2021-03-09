@@ -15,13 +15,7 @@ public class Spaces extends JPanel {
 
     private final JTabbedPane tabbedPane = new JTabbedPane();
     private WorkspaceController workspaceController;
-
-    /**
-     * TODO: Render tabs
-     * TODO: Render Active Space Panel
-     *
-     * @param workspaceController
-     */
+    
     public Spaces(WorkspaceController workspaceController) {
         this.workspaceController = workspaceController;
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));

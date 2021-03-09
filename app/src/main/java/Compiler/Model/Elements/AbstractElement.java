@@ -13,18 +13,6 @@ public abstract class AbstractElement extends AbstractModel {
     public static final String EVENT_CONNECTION_MADE = "event_connection_made";
     public static final String EVENT_POSITION_UPDATED = "event_position_updated";
 
-    /**
-     * TODO: Add ConnectionsIn ArrayList to other AbstractElements
-     * TODO: Add ConnectionsOut ArrayList to other AbstractElements
-     * TODO: Broadcast change to views when either list is updated
-     * TODO: Broadcast change when values is updated
-     * <p>
-     * TODO: Link to view???
-     * TODO: Update view???
-     * TODO: Update Space View???
-     * TODO: Draw Connections from the Space View???
-     * TODO: ????
-     */
 
     private ArrayList<AbstractElement> connectionsIn = new ArrayList<>();
     private ArrayList<AbstractElement> connectionsOut = new ArrayList<>();

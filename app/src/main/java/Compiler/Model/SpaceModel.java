@@ -10,16 +10,10 @@ public class SpaceModel extends AbstractModel {
 
     private ArrayList<AbstractElement> elements = new ArrayList<>();
 
-    /**
-     * TODO: Add ArrayList of AbstractElements
-     * TODO: Add way to add to list
-     * TODO: Broadcast view update when list updated
-     */
     public SpaceModel() {
         super();
     }
-
-
+    
     public void addElement(AbstractElement element) {
         element.setSpaceModel(this);
         this.elements.add(element);

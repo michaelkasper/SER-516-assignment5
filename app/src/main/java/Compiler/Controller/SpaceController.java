@@ -16,11 +16,6 @@ public class SpaceController extends PropertyChangeDecorator {
     private SpaceModel spaceModel;
     private Space spaceView;
 
-    //TODO: Drag and Drop should be setup here, more so the drop
-    //TODO: The drop logic would be one listener. The listener would first check to see if the
-    // element is in the SpaceModel already, if not, create a new model and pass it to the SpaceModel to be added. After its added or
-    // if its already added it would then update its render position
-
     public SpaceController(Space spaceView, SpaceModel spaceModel) {
         this.spaceView = spaceView;
         this.spaceModel = spaceModel;

@@ -3,8 +3,8 @@ package Compiler.View;
 import Compiler.Controller.SpaceController;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
-import Compiler.View.Components.Element;
 import Compiler.Service.DragAndDrop.AbstractDropJPanel;
+import Compiler.View.Components.Element;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,10 +18,8 @@ public class Space extends AbstractDropJPanel {
     private Consumer<TransferHandler.TransferSupport> onElementDrop;
 
     /**
-     * TODO: Make drop zone
-     * TODO: Make arrayList of AbstractElements
-     * TODO: Notify Space View of changes
      * TODO: Listen for connection changes form AbstractElements
+     * TODO: Draw Connections
      */
     public Space(SpaceModel spaceModel) {
         this.spaceController = new SpaceController(this, spaceModel);
