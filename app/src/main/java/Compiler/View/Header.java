@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+import static Compiler.Config.BLUE_BG_COLOR;
+
 
 public class Header extends JPanel {
 
@@ -27,7 +29,7 @@ public class Header extends JPanel {
         this.setPreferredSize(new Dimension(getWidth(), 50));
 
         this.setBorder(BorderFactory.createMatteBorder(0, 0, 5, 0, Color.white));
-        this.setBackground(new Color(219, 225, 243));
+        this.setBackground(BLUE_BG_COLOR);
 
         this.addSpaceBtn = new JButton("New Space");
         this.importSpaceBtn = new JButton("Load");

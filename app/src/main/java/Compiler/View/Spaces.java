@@ -4,8 +4,15 @@ import Compiler.Controller.WorkspaceController;
 import Compiler.Model.SpaceModel;
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
+
+import static Compiler.Config.BLUE_BG_COLOR;
+import static Compiler.Config.GRAY_BG_COLOR;
 
 public class Spaces extends JPanel {
 
@@ -23,12 +30,11 @@ public class Spaces extends JPanel {
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
         this.setSize(new Dimension(getWidth(), getHeight()));
-        this.setBackground(new Color(219, 225, 243));
-        this.setBorder(BorderFactory.createEmptyBorder(10, 10, 20, 10));
+        this.setBackground(GRAY_BG_COLOR);
+        this.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(10, 10, 20, 10, BLUE_BG_COLOR), new LineBorder(Color.gray)));
 
         tabbedPane.setBounds(0, 0, getWidth(), getHeight());
         tabbedPane.setTabPlacement(JTabbedPane.TOP);
-        tabbedPane.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
         this.add(tabbedPane);
         this.registerListeners();

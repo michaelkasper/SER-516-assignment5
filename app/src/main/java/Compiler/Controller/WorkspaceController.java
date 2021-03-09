@@ -42,11 +42,6 @@ public class WorkspaceController extends PropertyChangeDecorator {
         this.theFrame.add(this.sidebarView, BorderLayout.LINE_START);
         this.theFrame.add(this.spacesView, BorderLayout.CENTER);
         this.registerListeners();
-
-
-        //TODO: Remove Temp Code
-        this.onAddSpace(new ActionEvent(this, 0, ""));
-        //TODO: Remove Temp Code
     }
 
 
