@@ -1,11 +1,10 @@
 package Compiler.View.Components;
 
 import Compiler.Controller.ElementController;
+import Compiler.Model.ConnectionPointModel;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Service.DragAndDrop.DragAndDrop;
 import Compiler.Service.DragAndDrop.DragInterface;
-import Compiler.View.Components.ConnectionPoint.ConnectionPointIn;
-import Compiler.View.Components.ConnectionPoint.ConnectionPointOut;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,28 +32,20 @@ public class Element extends JPanel implements DragInterface {
         this.setLayout(new GridLayout(1, 3));
         this.setBorder(BorderFactory.createLineBorder(Color.black));
 
-        ConnectionPointIn[] pointsIn = new ConnectionPointIn[Math.abs(this.getElementModel().inputs)];
-        for (int i = 0; i < pointsIn.length; i++) {
-            pointsIn[i] = new ConnectionPointIn(elementModel);
-        }
-
-        ConnectionPointOut[] pointsOut = new ConnectionPointOut[Math.abs(this.getElementModel().outputs)];
-        for (int i = 0; i < pointsOut.length; i++) {
-            pointsOut[i] = new ConnectionPointOut(elementModel);
-        }
-
-        IoRepresentation inputsRepresentation = new IoRepresentation(this.getElementModel().inputs, pointsIn);
-        IoRepresentation outputRepresentation = new IoRepresentation(this.getElementModel().outputs, pointsOut);
-
-        this.setComponentZOrder(inputsRepresentation, 0);
-        this.setComponentZOrder(outputRepresentation, 0);
+        IoRepresentation inputsRepresentation = new IoRepresentation(ConnectionPointModel.Type.IN, this.getElementModel());
+        IoRepresentation outputRepresentation = new IoRepresentation(ConnectionPointModel.Type.OUT, this.getElementModel());
 
         JLabel symbolLabel = new JLabel(this.getElementModel().symbol, SwingConstants.CENTER);
         symbolLabel.setFont(symbolLabel.getFont().deriveFont(25f));
 
+
+        this.setComponentZOrder(inputsRepresentation, 0);
+        this.setComponentZOrder(outputRepresentation, 0);
+        
         this.add(inputsRepresentation);
         this.add(symbolLabel);
         this.add(outputRepresentation);
+
     }
 
     @Override

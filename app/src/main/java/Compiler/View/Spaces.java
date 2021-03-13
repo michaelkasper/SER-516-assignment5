@@ -1,5 +1,6 @@
 package Compiler.View;
 
+import Compiler.Compiler;
 import Compiler.Controller.WorkspaceController;
 import Compiler.Model.SpaceModel;
 

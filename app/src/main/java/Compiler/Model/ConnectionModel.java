@@ -1,13 +1,11 @@
 package Compiler.Model;
 
-import Compiler.Model.Elements.AbstractElement;
-
 public class ConnectionModel {
-    public AbstractElement fromElement;
-    public AbstractElement toElement;
+    public ConnectionPointModel outPoint;
+    public ConnectionPointModel inPoint;
 
-    public ConnectionModel(AbstractElement fromElement, AbstractElement toElement) {
-        this.fromElement = fromElement;
-        this.toElement = toElement;
+    public ConnectionModel(ConnectionPointModel outPoint, ConnectionPointModel inPoint) {
+        this.outPoint = outPoint;
+        this.inPoint = inPoint;
     }
 }

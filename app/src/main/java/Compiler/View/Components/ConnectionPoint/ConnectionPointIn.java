@@ -1,6 +1,6 @@
 package Compiler.View.Components.ConnectionPoint;
 
-import Compiler.Model.Elements.AbstractElement;
+import Compiler.Model.ConnectionPointModel;
 
 import java.awt.datatransfer.DataFlavor;
 
@@ -10,12 +10,12 @@ import java.awt.datatransfer.DataFlavor;
 
 public class ConnectionPointIn extends AbstractConnectionPoint {
 
-    public ConnectionPointIn(AbstractElement elementModel) {
+    public ConnectionPointIn(ConnectionPointModel elementModel) {
         super(elementModel);
     }
 
     public DataFlavor[] getAllowedDraggableFlags() {
-        return new DataFlavor[]{AbstractConnectionPoint.DRAGGABLE_OUT_FLAG};
+        return this.getConnectionPoint().getCurrentConnection() == null ? new DataFlavor[]{AbstractConnectionPoint.DRAGGABLE_OUT_FLAG} : new DataFlavor[]{};
     }
 
     @Override
@@ -27,5 +27,4 @@ public class ConnectionPointIn extends AbstractConnectionPoint {
     public boolean isDataFlavorSupported(DataFlavor flavor) {
         return flavor.equals(AbstractConnectionPoint.DRAGGABLE_IN_FLAG) || flavor.equals(DataFlavor.stringFlavor);
     }
-
 }

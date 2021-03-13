@@ -1,7 +1,9 @@
 package Compiler.View.Components.ConnectionPoint;
 
 import Compiler.Controller.ConnectionPointController;
+import Compiler.Model.ConnectionPointModel;
 import Compiler.Model.Elements.AbstractElement;
+import Compiler.Model.SpaceModel;
 import Compiler.Service.DragAndDrop.DragAndDrop;
 import Compiler.Service.DragAndDrop.DragInterface;
 import Compiler.Service.DragAndDrop.DropInterface;
@@ -21,13 +23,36 @@ abstract public class AbstractConnectionPoint extends JPanel implements DragInte
     public static DataFlavor DRAGGABLE_OUT_FLAG = new DataFlavor(ConnectionPointOut.class, "Draggable Out Connection Point");
 
     private final ConnectionPointController connectionPointController;
-    private boolean moving = false;
 
-    public AbstractConnectionPoint(AbstractElement elementModel) {
-        this.connectionPointController = new ConnectionPointController(elementModel);
-        if (elementModel.getSpaceModel() != null) {
+    public AbstractConnectionPoint(ConnectionPointModel connectionPointModel) {
+        connectionPointModel.setView(this);
+        this.connectionPointController = new ConnectionPointController(connectionPointModel);
+        if (connectionPointModel.isInSpace()) {
             this.getDragAndDropInterface().registerDragComponent(this);
             this.getDragAndDropInterface().registerDropComponent(this);
+            this.addMouseListener(this.connectionPointController);
+
+            this.connectionPointController.getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_CREATED, e -> {
+                if (e.getNewValue() != null) {
+                    this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+                    if (this.getConnectionPoint().getCurrentConnection() != null) {
+                        this.setBackground(Color.BLACK);
+                    }
+
+                }
+            });
+
+
+            this.connectionPointController.getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_STARTED, e -> {
+                if (e.getNewValue() != null) {
+                    if (this.connectionPointController.getSpaceModel().isFutureConnection(this.getConnectionPoint())) {
+                        this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+                    } else {
+                        this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                    }
+                }
+            });
         }
         this.setBackground(new Color(112, 112, 112));
         this.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -35,15 +60,13 @@ abstract public class AbstractConnectionPoint extends JPanel implements DragInte
 
     @Override
     public boolean canDrag() {
-        return !this.moving;
+        return !this.connectionPointController.getIsDragging() && this.getConnectionPoint().getCurrentConnection() == null;
     }
 
     @Override
     public boolean onDrop(TransferHandler.TransferSupport support) {
         return this.connectionPointController.onConnectionDrop(support);
     }
-
-    abstract public DataFlavor[] getAllowedDraggableFlags();
 
     @Override
     public void draggingStart() {
@@ -68,20 +91,18 @@ abstract public class AbstractConnectionPoint extends JPanel implements DragInte
 
     @Override
     public void onDragComplete() {
-        this.moving = false;
-        this.setVisible(true);
-        this.revalidate();
+        this.connectionPointController.setIsDragging(false);
     }
 
     @Override
     public void onDragStart() {
-        this.moving = true;
+        this.connectionPointController.setIsDragging(true);
     }
 
     @Override
     public Object getTransferData(DataFlavor flavor) {
         if (flavor.equals(DataFlavor.stringFlavor) || flavor.equals(AbstractConnectionPoint.DRAGGABLE_IN_FLAG) || flavor.equals(AbstractConnectionPoint.DRAGGABLE_OUT_FLAG)) {
-            return this.getElementModel().getId();
+            return this.getConnectionPoint().getId();
         }
 
         return null;
@@ -89,5 +110,12 @@ abstract public class AbstractConnectionPoint extends JPanel implements DragInte
 
     public AbstractElement getElementModel() {
         return this.connectionPointController.getElementModel();
+    }
+
+
+    abstract public DataFlavor[] getAllowedDraggableFlags();
+
+    protected ConnectionPointModel getConnectionPoint() {
+        return this.connectionPointController.getConnectionPoint();
     }
 }
