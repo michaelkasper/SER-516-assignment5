@@ -1,6 +1,5 @@
 package Compiler.Model;
 
-import Compiler.Controller.ConnectionPointController;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.View.Components.ConnectionPoint.AbstractConnectionPoint;
 
@@ -9,7 +8,6 @@ public class ConnectionPointModel extends AbstractModel {
     private Type type;
     private AbstractElement abstractElement;
     private boolean isDragging = false;
-    private boolean isCreatingConnection = false;
     private AbstractConnectionPoint connectionPointView;
     private ConnectionModel currentConnection;
 
@@ -29,25 +27,12 @@ public class ConnectionPointModel extends AbstractModel {
         return abstractElement;
     }
 
-
-    public void setIsCreatingConnection(boolean isCreatingConnection) {
-        this.isCreatingConnection = isCreatingConnection;
-        this.getElementModel().getSpaceModel().startConnection(this);
-    }
-
-
-    public boolean getIsCreatingConnection() {
-        return this.isCreatingConnection;
-    }
-
-
     public boolean isDragging() {
         return isDragging;
     }
 
     public void setDragging(boolean dragging) {
         isDragging = dragging;
-        this.setIsCreatingConnection(dragging);
     }
 
     public void setView(AbstractConnectionPoint connectionPointView) {
@@ -58,11 +43,9 @@ public class ConnectionPointModel extends AbstractModel {
         return type;
     }
 
-
     public AbstractConnectionPoint getConnectionPointView() {
         return connectionPointView;
     }
-
 
     public ConnectionModel getCurrentConnection() {
         return currentConnection;

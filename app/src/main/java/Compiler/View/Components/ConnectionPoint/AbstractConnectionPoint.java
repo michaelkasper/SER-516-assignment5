@@ -12,6 +12,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Individual pixel used in the grid
@@ -60,7 +62,7 @@ abstract public class AbstractConnectionPoint extends JPanel implements DragInte
 
     @Override
     public boolean canDrag() {
-        return !this.connectionPointController.getIsDragging() && this.getConnectionPoint().getCurrentConnection() == null;
+        return !this.connectionPointController.isDragging() && this.getConnectionPoint().getCurrentConnection() == null;
     }
 
     @Override
@@ -69,12 +71,12 @@ abstract public class AbstractConnectionPoint extends JPanel implements DragInte
     }
 
     @Override
-    public void draggingStart() {
+    public void dropZoneDraggingStart() {
         this.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
     }
 
     @Override
-    public void draggingEnd() {
+    public void dropZoneDraggingEnd() {
         this.setBorder(BorderFactory.createEmptyBorder());
     }
 
@@ -108,14 +110,17 @@ abstract public class AbstractConnectionPoint extends JPanel implements DragInte
         return null;
     }
 
-    public AbstractElement getElementModel() {
-        return this.connectionPointController.getElementModel();
-    }
-
-
-    abstract public DataFlavor[] getAllowedDraggableFlags();
-
     protected ConnectionPointModel getConnectionPoint() {
         return this.connectionPointController.getConnectionPoint();
     }
+
+    protected boolean isDropZoneActive() {
+        ArrayList<ConnectionPointModel> points = this.getConnectionPoint().getElementModel().getAllConnectionPoints();
+
+        return points.stream().filter(ConnectionPointModel::isDragging).findFirst().orElse(null) == null
+                && this.getConnectionPoint().getCurrentConnection() == null;
+    }
+
+    abstract public DataFlavor[] getAllowedDraggableFlags();
+
 }

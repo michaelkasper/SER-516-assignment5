@@ -36,7 +36,7 @@ public class TransferHandler extends javax.swing.TransferHandler {
         if (component instanceof DragInterface) {
             DragInterface dragComponent = (DragInterface) component;
 
-            this.loopRelatedDropZones(dragComponent.getTransferDataFlavors()[0], DropInterface::draggingEnd);
+            this.loopRelatedDropZones(dragComponent.getTransferDataFlavors()[0], DropInterface::dropZoneDraggingEnd);
             dragComponent.onDragComplete();
         }
     }
@@ -88,9 +88,8 @@ public class TransferHandler extends javax.swing.TransferHandler {
     public <T extends JPanel & DragInterface> void exportAsDrag(T component, InputEvent e, int action, ArrayList<DropInterface> dropZones) {
         this.dropZones = dropZones;
 
-        this.loopRelatedDropZones(component.getTransferDataFlavors()[0], DropInterface::draggingStart);
+        this.loopRelatedDropZones(component.getTransferDataFlavors()[0], DropInterface::dropZoneDraggingStart);
         this.setDragImage(Image.createImage(component));
-        component.onDragStart();
         super.exportAsDrag(component, e, action);
     }
 

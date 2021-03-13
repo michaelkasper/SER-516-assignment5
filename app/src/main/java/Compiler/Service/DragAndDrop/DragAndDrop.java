@@ -36,16 +36,11 @@ public class DragAndDrop extends MouseAdapter {
     }
 
 
-    public void unregisterDragComponent(JComponent component) {
-        component.addMouseMotionListener(null);
-        component.setTransferHandler(null);
-    }
-
-
     public void mouseDragged(MouseEvent e) {
         if (e.getComponent() instanceof DragInterface && e.getComponent() instanceof JPanel) {
             DragInterface component = (DragInterface) e.getComponent();
             if (component.canDrag()) {
+                component.onDragStart();
                 this.transferHandler.exportAsDrag(((JPanel & DragInterface) component), e, javax.swing.TransferHandler.MOVE, this.dropZones);
             }
         }

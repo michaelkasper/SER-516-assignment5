@@ -1,7 +1,6 @@
 package Compiler.Controller;
 
 import Compiler.Model.ConnectionPointModel;
-import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
 import Compiler.Service.PropertyChangeDecorator;
 import Compiler.View.Components.ConnectionPoint.AbstractConnectionPoint;
@@ -14,8 +13,6 @@ import java.io.IOException;
 
 
 public class ConnectionPointController extends PropertyChangeDecorator implements MouseListener {
-    public static final String EVENT_CREATING_CONNECTION = "event_creating_connection";
-
     private ConnectionPointModel connectionPointModel;
 
     public ConnectionPointController(ConnectionPointModel connectionPointModel) {
@@ -46,10 +43,6 @@ public class ConnectionPointController extends PropertyChangeDecorator implement
         return connectionPointModel;
     }
 
-    public AbstractElement getElementModel() {
-        return this.connectionPointModel.getElementModel();
-    }
-
     public SpaceModel getSpaceModel() {
         return this.connectionPointModel.getElementModel().getSpaceModel();
     }
@@ -58,7 +51,7 @@ public class ConnectionPointController extends PropertyChangeDecorator implement
         this.connectionPointModel.setDragging(isDragging);
     }
 
-    public boolean getIsDragging() {
+    public boolean isDragging() {
         return this.connectionPointModel.isDragging();
     }
 

@@ -5,8 +5,8 @@ import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
 import Compiler.Service.DragAndDrop.DragAndDrop;
 import Compiler.Service.DragAndDrop.DropInterface;
-import Compiler.View.Components.SpaceConnections;
 import Compiler.View.Components.Element;
+import Compiler.View.Components.SpaceConnections;
 
 import javax.swing.*;
 import java.awt.*;
@@ -57,12 +57,12 @@ public class Space extends JPanel implements DropInterface {
     }
 
     @Override
-    public void draggingStart() {
+    public void dropZoneDraggingStart() {
         this.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
     }
 
     @Override
-    public void draggingEnd() {
+    public void dropZoneDraggingEnd() {
         this.setBorder(BorderFactory.createEmptyBorder());
     }
 

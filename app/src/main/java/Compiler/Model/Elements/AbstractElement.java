@@ -5,6 +5,7 @@ import Compiler.Model.*;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Stack;
 
 public abstract class AbstractElement extends AbstractModel {
@@ -160,6 +161,13 @@ public abstract class AbstractElement extends AbstractModel {
 
     public ConnectionPointModel[] getOutConnectionPoints() {
         return outConnectionPoints;
+    }
+
+    public ArrayList<ConnectionPointModel> getAllConnectionPoints() {
+        ArrayList<ConnectionPointModel> points = new ArrayList<>();
+        Collections.addAll(points, this.getInConnectionPoints());
+        Collections.addAll(points, this.getOutConnectionPoints());
+        return points;
     }
 
     public ArrayList<ConnectionModel> getConnections() {

@@ -15,7 +15,7 @@ public class ConnectionPointOut extends AbstractConnectionPoint {
     }
 
     public DataFlavor[] getAllowedDraggableFlags() {
-        return this.getConnectionPoint().getCurrentConnection() == null ? new DataFlavor[]{AbstractConnectionPoint.DRAGGABLE_IN_FLAG} : new DataFlavor[]{};
+        return this.isDropZoneActive() ? new DataFlavor[]{AbstractConnectionPoint.DRAGGABLE_IN_FLAG} : new DataFlavor[]{};
     }
 
     @Override

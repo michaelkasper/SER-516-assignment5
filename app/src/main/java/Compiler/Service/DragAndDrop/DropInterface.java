@@ -7,7 +7,7 @@ public interface DropInterface extends DragAndDropInterface {
 
     DataFlavor[] getAllowedDraggableFlags();
 
-    void draggingStart();
+    void dropZoneDraggingStart();
 
-    void draggingEnd();
+    void dropZoneDraggingEnd();
 }
