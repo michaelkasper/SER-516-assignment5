@@ -53,11 +53,6 @@ public class SpaceModel extends AbstractModel {
         return this.elements;
     }
 
-
-    public void createConnection(String inConnectionId, String outConnectionId) {
-        this.createConnection(this.getElementConnectionPointById(inConnectionId), this.getElementConnectionPointById(outConnectionId));
-    }
-
     public void createConnection(ConnectionPointModel inConnection, String outConnectionId) {
         this.createConnection(inConnection, this.getElementConnectionPointById(outConnectionId));
     }
@@ -100,7 +95,7 @@ public class SpaceModel extends AbstractModel {
         if (inPoint != null && outPoint != null) {
             Timer.setTimeout(() -> {
                 this.createConnection(inPoint, outPoint);
-            }, 500);
+            }, 150);
         }
     }
 
