@@ -9,7 +9,7 @@ public class DragAndDrop extends MouseAdapter {
 
     private static DragAndDrop instance = null;
     private final TransferHandler transferHandler;
-    private ArrayList<AbstractDropJPanel> dropZones = new ArrayList<>();
+    private ArrayList<DropInterface> dropZones = new ArrayList<>();
 
     public static DragAndDrop getInstance() {
         if (instance == null) {
@@ -23,7 +23,7 @@ public class DragAndDrop extends MouseAdapter {
     }
 
 
-    public void registerDropComponent(AbstractDropJPanel component) {
+    public <T extends JPanel & DropInterface> void registerDropComponent(T component) {
         dropZones.add(component);
         component.setTransferHandler(this.transferHandler);
 
@@ -36,11 +36,17 @@ public class DragAndDrop extends MouseAdapter {
     }
 
 
+    public void unregisterDragComponent(JComponent component) {
+        component.addMouseMotionListener(null);
+        component.setTransferHandler(null);
+    }
+
+
     public void mouseDragged(MouseEvent e) {
-        if (e.getComponent() instanceof AbstractDragJPanel) {
-            AbstractDragJPanel component = (AbstractDragJPanel) e.getComponent();
+        if (e.getComponent() instanceof DragInterface && e.getComponent() instanceof JPanel) {
+            DragInterface component = (DragInterface) e.getComponent();
             if (component.canDrag()) {
-                this.transferHandler.exportAsDrag(component, e, javax.swing.TransferHandler.MOVE, this.dropZones);
+                this.transferHandler.exportAsDrag(((JPanel & DragInterface) component), e, javax.swing.TransferHandler.MOVE, this.dropZones);
             }
         }
     }

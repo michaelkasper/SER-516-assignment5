@@ -12,9 +12,4 @@ public class PropertyChangeDecorator {
     public void addPropertyChangeListener(String property, PropertyChangeListener listener) {
         support.addPropertyChangeListener(property, listener);
     }
-
-    public void removePropertyChangeListener(String property, PropertyChangeListener listener) {
-        support.removePropertyChangeListener(property, listener);
-    }
-
 }

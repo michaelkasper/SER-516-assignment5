@@ -4,34 +4,31 @@ import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
 import Compiler.Service.PropertyChangeDecorator;
 import Compiler.View.Components.Element;
-import Compiler.View.Space;
-
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import java.awt.*;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.IOException;
 
 
-public class SpaceController extends PropertyChangeDecorator implements MouseListener {
+public class SpaceController extends PropertyChangeDecorator {
+    public final static String EVENT_REBUILD_MAP = "event_rebuild_map";
 
     public SpaceModel spaceModel;
-    private Space spaceView;
-    private Element fromElement;
-    private Element toElement;
-    private boolean connectionInProgress = false;
-
-    public SpaceController(Space spaceView, SpaceModel spaceModel) {
-        this.spaceView = spaceView;
+    
+    public SpaceController(SpaceModel spaceModel) {
         this.spaceModel = spaceModel;
 
-        this.registerListeners();
+        for (String property : new String[]{SpaceModel.EVENT_ELEMENT_ADDED, SpaceModel.EVENT_CONNECTION_CREATED}) {
+            this.spaceModel.addPropertyChangeListener(property, e -> {
+                if (e.getNewValue() != null) {
+                    this.support.firePropertyChange(EVENT_REBUILD_MAP, null, this.spaceModel);
+                }
+            });
+
+        }
     }
 
-    public void onElementDrop(TransferHandler.TransferSupport support) {
+    public boolean onElementDrop(TransferHandler.TransferSupport support) {
         try {
             String[] data = (String[]) support.getTransferable().getTransferData(Element.DRAGGABLE_FLAG);
 
@@ -44,73 +41,23 @@ public class SpaceController extends PropertyChangeDecorator implements MouseLis
                 this.spaceModel.addElement(elementModel);
 
                 elementModel.addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, e -> {
-                    this.spaceView.rebuildMap(this.spaceModel);
+                    this.support.firePropertyChange(EVENT_REBUILD_MAP, null, this.spaceModel);
                 });
             } else {
                 AbstractElement elementModel = this.spaceModel.getElementById(id);
                 elementModel.setPosition(support.getDropLocation().getDropPoint());
             }
+            return true;
 
         } catch (UnsupportedFlavorException | IOException e) {
             e.printStackTrace();
         }
+
+        return false;
     }
 
-    private void registerListeners() {
-        this.spaceView.setOnElementDrop(this::onElementDrop);
 
-        this.spaceModel.addPropertyChangeListener(SpaceModel.EVENT_ELEMENT_ADDED, e -> {
-            if (e.getNewValue() != null) {
-                this.spaceView.rebuildMap(this.spaceModel);
-            }
-        });
+    public SpaceModel getSpaceModel() {
+        return this.spaceModel;
     }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        if(e.getComponent() instanceof Element){
-            Element element = (Element) e.getComponent();
-            if(connectionInProgress) {
-                this.toElement = element;
-                this.fromElement.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                createConnection();
-                connectionInProgress = false;
-            }
-            else {
-                this.fromElement = element;
-                Border border = BorderFactory.createLineBorder(Color.GREEN);
-                element.setBorder(border);
-                connectionInProgress = true;
-            }
-        }
-    }
-
-    private void createConnection() {
-        this.fromElement.elementModel.addConnectionOut(this.toElement.elementModel);
-        this.toElement.elementModel.addConnectionIn(this.fromElement.elementModel);
-        this.spaceView.rebuildMap(this.spaceModel);
-        this.fromElement = null;
-        this.toElement = null;
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
-
 }

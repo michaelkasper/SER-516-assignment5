@@ -18,10 +18,7 @@ import static Compiler.Config.GRAY_BG_COLOR;
 
 public class Sidebar extends JPanel {
 
-    private final WorkspaceController workspaceController;
-
     public Sidebar(WorkspaceController workspaceController) {
-        this.workspaceController = workspaceController;
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         this.setPreferredSize(new Dimension(250, getHeight()));
 

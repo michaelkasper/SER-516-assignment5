@@ -8,5 +8,4 @@ public class OpenIfElement extends AbstractElement {
     public OpenIfElement() {
         super("(", 0, 1);
     }
-
 }
