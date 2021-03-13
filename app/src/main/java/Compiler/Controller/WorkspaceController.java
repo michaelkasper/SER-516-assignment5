@@ -1,28 +1,21 @@
 package Compiler.Controller;
 
 import Compiler.Model.SpaceModel;
+import Compiler.Service.PropertyChangeDecorator;
 import Compiler.View.Header;
 import Compiler.View.Sidebar;
 import Compiler.View.Spaces;
-import Compiler.Service.PropertyChangeDecorator;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
-/**
- * The Game board controller handles all logic for the game board view
- */
+
 public class WorkspaceController extends PropertyChangeDecorator {
 
     public static final String EVENT_SPACE_ADDED = "event_space_added";
     public static final String EVENT_ACTIVE_SPACE_CHANGED = "event_active_space_changed";
-    /**
-     * TODO: Add tabs controller that changes the active spaces Model
-     * TODO: Add ArrayList of spaces Models
-     * TODO: Add current active space view linked to the space model
-     */
 
     private final JFrame theFrame;
     private final Header headerView;
@@ -42,6 +35,10 @@ public class WorkspaceController extends PropertyChangeDecorator {
         this.theFrame.add(this.sidebarView, BorderLayout.LINE_START);
         this.theFrame.add(this.spacesView, BorderLayout.CENTER);
         this.registerListeners();
+
+
+        // Create default tab
+        this.onAddSpace(new ActionEvent(this, 0, ""));
     }
 
 

@@ -4,12 +4,9 @@ import Compiler.Controller.WorkspaceController;
 import Compiler.Model.SpaceModel;
 
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
-import java.awt.event.ActionListener;
 
 import static Compiler.Config.BLUE_BG_COLOR;
 import static Compiler.Config.GRAY_BG_COLOR;
@@ -18,13 +15,7 @@ public class Spaces extends JPanel {
 
     private final JTabbedPane tabbedPane = new JTabbedPane();
     private WorkspaceController workspaceController;
-
-    /**
-     * TODO: Render tabs
-     * TODO: Render Active Space Panel
-     *
-     * @param workspaceController
-     */
+    
     public Spaces(WorkspaceController workspaceController) {
         this.workspaceController = workspaceController;
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -58,9 +49,5 @@ public class Spaces extends JPanel {
                 tabbedPane.setSelectedIndex(spaceModelIndex);
             }
         }); // select tab
-    }
-
-    public void setTabSelectedListener(ActionListener actionListener) {
-
     }
 }

@@ -5,7 +5,6 @@ import Compiler.Model.ConnectionModel;
 import Compiler.Model.SpaceModel;
 
 import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 public abstract class AbstractElement extends AbstractModel {

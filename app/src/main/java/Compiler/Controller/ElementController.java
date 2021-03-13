@@ -1,12 +1,8 @@
 package Compiler.Controller;
 
 import Compiler.Model.Elements.AbstractElement;
-import Compiler.View.Components.Element;
 import Compiler.Service.PropertyChangeDecorator;
-
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
+import Compiler.View.Components.Element;
 
 public class ElementController extends PropertyChangeDecorator {
 

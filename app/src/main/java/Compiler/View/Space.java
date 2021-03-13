@@ -3,8 +3,8 @@ package Compiler.View;
 import Compiler.Controller.SpaceController;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
-import Compiler.View.Components.Element;
 import Compiler.Service.DragAndDrop.AbstractDropJPanel;
+import Compiler.View.Components.Element;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,10 +19,8 @@ public class Space extends AbstractDropJPanel {
     private Consumer<TransferHandler.TransferSupport> onElementDrop;
 
     /**
-     * TODO: Make drop zone
-     * TODO: Make arrayList of AbstractElements
-     * TODO: Notify Space View of changes
      * TODO: Listen for connection changes form AbstractElements
+     * TODO: Draw Connections
      */
     public Space(SpaceModel spaceModel) {
         this.spaceController = new SpaceController(this, spaceModel);
@@ -73,15 +71,15 @@ public class Space extends AbstractDropJPanel {
 
         double dx = x2 - x1, dy = y2 - y1;
         double angle = Math.atan2(dy, dx);
-        int len = (int) Math.sqrt(dx*dx + dy*dy);
+        int len = (int) Math.sqrt(dx * dx + dy * dy);
         AffineTransform at = AffineTransform.getTranslateInstance(x1, y1);
         at.concatenate(AffineTransform.getRotateInstance(angle));
         g.transform(at);
 
         // Draw horizontal arrow starting in (0, 0)
         g.drawLine(0, 0, len, 0);
-        g.fillPolygon(new int[] {len, len-ARR_SIZE, len-ARR_SIZE, len},
-                new int[] {0, -ARR_SIZE, ARR_SIZE, 0}, 4);
+        g.fillPolygon(new int[]{len, len - ARR_SIZE, len - ARR_SIZE, len},
+                new int[]{0, -ARR_SIZE, ARR_SIZE, 0}, 4);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package Compiler.Service.DragAndDrop;
 
+
 import Compiler.Service.Image;
 
 import javax.swing.*;
@@ -8,7 +9,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.function.Consumer;
-
 
 public class TransferHandler extends javax.swing.TransferHandler {
     private ArrayList<AbstractDropJPanel> dropZones;

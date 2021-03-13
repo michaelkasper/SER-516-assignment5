@@ -41,9 +41,4 @@ public class Sidebar extends JPanel {
             this.add(Box.createRigidArea(new Dimension(getWidth(), 20)));
         }
     }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-    }
 }

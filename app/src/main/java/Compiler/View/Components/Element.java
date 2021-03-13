@@ -21,9 +21,6 @@ public class Element extends AbstractDragJPanel {
     public AbstractElement elementModel;
     private boolean moving = false;
 
-    /**
-     * TODO: Make draggable
-     */
     public Element(AbstractElement elementModel) {
         this.elementController = new ElementController(this, elementModel);
         this.elementModel = elementModel;
@@ -91,6 +88,4 @@ public class Element extends AbstractDragJPanel {
 
         return null;
     }
-
-
 }
