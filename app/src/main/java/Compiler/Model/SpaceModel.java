@@ -86,6 +86,7 @@ public class SpaceModel extends AbstractModel {
         ConnectionPointModel currentPoint = futureConnection.get(newConnectionPointModel.getType());
         if (currentPoint != null && currentPoint.getId().equals(newConnectionPointModel.getId())) {
             futureConnection.put(newConnectionPointModel.getType(), null);
+            this.support.firePropertyChange(EVENT_CONNECTION_STARTED, null, true);
             return;
         }
 

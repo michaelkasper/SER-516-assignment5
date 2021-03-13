@@ -10,6 +10,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
+import java.util.Arrays;
 
 
 public class ConnectionPointController extends PropertyChangeDecorator implements MouseListener {
@@ -58,7 +59,16 @@ public class ConnectionPointController extends PropertyChangeDecorator implement
     @Override
     public void mouseClicked(MouseEvent e) {
         if (this.connectionPointModel.getCurrentConnection() == null) {
-            this.getSpaceModel().startConnection(this.connectionPointModel);
+            ConnectionPointModel[] oppositeConnectionPoints = this.getConnectionPoint().getType() == ConnectionPointModel.Type.IN
+                    ? this.getConnectionPoint().getElementModel().getOutConnectionPoints()
+                    : this.getConnectionPoint().getElementModel().getInConnectionPoints();
+
+            if (Arrays.stream(oppositeConnectionPoints)
+                    .filter(connectionPointModel -> this.getSpaceModel().isFutureConnection(connectionPointModel))
+                    .findFirst()
+                    .orElse(null) == null) {
+                this.getSpaceModel().startConnection(this.connectionPointModel);
+            }
         }
     }
 
