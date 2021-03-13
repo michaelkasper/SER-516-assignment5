@@ -4,6 +4,9 @@ import Compiler.Model.Elements.AbstractElement;
 import Compiler.View.Components.Element;
 import Compiler.Service.PropertyChangeDecorator;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 
 public class ElementController extends PropertyChangeDecorator {
 
@@ -23,6 +26,5 @@ public class ElementController extends PropertyChangeDecorator {
     private void registerListeners() {
         // listen for double click on
     }
-
 
 }

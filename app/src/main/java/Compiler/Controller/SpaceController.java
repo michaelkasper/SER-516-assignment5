@@ -7,14 +7,21 @@ import Compiler.View.Space;
 import Compiler.Service.PropertyChangeDecorator;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 
 
-public class SpaceController extends PropertyChangeDecorator {
+public class SpaceController extends PropertyChangeDecorator implements MouseListener {
 
-    private SpaceModel spaceModel;
+    public SpaceModel spaceModel;
     private Space spaceView;
+    private Element fromElement;
+    private Element toElement;
+    private boolean connectionInProgress = false;
 
     //TODO: Drag and Drop should be setup here, more so the drop
     //TODO: The drop logic would be one listener. The listener would first check to see if the
@@ -63,5 +70,51 @@ public class SpaceController extends PropertyChangeDecorator {
         });
     }
 
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if(e.getComponent() instanceof Element){
+            Element element = (Element) e.getComponent();
+            if(connectionInProgress) {
+                this.toElement = element;
+                this.fromElement.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                createConnection();
+                connectionInProgress = false;
+            }
+            else {
+                this.fromElement = element;
+                Border border = BorderFactory.createLineBorder(Color.GREEN);
+                element.setBorder(border);
+                connectionInProgress = true;
+            }
+        }
+    }
+
+    private void createConnection() {
+        this.fromElement.elementModel.addConnectionOut(this.toElement.elementModel);
+        this.toElement.elementModel.addConnectionIn(this.fromElement.elementModel);
+        this.spaceView.rebuildMap(this.spaceModel);
+        this.fromElement = null;
+        this.toElement = null;
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
 
 }

@@ -13,6 +13,7 @@ public abstract class AbstractElement extends AbstractModel {
     public static final String EVENT_CONNECTION_MADE = "event_connection_made";
     public static final String EVENT_POSITION_UPDATED = "event_position_updated";
 
+
     /**
      * TODO: Add ConnectionsIn ArrayList to other AbstractElements
      * TODO: Add ConnectionsOut ArrayList to other AbstractElements
@@ -49,6 +50,14 @@ public abstract class AbstractElement extends AbstractModel {
     public void addConnectionOut(AbstractElement element) {
         this.connectionsOut.add(element);
         this.support.firePropertyChange(EVENT_CONNECTION_MADE, null, new ConnectionModel(element, this));
+    }
+
+    public ArrayList<AbstractElement> getConnectionsIn() {
+        return connectionsIn;
+    }
+
+    public ArrayList<AbstractElement> getConnectionsOut() {
+        return connectionsOut;
     }
 
     public AbstractElement rest() {

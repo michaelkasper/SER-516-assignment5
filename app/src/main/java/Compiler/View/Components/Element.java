@@ -18,7 +18,7 @@ public class Element extends AbstractDragJPanel {
     public static DataFlavor DRAGGABLE_FLAG = new DataFlavor(Element.class, "Draggable Element");
 
     private final ElementController elementController;
-    private AbstractElement elementModel;
+    public AbstractElement elementModel;
     private boolean moving = false;
 
     /**
