@@ -1,6 +1,5 @@
 package Compiler.Model.Elements;
 
-import Compiler.Controller.ConnectionPointController;
 import Compiler.Model.*;
 
 import java.awt.*;
@@ -33,11 +32,12 @@ public abstract class AbstractElement extends AbstractModel {
     public final int inputs;
     public final int outputs;
     private Point position = new Point(-1, -1);
-
     private Stack<String> callStack = new Stack<>();
-    private ConnectionPointModel[] inConnectionPoints;
-    private ConnectionPointModel[] outConnectionPoints;
-    private ArrayList<ConnectionModel> connections = new ArrayList<ConnectionModel>();
+    private final ConnectionPointModel[] inConnectionPoints;
+    private final ConnectionPointModel[] outConnectionPoints;
+    private final ArrayList<ConnectionModel> inConnections = new ArrayList<ConnectionModel>();
+    private final ArrayList<ConnectionModel> outConnections = new ArrayList<ConnectionModel>();
+    private final ArrayList<ValidationError> errors = new ArrayList<>();
 
     public AbstractElement(String symbol, int inputs, int outputs) {
         super();
@@ -57,29 +57,15 @@ public abstract class AbstractElement extends AbstractModel {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void addConnection(ConnectionModel connection) {
-
-        AbstractElement inElement = connection.inPoint.getElementModel();
-        AbstractElement outElement = connection.outPoint.getElementModel();
-
-        if (inElement.getId().equals(this.getId())) {
-            Stack<String> newCallStack = (Stack<String>) outElement.callStack.clone();
-            if (this.inputs > 1) {
-                newCallStack.pop();
-            }
-            this.setCallStack(newCallStack);
+        if (connection.inPoint.getElementModel().equals(this)) {
+            this.inConnections.add(connection);
+        } else {
+            this.outConnections.add(connection);
         }
 
-        if (outElement.getId().equals(this.getId())) {
-            Stack<String> newCallStack = (Stack<String>) this.callStack.clone();
-            if (this.outputs > 1) {
-                newCallStack.add(this.id);
-            }
-            outElement.setCallStack(newCallStack);
-        }
+        this.updateCallStack();
 
-        this.connections.add(connection);
         this.support.firePropertyChange(EVENT_CONNECTION_MADE, null, connection);
     }
 
@@ -104,34 +90,90 @@ public abstract class AbstractElement extends AbstractModel {
         this.callStack = callStack;
     }
 
+    @SuppressWarnings("unchecked")
+    public void updateCallStack() {
+        if (this.getInConnections().size() > 0) {
+            AbstractElement fromElement = this.getInConnections().get(0).outPoint.getElementModel();
+
+            Stack<String> newCallStack = (Stack<String>) fromElement.callStack.clone();
+            if (this.inputs > 1) {
+                newCallStack.pop();
+            }
+            this.setCallStack(newCallStack);
+        }
+
+        for (ConnectionModel connection : this.getOutConnections()) {
+            AbstractElement toElement = connection.inPoint.getElementModel();
+
+            Stack<String> newCallStack = (Stack<String>) this.callStack.clone();
+            if (this.outputs > 1) {
+                newCallStack.add(this.id);
+            }
+            toElement.setCallStack(newCallStack);
+            toElement.updateCallStack();
+        }
+    }
+
+
+    public Stack<String> getCallStack() {
+        return callStack;
+    }
+
     public ArrayList<ValidationError> validate() {
+        this.errors.clear();
         ArrayList<ValidationError> errors = new ArrayList<>();
+        ArrayList<ValidationError> childErrors = new ArrayList<>();
 
-        //TODO: logic for verification
-//        if (this.connectionsIn.size() != this.inputs) {
-//            errors.add(new ValidationError(this, "Missing Input Connections"));
-//        }
-//
-//        if (this.connectionsOut.size() != this.outputs) {
-//            errors.add(new ValidationError(this, "Missing Output Connections"));
-//        }
-//
-//        boolean foundSyncError = false;
-//        for (AbstractElement element : this.connectionsIn) {
-//            if (!element.callStack.peek().equals(this.connectionsIn.get(0).callStack.peek())) {
-//                foundSyncError = true;
-//            }
-//        }
-//        if (foundSyncError) {
-//            errors.add(new ValidationError(this, "Open and Close do not sync"));
-//        }
-//
-//
-//        for (AbstractElement element : this.connectionsOut) {
-//            errors.addAll(element.validate());
-//        }
+        if (this.getInConnections().size() != this.inputs) {
+            errors.add(new ValidationError(this, "Missing In Connections"));
+        }
 
+        if (this.getOutConnections().size() != this.outputs) {
+            errors.add(new ValidationError(this, "Missing Out Connections"));
+        }
+
+        boolean foundSyncError = false;
+        String connectionStackItem = null;
+        for (ConnectionModel connection : this.getOutConnections()) {
+            if (connection.inPoint.getElementModel().callStack.size() > 0) {
+                //in
+                if (connectionStackItem == null) {
+                    connectionStackItem = connection.inPoint.getElementModel().callStack.peek();
+                } else if (!connection.inPoint.getElementModel().callStack.peek().equals(connectionStackItem)) {
+                    foundSyncError = true;
+                }
+            }
+        }
+        if (foundSyncError) {
+            errors.add(new ValidationError(this, "Open and Close do not sync"));
+        }
+        this.addErrors(errors);
+
+        errors.addAll(childErrors);
         return errors;
+    }
+
+    public void addError(ValidationError error) {
+        this.errors.add(error);
+    }
+
+    public void addErrors(ArrayList<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            this.addError(error);
+        }
+    }
+
+    public boolean hasErrors() {
+        return this.errors.size() > 0;
+    }
+
+    public String getErrorsAsString() {
+        String errorMsg = "Errors:";
+        for (ValidationError error : this.errors) {
+            errorMsg += " " + error.getErrMessage() + ";";
+        }
+
+        return errorMsg;
     }
 
     public static AbstractElement Factory(String className) {
@@ -170,7 +212,11 @@ public abstract class AbstractElement extends AbstractModel {
         return points;
     }
 
-    public ArrayList<ConnectionModel> getConnections() {
-        return this.connections;
+    public ArrayList<ConnectionModel> getInConnections() {
+        return this.inConnections;
+    }
+
+    public ArrayList<ConnectionModel> getOutConnections() {
+        return this.outConnections;
     }
 }

@@ -1,6 +1,5 @@
 package Compiler.View;
 
-import Compiler.Compiler;
 import Compiler.Controller.WorkspaceController;
 import Compiler.Model.SpaceModel;
 
@@ -9,8 +8,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
 
-import static Compiler.Config.BLUE_BG_COLOR;
-import static Compiler.Config.GRAY_BG_COLOR;
+import static Compiler.Config.*;
 
 public class Spaces extends JPanel {
 
@@ -29,9 +27,29 @@ public class Spaces extends JPanel {
             if (e.getNewValue() != null) {
                 SpaceModel spaceModel = (SpaceModel) e.getNewValue();
                 Space newSpace = new Space(spaceModel);
-                tabbedPane.add("Space " + (tabbedPane.getTabCount() + 1), newSpace);
-                tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+                int index = tabbedPane.getTabCount();
+                tabbedPane.add("Space " + (index + 1), newSpace);
+                tabbedPane.setBackgroundAt(index, Color.WHITE);
+                tabbedPane.setSelectedIndex(index);
 
+                Runnable renderErrors = () -> {
+                    if (spaceModel.hasErrors()) {
+                        tabbedPane.setBackgroundAt(index, TAB_ERROR_COLOR);
+                        tabbedPane.setToolTipTextAt(index, spaceModel.getErrorsAsString());
+
+                    } else {
+                        tabbedPane.setBackgroundAt(index, Color.WHITE);
+                        tabbedPane.setToolTipTextAt(index, null);
+
+                    }
+                };
+                renderErrors.run();
+
+                spaceModel.addPropertyChangeListener(SpaceModel.EVENT_UPDATE_ERRORS, event -> {
+                    if (event.getNewValue() != null) {
+                        renderErrors.run();
+                    }
+                });
             }
         }); // add tab
 

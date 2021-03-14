@@ -16,4 +16,9 @@ abstract public class AbstractModel extends PropertyChangeDecorator {
     public String getId() {
         return id;
     }
+
+
+    public boolean equals(AbstractModel other) {
+        return this.id.equals(other.getId()) && this.getClass().equals(other.getClass());
+    }
 }

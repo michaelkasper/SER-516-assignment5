@@ -10,7 +10,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
-import java.util.Arrays;
 
 
 public class ConnectionPointController extends PropertyChangeDecorator implements MouseListener {
@@ -24,15 +23,13 @@ public class ConnectionPointController extends PropertyChangeDecorator implement
         try {
             if (support.isDataFlavorSupported(AbstractConnectionPoint.DRAGGABLE_IN_FLAG)) {
                 String inId = (String) support.getTransferable().getTransferData(AbstractConnectionPoint.DRAGGABLE_IN_FLAG);
-                this.getSpaceModel().createConnection(inId, this.connectionPointModel);
+                return this.getSpaceModel().createConnection(inId, this.connectionPointModel);
             }
 
             if (support.isDataFlavorSupported(AbstractConnectionPoint.DRAGGABLE_OUT_FLAG)) {
                 String outId = (String) support.getTransferable().getTransferData(AbstractConnectionPoint.DRAGGABLE_OUT_FLAG);
-                this.getSpaceModel().createConnection(this.connectionPointModel, outId);
+                return this.getSpaceModel().createConnection(this.connectionPointModel, outId);
             }
-            return true;
-
         } catch (UnsupportedFlavorException | IOException e) {
             e.printStackTrace();
         }
@@ -58,18 +55,7 @@ public class ConnectionPointController extends PropertyChangeDecorator implement
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (this.connectionPointModel.getCurrentConnection() == null) {
-            ConnectionPointModel[] oppositeConnectionPoints = this.getConnectionPoint().getType() == ConnectionPointModel.Type.IN
-                    ? this.getConnectionPoint().getElementModel().getOutConnectionPoints()
-                    : this.getConnectionPoint().getElementModel().getInConnectionPoints();
-
-            if (Arrays.stream(oppositeConnectionPoints)
-                    .filter(connectionPointModel -> this.getSpaceModel().isFutureConnection(connectionPointModel))
-                    .findFirst()
-                    .orElse(null) == null) {
-                this.getSpaceModel().startConnection(this.connectionPointModel);
-            }
-        }
+        this.getSpaceModel().startConnection(this.connectionPointModel);
     }
 
     @Override

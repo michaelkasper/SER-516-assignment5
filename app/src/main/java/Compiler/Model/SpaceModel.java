@@ -4,17 +4,19 @@ import Compiler.Model.Elements.AbstractElement;
 import Compiler.Service.Timer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.function.Consumer;
 
 public class SpaceModel extends AbstractModel {
 
     public final static String EVENT_ELEMENT_ADDED = "event_element_added";
     public final static String EVENT_CONNECTION_CREATED = "event_connection_created";
     public final static String EVENT_CONNECTION_STARTED = "event_connection_started";
+    public final static String EVENT_UPDATE_ERRORS = "event_update_errors";
 
 
     private ArrayList<AbstractElement> elements = new ArrayList<>();
-    private HashMap<ConnectionPointModel.Type, ConnectionPointModel> futureConnection = new HashMap<ConnectionPointModel.Type, ConnectionPointModel>();
+    private ConnectionModel futureConnection = new ConnectionModel();
+    private ArrayList<ValidationError> errors = new ArrayList<>();
 
     public SpaceModel() {
         super();
@@ -53,56 +55,116 @@ public class SpaceModel extends AbstractModel {
         return this.elements;
     }
 
-    public void createConnection(ConnectionPointModel inConnection, String outConnectionId) {
-        this.createConnection(inConnection, this.getElementConnectionPointById(outConnectionId));
+    public boolean createConnection(ConnectionPointModel inConnection, String outConnectionId) {
+        return this.createConnection(new ConnectionModel(inConnection, this.getElementConnectionPointById(outConnectionId)));
     }
 
-    public void createConnection(String inConnectionId, ConnectionPointModel outConnection) {
-        this.createConnection(this.getElementConnectionPointById(inConnectionId), outConnection);
+    public boolean createConnection(String inConnectionId, ConnectionPointModel outConnection) {
+        return this.createConnection(new ConnectionModel(this.getElementConnectionPointById(inConnectionId), outConnection));
     }
 
-    public void createConnection(ConnectionPointModel inConnection, ConnectionPointModel outConnection) {
+    public boolean createConnection(ConnectionModel newConnection) {
+        if (newConnection.isValid()) {
+            newConnection.accept();
 
-        ConnectionModel connection = new ConnectionModel(inConnection, outConnection);
-
-        inConnection.getElementModel().addConnection(connection);
-        outConnection.getElementModel().addConnection(connection);
-
-        inConnection.setCurrentConnection(connection);
-        outConnection.setCurrentConnection(connection);
-
-        futureConnection.replace(ConnectionPointModel.Type.IN, null);
-        futureConnection.replace(ConnectionPointModel.Type.OUT, null);
-
-        this.support.firePropertyChange(EVENT_CONNECTION_CREATED, null, true);
+            futureConnection = new ConnectionModel();
+            this.support.firePropertyChange(EVENT_CONNECTION_CREATED, null, true);
+            return true;
+        }
+        return false;
     }
 
     public void startConnection(ConnectionPointModel newConnectionPointModel) {
-        ConnectionPointModel currentPoint = futureConnection.get(newConnectionPointModel.getType());
-        if (currentPoint != null && currentPoint.getId().equals(newConnectionPointModel.getId())) {
-            futureConnection.put(newConnectionPointModel.getType(), null);
+        ConnectionPointModel currentPoint = null;
+        Consumer<ConnectionPointModel> setPoint = point -> {
+        };
+        switch (newConnectionPointModel.getType()) {
+            case IN -> {
+                currentPoint = futureConnection.getInPoint();
+                setPoint = point -> futureConnection.setInPoint(point);
+            }
+            case OUT -> {
+                currentPoint = futureConnection.getOutPoint();
+                setPoint = point -> futureConnection.setOutPoint(point);
+            }
+        }
+
+
+        if (currentPoint != null && currentPoint.equals(newConnectionPointModel)) {
+            setPoint.accept(null);
             this.support.firePropertyChange(EVENT_CONNECTION_STARTED, null, true);
             return;
         }
 
-        futureConnection.put(newConnectionPointModel.getType(), newConnectionPointModel);
-
-        ConnectionPointModel inPoint = futureConnection.get(ConnectionPointModel.Type.IN);
-        ConnectionPointModel outPoint = futureConnection.get(ConnectionPointModel.Type.OUT);
+        setPoint.accept(newConnectionPointModel);
+        if (!futureConnection.isValid()) {
+            setPoint.accept(null);
+        }
 
         this.support.firePropertyChange(EVENT_CONNECTION_STARTED, null, true);
 
-        if (inPoint != null && outPoint != null) {
+        if (futureConnection.isComplete()) {
             Timer.setTimeout(() -> {
-                this.createConnection(inPoint, outPoint);
+                this.createConnection(futureConnection);
             }, 150);
         }
     }
 
     public boolean isFutureConnection(ConnectionPointModel pointModel) {
-        ConnectionPointModel inPoint = futureConnection.get(ConnectionPointModel.Type.IN);
-        ConnectionPointModel outPoint = futureConnection.get(ConnectionPointModel.Type.OUT);
+        ConnectionPointModel inPoint = futureConnection.getInPoint();
+        ConnectionPointModel outPoint = futureConnection.getOutPoint();
+        return (inPoint != null && inPoint.equals(pointModel)) || (outPoint != null && outPoint.getId().equals(pointModel.getId()));
+    }
 
-        return (inPoint != null && inPoint.getId().equals(pointModel.getId())) || (outPoint != null && outPoint.getId().equals(pointModel.getId()));
+    public ArrayList<ValidationError> validate() {
+        this.errors.clear();
+        ArrayList<ValidationError> errors = new ArrayList<>();
+        ArrayList<ValidationError> childErrors = new ArrayList<>();
+
+        int startCount = 0;
+        for (AbstractElement element : this.elements) {
+            if (element.inputs == 0) {
+                startCount++;
+            }
+            childErrors.addAll(element.validate());
+        }
+        if (startCount > 1) {
+            errors.add(new ValidationError(this, "Multiple Start Commands"));
+        }
+        if (startCount == 0) {
+            errors.add(new ValidationError(this, "No Start Command"));
+        }
+
+        this.addErrors(errors);
+        if (childErrors.size() > 0) {
+            this.addError(new ValidationError(this, "Elements have errors"));
+        }
+
+        errors.addAll(childErrors);
+        return errors;
+    }
+
+
+    public void addError(ValidationError error) {
+        this.errors.add(error);
+    }
+
+    public void addErrors(ArrayList<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            this.addError(error);
+        }
+    }
+
+    public boolean hasErrors() {
+        return this.errors.size() > 0;
+    }
+
+    public String getErrorsAsString() {
+        String errorMsg = "Errors:";
+        for (ValidationError error : this.errors) {
+            errorMsg += " " + error.getErrMessage() + ";";
+        }
+
+        return errorMsg;
     }
 }

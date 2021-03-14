@@ -32,7 +32,7 @@ public class Compiler extends JFrame {
         this.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        WorkspaceController workspaceController = new WorkspaceController();
+        WorkspaceController workspaceController = new WorkspaceController(this);
 
         Header headerView = new Header(workspaceController);
         Sidebar sidebarView = new Sidebar(workspaceController);
@@ -45,6 +45,11 @@ public class Compiler extends JFrame {
         this.setVisible(true);
 
         workspaceController.onAddSpace(new ActionEvent(this, 0, ""));
+    }
+
+
+    public void showDialog(String message) {
+        JOptionPane.showMessageDialog(this, message);
     }
 
     public static void main(String[] args) {

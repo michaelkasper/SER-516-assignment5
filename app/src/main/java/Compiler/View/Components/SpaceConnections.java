@@ -48,21 +48,18 @@ public class SpaceConnections extends JPanel {
         super.paintComponent(g);
         Point spacePosition = this.getLocationOnScreen();
         for (AbstractElement elementModel : this.spaceController.getSpaceModel().getElements()) {
-            for (ConnectionModel connection : elementModel.getConnections()) {
-                if (connection.outPoint.getElementModel().getId().equals(elementModel.getId())) {
-                    ConnectionPointModel inConnectionPoint = connection.inPoint;
-                    ConnectionPointModel outConnectionPoint = connection.outPoint;
-                    if (outConnectionPoint.getConnectionPointView().isShowing() && inConnectionPoint.getConnectionPointView().isShowing()) {
+            for (ConnectionModel connection : elementModel.getOutConnections()) {
+                ConnectionPointModel inConnectionPoint = connection.inPoint;
+                ConnectionPointModel outConnectionPoint = connection.outPoint;
+                if (outConnectionPoint.getConnectionPointView().isShowing() && inConnectionPoint.getConnectionPointView().isShowing()) {
 
-                        double fromX = outConnectionPoint.getConnectionPointView().getLocationOnScreen().getX() - spacePosition.getX();
-                        double fromY = outConnectionPoint.getConnectionPointView().getLocationOnScreen().getY() - spacePosition.getY();
+                    double fromX = outConnectionPoint.getConnectionPointView().getLocationOnScreen().getX() - spacePosition.getX();
+                    double fromY = outConnectionPoint.getConnectionPointView().getLocationOnScreen().getY() - spacePosition.getY();
 
-                        double toX = inConnectionPoint.getConnectionPointView().getLocationOnScreen().getX() - spacePosition.getX();
-                        double toY = inConnectionPoint.getConnectionPointView().getLocationOnScreen().getY() - spacePosition.getY();
+                    double toX = inConnectionPoint.getConnectionPointView().getLocationOnScreen().getX() - spacePosition.getX();
+                    double toY = inConnectionPoint.getConnectionPointView().getLocationOnScreen().getY() - spacePosition.getY();
 
-                        drawArrow(g, (int) toX, (int) toY, (int) fromX, (int) fromY);
-                    }
-
+                    drawArrow(g, (int) toX, (int) toY, (int) fromX, (int) fromY);
                 }
 
             }
