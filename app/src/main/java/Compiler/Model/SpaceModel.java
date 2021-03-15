@@ -133,7 +133,7 @@ public class SpaceModel extends AbstractModel {
         if (startCount > 1) {
             errors.add(new ValidationError(this, "Multiple Start Commands"));
         }
-        if (startCount == 0) {
+        if (startCount == 0 && this.elements.size() > 0) {
             errors.add(new ValidationError(this, "No Start Command"));
         }
 
