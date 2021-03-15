@@ -4,8 +4,11 @@ import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.Elements.ThreadElement;
 import Compiler.Service.Timer;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SpaceModel extends AbstractModel {
 
@@ -65,7 +68,6 @@ public class SpaceModel extends AbstractModel {
     }
 
     public boolean createConnection(ConnectionPointModel inConnection, ConnectionPointModel outConnection) {
-
         if (inConnection.isAllowedToConnectTo(outConnection)) {
             if (inConnection.getElementModel().getClass() == ThreadElement.class) {
                 inConnection = new ConnectionPointModel(inConnection.getType(), inConnection.getElementModel(), inConnection.getConnectionPointView());
@@ -166,5 +168,48 @@ public class SpaceModel extends AbstractModel {
         }
 
         return errorMsg;
+    }
+
+
+    public JSONObject export() {
+        JSONObject obj = new JSONObject();
+
+        obj.put("id", id);
+        obj.put("futureConnectionId", futureConnection != null ? futureConnection.getId() : null);
+
+        JSONArray elements = new JSONArray();
+        for (AbstractElement element : this.elements) {
+            elements.add(element.getId());
+        }
+        obj.put("elements", elements);
+
+        JSONArray errors = new JSONArray();
+        for (ValidationError error : this.errors) {
+            errors.add(error.getErrMessage());
+        }
+        obj.put("errors", errors);
+
+        return obj;
+    }
+
+    public void importJson(JSONObject json) {
+        this.id = (String) json.get("id");
+
+        JSONArray errorsJson = (JSONArray) json.get("errors");
+        errorsJson.forEach(errorJson -> {
+            this.errors.add(new ValidationError(this, (String) errorJson));
+        });
+    }
+
+    public void importRelationships(JSONObject json, HashMap<String, AbstractElement> elementsMap, HashMap<String, ConnectionPointModel> pointsMap) {
+        String futureConnectionId = (String) json.get("futureConnectionId");
+        if (futureConnectionId != null && !futureConnectionId.isEmpty()) {
+            this.futureConnection = pointsMap.get(futureConnectionId);
+        }
+
+        JSONArray elementsJson = (JSONArray) json.get("elements");
+        elementsJson.forEach(elementId -> {
+            this.elements.add(elementsMap.get(elementId));
+        });
     }
 }

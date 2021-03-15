@@ -6,8 +6,10 @@ import Compiler.View.Sidebar;
 import Compiler.View.Spaces;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 import static Compiler.Config.FRAME_HEIGHT;
 import static Compiler.Config.FRAME_WIDTH;
@@ -50,6 +52,37 @@ public class Compiler extends JFrame {
 
     public void showDialog(String message) {
         JOptionPane.showMessageDialog(this, message);
+    }
+
+    public File showSaveDialog() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Specify a file to save");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("json file", "json"));
+        int userSelection = fileChooser.showSaveDialog(this);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+
+            int i = fileToSave.getName().lastIndexOf('.');
+            String name = i > 0 ? fileToSave.getName().substring(0, i) : fileToSave.getName();
+            return new File(fileToSave.getParent(), name + ".json");
+        }
+
+        return null;
+    }
+
+
+    public File showOpenFileDialog() {
+        final JFileChooser fileChooser = new JFileChooser();
+
+        fileChooser.setFileFilter(new FileNameExtensionFilter("JSON", "json"));
+
+        int returnVal = fileChooser.showOpenDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            return fileChooser.getSelectedFile();
+        }
+        
+        return null;
     }
 
     public static void main(String[] args) {

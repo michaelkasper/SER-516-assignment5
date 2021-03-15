@@ -50,17 +50,19 @@ public class SpaceConnections extends JPanel {
             for (ConnectionPointModel fromPoint : elementModel.getOutConnectionPoints()) {
 
                 ConnectionPointModel toPoint = fromPoint.getConnectsTo();
-                if (toPoint != null && fromPoint.getConnectionPointView().isShowing() && toPoint.getConnectionPointView().isShowing()) {
 
-                    double fromX = fromPoint.getConnectionPointView().getLocationOnScreen().getX() - spacePosition.getX();
-                    double fromY = fromPoint.getConnectionPointView().getLocationOnScreen().getY() - spacePosition.getY();
+                if (fromPoint.getConnectionPointView() != null && toPoint != null && toPoint.getConnectionPointView() != null) {
+                    if (fromPoint.getConnectionPointView().isShowing() && toPoint.getConnectionPointView().isShowing()) {
 
-                    double toX = toPoint.getConnectionPointView().getLocationOnScreen().getX() - spacePosition.getX();
-                    double toY = toPoint.getConnectionPointView().getLocationOnScreen().getY() - spacePosition.getY();
+                        double fromX = fromPoint.getConnectionPointView().getLocationOnScreen().getX() - spacePosition.getX();
+                        double fromY = fromPoint.getConnectionPointView().getLocationOnScreen().getY() - spacePosition.getY();
 
-                    drawArrow(g, (int) fromX, (int) fromY, (int) toX, (int) toY);
+                        double toX = toPoint.getConnectionPointView().getLocationOnScreen().getX() - spacePosition.getX();
+                        double toY = toPoint.getConnectionPointView().getLocationOnScreen().getY() - spacePosition.getY();
+
+                        drawArrow(g, (int) fromX, (int) fromY, (int) toX, (int) toY);
+                    }
                 }
-
             }
         }
     }

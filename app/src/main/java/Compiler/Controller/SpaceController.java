@@ -14,7 +14,7 @@ public class SpaceController extends PropertyChangeDecorator {
     public final static String EVENT_REBUILD_MAP = "event_rebuild_map";
 
     public SpaceModel spaceModel;
-    
+
     public SpaceController(SpaceModel spaceModel) {
         this.spaceModel = spaceModel;
 
@@ -24,7 +24,11 @@ public class SpaceController extends PropertyChangeDecorator {
                     this.support.firePropertyChange(EVENT_REBUILD_MAP, null, this.spaceModel);
                 }
             });
+        }
 
+
+        for (AbstractElement element : this.spaceModel.getElements()) {
+            this.configureElement(element);
         }
     }
 
@@ -40,9 +44,7 @@ public class SpaceController extends PropertyChangeDecorator {
                 elementModel.setPosition(support.getDropLocation().getDropPoint());
                 this.spaceModel.addElement(elementModel);
 
-                elementModel.addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, e -> {
-                    this.support.firePropertyChange(EVENT_REBUILD_MAP, null, this.spaceModel);
-                });
+                this.configureElement(elementModel);
             } else {
                 AbstractElement elementModel = this.spaceModel.getElementById(id);
                 elementModel.setPosition(support.getDropLocation().getDropPoint());
@@ -59,5 +61,12 @@ public class SpaceController extends PropertyChangeDecorator {
 
     public SpaceModel getSpaceModel() {
         return this.spaceModel;
+    }
+
+
+    private void configureElement(AbstractElement element) {
+        element.addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, e -> {
+            this.support.firePropertyChange(EVENT_REBUILD_MAP, null, this.spaceModel);
+        });
     }
 }

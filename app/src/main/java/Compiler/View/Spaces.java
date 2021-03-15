@@ -50,8 +50,15 @@ public class Spaces extends JPanel {
                         renderErrors.run();
                     }
                 });
+
+                newSpace.rebuildMap(spaceModel);
+                renderErrors.run();
             }
-        }); // add tab
+        });
+
+        workspaceController.addPropertyChangeListener(WorkspaceController.EVENT_CLEAR_SPACES, e -> {
+            tabbedPane.removeAll();
+        });
 
         this.add(tabbedPane);
     }
