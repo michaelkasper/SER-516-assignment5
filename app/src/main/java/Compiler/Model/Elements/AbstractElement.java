@@ -1,17 +1,17 @@
 package Compiler.Model.Elements;
 
-import Compiler.Model.*;
+import Compiler.Model.AbstractModel;
+import Compiler.Model.Connections.ConnectionPointModel;
+import Compiler.Model.Connections.LoopConnectionPointModel;
+import Compiler.Model.SpaceModel;
+import Compiler.Model.ValidationError;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Stack;
 
 public abstract class AbstractElement extends AbstractModel {
 
-    public static final String EVENT_CONNECTION_MADE = "event_connection_made";
     public static final String EVENT_POSITION_UPDATED = "event_position_updated";
-    public static final String EVENT_CREATING_CONNECTION = "event_creating_connection";
 
 
     /**
@@ -27,17 +27,15 @@ public abstract class AbstractElement extends AbstractModel {
      * TODO: ????
      */
 
-    private SpaceModel spaceModel;
     public final String symbol;
     public final int inputs;
     public final int outputs;
-    private Point position = new Point(-1, -1);
-    private Stack<String> callStack = new Stack<>();
-    private final ConnectionPointModel[] inConnectionPoints;
-    private final ConnectionPointModel[] outConnectionPoints;
-    private final ArrayList<ConnectionModel> inConnections = new ArrayList<ConnectionModel>();
-    private final ArrayList<ConnectionModel> outConnections = new ArrayList<ConnectionModel>();
-    private final ArrayList<ValidationError> errors = new ArrayList<>();
+    protected SpaceModel spaceModel;
+    protected ArrayList<ConnectionPointModel> inConnectionPoints;
+    protected ArrayList<ConnectionPointModel> outConnectionPoints;
+
+    protected final ArrayList<ValidationError> errors = new ArrayList<>();
+    protected Point position = new Point(-1, -1);
 
     public AbstractElement(String symbol, int inputs, int outputs) {
         super();
@@ -45,28 +43,7 @@ public abstract class AbstractElement extends AbstractModel {
         this.inputs = inputs;
         this.outputs = outputs;
 
-
-        inConnectionPoints = new ConnectionPointModel[Math.abs(inputs)];
-        for (int i = 0; i < inConnectionPoints.length; i++) {
-            inConnectionPoints[i] = new ConnectionPointModel(ConnectionPointModel.Type.IN, this);
-        }
-
-        outConnectionPoints = new ConnectionPointModel[Math.abs(outputs)];
-        for (int i = 0; i < outConnectionPoints.length; i++) {
-            outConnectionPoints[i] = new ConnectionPointModel(ConnectionPointModel.Type.OUT, this);
-        }
-    }
-
-    public void addConnection(ConnectionModel connection) {
-        if (connection.inPoint.getElementModel().equals(this)) {
-            this.inConnections.add(connection);
-        } else {
-            this.outConnections.add(connection);
-        }
-
-        this.updateCallStack();
-
-        this.support.firePropertyChange(EVENT_CONNECTION_MADE, null, connection);
+        this.createConnectionPoints();
     }
 
     public void setPosition(Point dropPoint) {
@@ -86,81 +63,10 @@ public abstract class AbstractElement extends AbstractModel {
         return spaceModel;
     }
 
-    public void setCallStack(Stack<String> callStack) {
-        this.callStack = callStack;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void updateCallStack() {
-        if (this.getInConnections().size() > 0) {
-            AbstractElement fromElement = this.getInConnections().get(0).outPoint.getElementModel();
-
-            Stack<String> newCallStack = (Stack<String>) fromElement.callStack.clone();
-            if (this.inputs > 1) {
-                newCallStack.pop();
-            }
-            this.setCallStack(newCallStack);
-        }
-
-        for (ConnectionModel connection : this.getOutConnections()) {
-            AbstractElement toElement = connection.inPoint.getElementModel();
-
-            Stack<String> newCallStack = (Stack<String>) this.callStack.clone();
-            if (this.outputs > 1) {
-                newCallStack.add(this.id);
-            }
-            toElement.setCallStack(newCallStack);
-            toElement.updateCallStack();
-        }
-    }
-
-
-    public Stack<String> getCallStack() {
-        return callStack;
-    }
-
     public ArrayList<ValidationError> validate() {
         this.errors.clear();
-        ArrayList<ValidationError> errors = new ArrayList<>();
-        ArrayList<ValidationError> childErrors = new ArrayList<>();
-
-        if (this.getInConnections().size() != this.inputs) {
-            errors.add(new ValidationError(this, "Missing In Connections"));
-        }
-
-        if (this.getOutConnections().size() != this.outputs) {
-            errors.add(new ValidationError(this, "Missing Out Connections"));
-        }
-
-        boolean foundSyncError = false;
-        String connectionStackItem = null;
-        for (ConnectionModel connection : this.getOutConnections()) {
-            if (connection.inPoint.getElementModel().callStack.size() > 0) {
-                //in
-                if (connectionStackItem == null) {
-                    connectionStackItem = connection.inPoint.getElementModel().callStack.peek();
-                } else if (!connection.inPoint.getElementModel().callStack.peek().equals(connectionStackItem)) {
-                    foundSyncError = true;
-                }
-            }
-        }
-        if (foundSyncError) {
-            errors.add(new ValidationError(this, "Open and Close do not sync"));
-        }
-        this.addErrors(errors);
-
-        errors.addAll(childErrors);
-        return errors;
-    }
-
-    public void addError(ValidationError error) {
-        this.errors.add(error);
-    }
-
-    public void addErrors(ArrayList<ValidationError> errors) {
-        for (ValidationError error : errors) {
-            this.addError(error);
-        }
+        this.errors.addAll(this.validateConnections());
+        return this.errors;
     }
 
     public boolean hasErrors() {
@@ -196,27 +102,75 @@ public abstract class AbstractElement extends AbstractModel {
         return null;
     }
 
-
-    public ConnectionPointModel[] getInConnectionPoints() {
+    public ArrayList<ConnectionPointModel> getInConnectionPoints() {
         return inConnectionPoints;
     }
 
-    public ConnectionPointModel[] getOutConnectionPoints() {
+    public ArrayList<ConnectionPointModel> getOutConnectionPoints() {
         return outConnectionPoints;
     }
 
     public ArrayList<ConnectionPointModel> getAllConnectionPoints() {
         ArrayList<ConnectionPointModel> points = new ArrayList<>();
-        Collections.addAll(points, this.getInConnectionPoints());
-        Collections.addAll(points, this.getOutConnectionPoints());
+        points.addAll(this.getInConnectionPoints());
+        points.addAll(this.getOutConnectionPoints());
+
         return points;
     }
 
-    public ArrayList<ConnectionModel> getInConnections() {
-        return this.inConnections;
+
+    protected ArrayList<ValidationError> validateConnections() {
+        ArrayList<ValidationError> errors = new ArrayList<>();
+
+        for (ConnectionPointModel connectionPoint : this.inConnectionPoints) {
+            if (connectionPoint.getConnectsTo() == null) {
+                errors.add(new ValidationError(this, "Missing In Connections"));
+                break;
+            }
+        }
+
+        for (ConnectionPointModel connectionPoint : this.outConnectionPoints) {
+            if (connectionPoint.getConnectsTo() == null) {
+                errors.add(new ValidationError(this, "Missing Out Connections"));
+                break;
+            }
+        }
+        return errors;
     }
 
-    public ArrayList<ConnectionModel> getOutConnections() {
-        return this.outConnections;
+    protected void createConnectionPoints() {
+        inConnectionPoints = new ArrayList<>();
+        for (int i = 0; i < Math.abs(inputs); i++) {
+            inConnectionPoints.add(new ConnectionPointModel(ConnectionPointModel.Type.IN, this));
+        }
+
+        outConnectionPoints = new ArrayList<>();
+        for (int i = 0; i < Math.abs(outputs); i++) {
+            outConnectionPoints.add(new ConnectionPointModel(ConnectionPointModel.Type.OUT, this));
+        }
+    }
+
+
+    public boolean verifyNoLoop(ConnectionPointModel toPoint) {
+        for (ConnectionPointModel connectionPoint : this.getInConnectionPoints()) {
+            if (connectionPoint.getConnectsTo() != null) {
+                if (connectionPoint.getConnectsTo().getElementModel().equals(toPoint.getElementModel())) {
+                    if (connectionPoint.getConnectsTo().getClass() == LoopConnectionPointModel.class && toPoint.getClass() == LoopConnectionPointModel.class) {
+                        return true;
+                    }
+                    return false;
+                } else {
+                    return connectionPoint.getConnectsTo().getElementModel().verifyNoLoop(toPoint);
+                }
+            }
+        }
+        return true;
+    }
+
+    public void addConnectionPoint(ConnectionPointModel connectionPointModel) {
+        switch (connectionPointModel.getType()) {
+            case IN -> this.inConnectionPoints.add(connectionPointModel);
+            case OUT -> this.outConnectionPoints.add(connectionPointModel);
+        }
     }
 }

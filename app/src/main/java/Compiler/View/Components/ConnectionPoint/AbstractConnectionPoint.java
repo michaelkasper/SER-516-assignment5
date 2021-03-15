@@ -1,8 +1,8 @@
 package Compiler.View.Components.ConnectionPoint;
 
 import Compiler.Controller.ConnectionPointController;
-import Compiler.Model.ConnectionPointModel;
-import Compiler.Model.Elements.AbstractElement;
+import Compiler.Model.Connections.ConnectionPointModel;
+import Compiler.Model.Connections.LoopConnectionPointModel;
 import Compiler.Model.SpaceModel;
 import Compiler.Service.DragAndDrop.DragAndDrop;
 import Compiler.Service.DragAndDrop.DragInterface;
@@ -13,7 +13,6 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Individual pixel used in the grid
@@ -29,6 +28,9 @@ abstract public class AbstractConnectionPoint extends JPanel implements DragInte
     public AbstractConnectionPoint(ConnectionPointModel connectionPointModel) {
         connectionPointModel.setView(this);
         this.connectionPointController = new ConnectionPointController(connectionPointModel);
+        this.setBackground(new Color(112, 112, 112));
+        this.setBorder(BorderFactory.createLineBorder(Color.black));
+
         if (connectionPointModel.isInSpace()) {
             this.getDragAndDropInterface().registerDragComponent(this);
             this.getDragAndDropInterface().registerDropComponent(this);
@@ -37,32 +39,42 @@ abstract public class AbstractConnectionPoint extends JPanel implements DragInte
             this.connectionPointController.getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_CREATED, e -> {
                 if (e.getNewValue() != null) {
                     this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
-                    if (this.getConnectionPoint().getCurrentConnection() != null) {
-                        this.setBackground(Color.BLACK);
-                    }
-
                 }
             });
 
 
             this.connectionPointController.getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_STARTED, e -> {
                 if (e.getNewValue() != null) {
-                    if (this.connectionPointController.getSpaceModel().isFutureConnection(this.getConnectionPoint())) {
-                        this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-                    } else {
-                        this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                    ConnectionPointModel futureConnectionPoint1 = this.connectionPointController.getSpaceModel().getFutureConnection();
+
+                    if (futureConnectionPoint1 != null) {
+                        ConnectionPointModel futureConnectionPoint2 = this.connectionPointController.getSpaceModel().getFutureConnection().getConnectsTo();
+                        if (futureConnectionPoint1.equals(this.getConnectionPoint())) {
+                            this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+                            return;
+                        }
+
+                        if (futureConnectionPoint2 != null && futureConnectionPoint2.equals(this.getConnectionPoint())) {
+                            this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+                            return;
+                        }
                     }
+
+                    this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
                 }
             });
+
+            if (this.getConnectionPoint().getClass() == LoopConnectionPointModel.class) {
+                this.setBackground(Color.orange);
+            }
         }
-        this.setBackground(new Color(112, 112, 112));
-        this.setBorder(BorderFactory.createLineBorder(Color.black));
+
     }
 
     @Override
     public boolean canDrag() {
-        return !this.connectionPointController.isDragging() && this.getConnectionPoint().getCurrentConnection() == null;
+        return !this.connectionPointController.isDragging() && this.getConnectionPoint().getConnectsTo() == null;
     }
 
     @Override
@@ -118,7 +130,7 @@ abstract public class AbstractConnectionPoint extends JPanel implements DragInte
         ArrayList<ConnectionPointModel> points = this.getConnectionPoint().getElementModel().getAllConnectionPoints();
 
         return points.stream().filter(ConnectionPointModel::isDragging).findFirst().orElse(null) == null
-                && this.getConnectionPoint().getCurrentConnection() == null;
+                && this.getConnectionPoint().getConnectsTo() == null;
     }
 
     abstract public DataFlavor[] getAllowedDraggableFlags();

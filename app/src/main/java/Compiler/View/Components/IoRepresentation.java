@@ -1,6 +1,6 @@
 package Compiler.View.Components;
 
-import Compiler.Model.ConnectionPointModel;
+import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.View.Components.ConnectionPoint.AbstractConnectionPoint;
 import Compiler.View.Components.ConnectionPoint.ConnectionPointIn;
@@ -13,31 +13,34 @@ import java.util.ArrayList;
 public class IoRepresentation extends JComponent {
     private final int WIDTH = 15;
     private final int HEIGHT = 15;
-    private ConnectionPointModel.Type type;
     private AbstractElement abstractElement;
-    private ArrayList<AbstractConnectionPoint> points = new ArrayList<AbstractConnectionPoint>();
+    private ArrayList<AbstractConnectionPoint> points = new ArrayList<>();
     private int count;
 
     public IoRepresentation(ConnectionPointModel.Type type, AbstractElement abstractElement) {
-        this.type = type;
         this.abstractElement = abstractElement;
         this.setLayout(null);
 
-        if (type == ConnectionPointModel.Type.IN) {
-            this.count = this.abstractElement.inputs;
-            for (ConnectionPointModel connectionPoint : this.abstractElement.getInConnectionPoints()) {
-                AbstractConnectionPoint point = new ConnectionPointIn(connectionPoint);
-                this.points.add(point);
-                this.add(point);
+        switch (type) {
+            case IN -> {
+                this.count = this.abstractElement.inputs;
+                for (ConnectionPointModel connectionPoint : this.abstractElement.getInConnectionPoints()) {
+                    if (!connectionPoint.isHidden()) {
+                        AbstractConnectionPoint point = new ConnectionPointIn(connectionPoint);
+                        this.points.add(point);
+                        this.add(point);
+                    }
+                }
             }
-        }
-
-        if (type == ConnectionPointModel.Type.OUT) {
-            this.count = this.abstractElement.outputs;
-            for (ConnectionPointModel connectionPoint : this.abstractElement.getOutConnectionPoints()) {
-                AbstractConnectionPoint point = new ConnectionPointOut(connectionPoint);
-                this.points.add(point);
-                this.add(point);
+            case OUT -> {
+                this.count = this.abstractElement.outputs;
+                for (ConnectionPointModel connectionPoint : this.abstractElement.getOutConnectionPoints()) {
+                    if (!connectionPoint.isHidden()) {
+                        AbstractConnectionPoint point = new ConnectionPointOut(connectionPoint);
+                        this.points.add(point);
+                        this.add(point);
+                    }
+                }
             }
         }
     }

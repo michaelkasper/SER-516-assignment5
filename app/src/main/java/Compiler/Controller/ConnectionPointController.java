@@ -1,6 +1,6 @@
 package Compiler.Controller;
 
-import Compiler.Model.ConnectionPointModel;
+import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.SpaceModel;
 import Compiler.Service.PropertyChangeDecorator;
 import Compiler.View.Components.ConnectionPoint.AbstractConnectionPoint;

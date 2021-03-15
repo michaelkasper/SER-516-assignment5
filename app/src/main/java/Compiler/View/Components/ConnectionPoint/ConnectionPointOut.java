@@ -1,6 +1,6 @@
 package Compiler.View.Components.ConnectionPoint;
 
-import Compiler.Model.ConnectionPointModel;
+import Compiler.Model.Connections.ConnectionPointModel;
 
 import java.awt.datatransfer.DataFlavor;
 

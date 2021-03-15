@@ -1,10 +1,11 @@
 package Compiler.Model;
 
+import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.Elements.AbstractElement;
+import Compiler.Model.Elements.ThreadElement;
 import Compiler.Service.Timer;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 public class SpaceModel extends AbstractModel {
 
@@ -15,7 +16,7 @@ public class SpaceModel extends AbstractModel {
 
 
     private ArrayList<AbstractElement> elements = new ArrayList<>();
-    private ConnectionModel futureConnection = new ConnectionModel();
+    private ConnectionPointModel futureConnection = null;
     private ArrayList<ValidationError> errors = new ArrayList<>();
 
     public SpaceModel() {
@@ -56,18 +57,28 @@ public class SpaceModel extends AbstractModel {
     }
 
     public boolean createConnection(ConnectionPointModel inConnection, String outConnectionId) {
-        return this.createConnection(new ConnectionModel(inConnection, this.getElementConnectionPointById(outConnectionId)));
+        return this.createConnection(inConnection, this.getElementConnectionPointById(outConnectionId));
     }
 
     public boolean createConnection(String inConnectionId, ConnectionPointModel outConnection) {
-        return this.createConnection(new ConnectionModel(this.getElementConnectionPointById(inConnectionId), outConnection));
+        return this.createConnection(this.getElementConnectionPointById(inConnectionId), outConnection);
     }
 
-    public boolean createConnection(ConnectionModel newConnection) {
-        if (newConnection.isValid()) {
-            newConnection.accept();
+    public boolean createConnection(ConnectionPointModel inConnection, ConnectionPointModel outConnection) {
 
-            futureConnection = new ConnectionModel();
+        if (inConnection.isAllowedToConnectTo(outConnection)) {
+            if (inConnection.getElementModel().getClass() == ThreadElement.class) {
+                inConnection = new ConnectionPointModel(inConnection.getType(), inConnection.getElementModel(), inConnection.getConnectionPointView());
+            }
+
+            if (outConnection.getElementModel().getClass() == ThreadElement.class) {
+                outConnection = new ConnectionPointModel(outConnection.getType(), outConnection.getElementModel(), outConnection.getConnectionPointView());
+            }
+
+            inConnection.setConnectsTo(outConnection);
+            outConnection.setConnectsTo(inConnection);
+
+            futureConnection = null;
             this.support.firePropertyChange(EVENT_CONNECTION_CREATED, null, true);
             return true;
         }
@@ -75,45 +86,34 @@ public class SpaceModel extends AbstractModel {
     }
 
     public void startConnection(ConnectionPointModel newConnectionPointModel) {
-        ConnectionPointModel currentPoint = null;
-        Consumer<ConnectionPointModel> setPoint = point -> {
-        };
-        switch (newConnectionPointModel.getType()) {
-            case IN -> {
-                currentPoint = futureConnection.getInPoint();
-                setPoint = point -> futureConnection.setInPoint(point);
-            }
-            case OUT -> {
-                currentPoint = futureConnection.getOutPoint();
-                setPoint = point -> futureConnection.setOutPoint(point);
-            }
-        }
-
-
-        if (currentPoint != null && currentPoint.equals(newConnectionPointModel)) {
-            setPoint.accept(null);
+        if (futureConnection == null) {
+            futureConnection = newConnectionPointModel;
             this.support.firePropertyChange(EVENT_CONNECTION_STARTED, null, true);
             return;
         }
 
-        setPoint.accept(newConnectionPointModel);
-        if (!futureConnection.isValid()) {
-            setPoint.accept(null);
+
+        if (newConnectionPointModel.equals(futureConnection)) {
+            futureConnection = null;
+            this.support.firePropertyChange(EVENT_CONNECTION_STARTED, null, true);
+            return;
         }
 
-        this.support.firePropertyChange(EVENT_CONNECTION_STARTED, null, true);
 
-        if (futureConnection.isComplete()) {
+        if (newConnectionPointModel.isAllowedToConnectTo(futureConnection)) {
+            futureConnection.setConnectsTo(newConnectionPointModel);
             Timer.setTimeout(() -> {
-                this.createConnection(futureConnection);
+                switch (newConnectionPointModel.getType()) {
+                    case IN -> this.createConnection(newConnectionPointModel, futureConnection);
+                    case OUT -> this.createConnection(futureConnection, newConnectionPointModel);
+                }
+                futureConnection = null;
             }, 150);
         }
     }
 
-    public boolean isFutureConnection(ConnectionPointModel pointModel) {
-        ConnectionPointModel inPoint = futureConnection.getInPoint();
-        ConnectionPointModel outPoint = futureConnection.getOutPoint();
-        return (inPoint != null && inPoint.equals(pointModel)) || (outPoint != null && outPoint.getId().equals(pointModel.getId()));
+    public ConnectionPointModel getFutureConnection() {
+        return futureConnection;
     }
 
     public ArrayList<ValidationError> validate() {

@@ -1,7 +1,7 @@
 package Compiler.View.Components;
 
 import Compiler.Controller.ElementController;
-import Compiler.Model.ConnectionPointModel;
+import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
 import Compiler.Service.DragAndDrop.DragAndDrop;
@@ -13,10 +13,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 
 import static Compiler.Config.*;
-
-/**
- * Individual pixel used in the grid
- */
 
 public class Element extends JPanel implements DragInterface {
 
@@ -36,8 +32,8 @@ public class Element extends JPanel implements DragInterface {
         this.setBorder(BorderFactory.createLineBorder(Color.black));
         this.setBackground(ELEMENT_COLOR);
 
-        IoRepresentation inputsRepresentation = new IoRepresentation(ConnectionPointModel.Type.IN, this.getElementModel());
-        IoRepresentation outputRepresentation = new IoRepresentation(ConnectionPointModel.Type.OUT, this.getElementModel());
+        IoRepresentation inputsRepresentation = new IoRepresentation(ConnectionPointModel.Type.IN, elementModel);
+        IoRepresentation outputRepresentation = new IoRepresentation(ConnectionPointModel.Type.OUT, elementModel);
 
         JLabel symbolLabel = new JLabel(this.getElementModel().symbol, SwingConstants.CENTER);
         symbolLabel.setFont(symbolLabel.getFont().deriveFont(25f));

@@ -61,6 +61,7 @@ public class TransferHandler extends javax.swing.TransferHandler {
      */
     @Override
     public boolean canImport(javax.swing.TransferHandler.TransferSupport support) {
+//        System.out.println(support.getTransferable().getTransferDataFlavors());
         if (support.getComponent() instanceof DropInterface) {
             DropInterface component = (DropInterface) support.getComponent();
             for (DataFlavor flavor : component.getAllowedDraggableFlags()) {
