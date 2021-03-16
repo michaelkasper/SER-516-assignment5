@@ -70,19 +70,11 @@ public class Compiler extends JFrame {
 
         return null;
     }
-
-
-    public File showOpenFileDialog() {
-        final JFileChooser fileChooser = new JFileChooser();
-
-        fileChooser.setFileFilter(new FileNameExtensionFilter("JSON", "json"));
-
-        int returnVal = fileChooser.showOpenDialog(null);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            return fileChooser.getSelectedFile();
-        }
-        
-        return null;
+    
+    public JFileChooser showOpenFileDialog() {
+    	final JFileChooser fileChooser = new JFileChooser();
+    	fileChooser.setFileFilter(new FileNameExtensionFilter("JSON", "json"));
+    	return fileChooser;
     }
 
     public static void main(String[] args) {

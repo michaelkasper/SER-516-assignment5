@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 
+import javax.swing.JFileChooser;
+
 
 public class WorkspaceController extends PropertyChangeDecorator {
     private static FileWriter file;
@@ -47,9 +49,10 @@ public class WorkspaceController extends PropertyChangeDecorator {
 
 
     public void onImport(ActionEvent event) {
-        File fileLocation = this.frame.showOpenFileDialog();
-
-        if (fileLocation != null) {
+    	JFileChooser fileChooser = this.frame.showOpenFileDialog();
+    	int returnVal = fileChooser.showOpenDialog(null);
+	    if (returnVal == JFileChooser.APPROVE_OPTION) {
+	    	File fileLocation = fileChooser.getSelectedFile();
             ArrayList<SpaceModel> newSpaces = ImportExport.loadFrom(fileLocation);
 
             if (newSpaces != null) {
@@ -62,11 +65,11 @@ public class WorkspaceController extends PropertyChangeDecorator {
                 }
                 return;
             }
-        }
-
-        this.frame.showDialog("Import Unsuccessful");
+            
+            this.frame.showDialog("Import Unsuccessful");
+	    }
     }
-
+    
     public void onCompile(ActionEvent e) {
         // grab active space
         ArrayList<ValidationError> errors = new ArrayList<>();
