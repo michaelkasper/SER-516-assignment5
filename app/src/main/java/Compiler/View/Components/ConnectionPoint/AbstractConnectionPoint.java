@@ -18,7 +18,7 @@ import java.awt.datatransfer.Transferable;
  * Individual pixel used in the grid
  */
 
-abstract public class AbstractConnectionPoint extends JPanel implements DragInterface, DropInterface {
+abstract public class  AbstractConnectionPoint extends JPanel implements DragInterface, DropInterface {
 
     public static DataFlavor DRAGGABLE_IN_FLAG = new DataFlavor(ConnectionPointIn.class, "Draggable In Connection Point");
     public static DataFlavor DRAGGABLE_OUT_FLAG = new DataFlavor(ConnectionPointOut.class, "Draggable Out Connection Point");

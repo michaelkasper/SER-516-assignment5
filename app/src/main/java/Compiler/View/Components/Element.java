@@ -23,6 +23,7 @@ public class Element extends JPanel implements DragInterface {
 
     public Element(AbstractElement elementModel) {
         this.elementController = new ElementController(elementModel);
+        addMouseListener(this.elementController);
         this.getDragAndDropInterface().registerDragComponent(this);
 
         if (elementModel.getPosition().x > -1 && elementModel.getPosition().y > -1) {
