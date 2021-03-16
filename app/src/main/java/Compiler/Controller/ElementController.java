@@ -17,7 +17,7 @@ public class ElementController extends PropertyChangeDecorator implements MouseL
         this.elementModel = elementModel;
 
     }
-    
+
     public AbstractElement getElementModel() {
         return elementModel;
     }
@@ -27,9 +27,10 @@ public class ElementController extends PropertyChangeDecorator implements MouseL
         if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1) {
             String value = JOptionPane.showInputDialog(e.getComponent()
                     , "Input"
-                    , "Enter a Value");
+                    , this.elementModel.getValue() == null ? "Enter a Value" : this.elementModel.getValue());
+
+            elementModel.setValue(value);
         }
-        // TODO: Add this value to element model.
     }
 
     @Override

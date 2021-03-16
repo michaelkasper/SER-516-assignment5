@@ -39,6 +39,7 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
     protected ArrayList<ConnectionPointModel> outConnectionPoints;
     protected ArrayList<ValidationError> errors = new ArrayList<>();
     protected Point position = new Point(-1, -1);
+    private String value;
 
     public AbstractElement() {
         super();
@@ -177,6 +178,7 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
         obj.put("id", id);
         obj.put("class", this.getClass().getSimpleName());
         obj.put("symbol", symbol);
+        obj.put("value", value);
         obj.put("inputs", inputs);
         obj.put("outputs", outputs);
         obj.put("spaceModelId", spaceModel.getId());
@@ -213,6 +215,7 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
     public void importJson(JSONObject json) {
         this.id = (String) json.get("id");
         this.symbol = (String) json.get("symbol");
+        this.value = (String) json.get("value");
 
         this.inputs = ((Long) json.get("inputs")).intValue();
         this.outputs = ((Long) json.get("outputs")).intValue();
@@ -270,4 +273,11 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
         return null;
     }
 
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return this.value;
+    }
 }
