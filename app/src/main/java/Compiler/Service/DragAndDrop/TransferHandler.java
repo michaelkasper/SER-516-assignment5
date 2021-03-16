@@ -6,7 +6,9 @@ import Compiler.Service.Image;
 import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.InputEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
@@ -36,7 +38,7 @@ public class TransferHandler extends javax.swing.TransferHandler {
         if (component instanceof DragInterface) {
             DragInterface dragComponent = (DragInterface) component;
 
-            this.loopRelatedDropZones(dragComponent.getTransferDataFlavors()[0], DropInterface::dropZoneDraggingEnd);
+            this.loopRelatedDropZones(dragComponent, dragComponent.getTransferDataFlavors()[0], DropInterface::dropZoneDraggingEnd);
             dragComponent.onDragComplete();
         }
     }
@@ -61,25 +63,46 @@ public class TransferHandler extends javax.swing.TransferHandler {
      */
     @Override
     public boolean canImport(javax.swing.TransferHandler.TransferSupport support) {
-//        System.out.println(support.getTransferable().getTransferDataFlavors());
-        if (support.getComponent() instanceof DropInterface) {
-            DropInterface component = (DropInterface) support.getComponent();
-            for (DataFlavor flavor : component.getAllowedDraggableFlags()) {
-                if (support.isDataFlavorSupported(flavor)) {
-                    return true;
+        try {
+            if (support.getComponent() instanceof DropInterface) {
+                DropInterface component = (DropInterface) support.getComponent();
+
+                for (DataFlavor flavor : component.getAllowedDraggableFlags()) {
+                    if (support.isDataFlavorSupported(flavor)) {
+                        Object transferData = support.getTransferable().getTransferData(flavor);
+                        if (transferData != null) {
+                            String dragId = transferData.toString();
+                            if (component.canDropDragComponent(dragId)) {
+                                return true;
+                            }
+                        }
+                    }
+
                 }
             }
+        } catch (UnsupportedFlavorException | IOException e) {
+            e.printStackTrace();
         }
         return false;
     }
 
-    private void loopRelatedDropZones(DataFlavor allowedFlavor, Consumer<DropInterface> callback) {
-        for (DropInterface dropzone : this.dropZones) {
-            for (DataFlavor flavor : dropzone.getAllowedDraggableFlags()) {
-                if (allowedFlavor.equals(flavor)) {
-                    callback.accept(dropzone);
+    private void loopRelatedDropZones(DragInterface dragComponent, DataFlavor allowedFlavor, Consumer<DropInterface> callback) {
+        try {
+            for (DropInterface dropzone : this.dropZones) {
+                for (DataFlavor flavor : dropzone.getAllowedDraggableFlags()) {
+                    if (allowedFlavor.equals(flavor)) {
+                        Object transferData = dragComponent.getTransferData(flavor);
+                        if (transferData != null) {
+                            String dragId = transferData.toString();
+                            if (dropzone.canDropDragComponent(dragId)) {
+                                callback.accept(dropzone);
+                            }
+                        }
+                    }
                 }
             }
+        } catch (UnsupportedFlavorException | IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -89,7 +112,7 @@ public class TransferHandler extends javax.swing.TransferHandler {
     public <T extends JPanel & DragInterface> void exportAsDrag(T component, InputEvent e, int action, ArrayList<DropInterface> dropZones) {
         this.dropZones = dropZones;
 
-        this.loopRelatedDropZones(component.getTransferDataFlavors()[0], DropInterface::dropZoneDraggingStart);
+        this.loopRelatedDropZones(component, component.getTransferDataFlavors()[0], DropInterface::dropZoneDraggingStart);
         this.setDragImage(Image.createImage(component));
         super.exportAsDrag(component, e, action);
     }

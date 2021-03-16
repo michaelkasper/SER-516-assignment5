@@ -2,6 +2,7 @@ package Compiler.View.Components.ConnectionPoint;
 
 import Compiler.Model.Connections.ConnectionPointModel;
 
+import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;
 
 /**
@@ -15,7 +16,7 @@ public class ConnectionPointIn extends AbstractConnectionPoint {
     }
 
     public DataFlavor[] getAllowedDraggableFlags() {
-        return this.isDropZoneActive() ? new DataFlavor[]{AbstractConnectionPoint.DRAGGABLE_OUT_FLAG} : new DataFlavor[]{};
+        return new DataFlavor[]{AbstractConnectionPoint.DRAGGABLE_OUT_FLAG};
     }
 
     @Override

@@ -57,6 +57,11 @@ public class Space extends JPanel implements DropInterface {
     }
 
     @Override
+    public boolean canDropDragComponent(String dragId) {
+        return true;
+    }
+
+    @Override
     public void dropZoneDraggingStart() {
         this.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
     }

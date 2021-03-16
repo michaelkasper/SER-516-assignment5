@@ -7,6 +7,8 @@ public interface DropInterface extends DragAndDropInterface {
 
     DataFlavor[] getAllowedDraggableFlags();
 
+    boolean canDropDragComponent(String dragId);
+    
     void dropZoneDraggingStart();
 
     void dropZoneDraggingEnd();

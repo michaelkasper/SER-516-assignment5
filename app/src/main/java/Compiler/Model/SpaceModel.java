@@ -46,10 +46,9 @@ public class SpaceModel extends AbstractModel {
 
     public ConnectionPointModel getElementConnectionPointById(String id) {
         for (AbstractElement element : this.elements) {
-            for (ConnectionPointModel point : element.getAllConnectionPoints()) {
-                if (point.getId().equals(id)) {
-                    return point;
-                }
+            ConnectionPointModel point = element.getConnectionPointById(id);
+            if (point != null) {
+                return point;
             }
         }
         return null;

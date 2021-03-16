@@ -3,6 +3,7 @@ package Compiler.View.Components.ConnectionPoint;
 import Compiler.Controller.ConnectionPointController;
 import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.Connections.LoopConnectionPointModel;
+import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
 import Compiler.Service.DragAndDrop.DragAndDrop;
 import Compiler.Service.DragAndDrop.DragInterface;
@@ -12,7 +13,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.util.ArrayList;
 
 /**
  * Individual pixel used in the grid
@@ -69,7 +69,6 @@ abstract public class AbstractConnectionPoint extends JPanel implements DragInte
                 this.setBackground(Color.orange);
             }
         }
-
     }
 
     @Override
@@ -126,12 +125,32 @@ abstract public class AbstractConnectionPoint extends JPanel implements DragInte
         return this.connectionPointController.getConnectionPoint();
     }
 
-    protected boolean isDropZoneActive() {
-        ArrayList<ConnectionPointModel> points = this.getConnectionPoint().getElementModel().getAllConnectionPoints();
-
-        return points.stream().filter(ConnectionPointModel::isDragging).findFirst().orElse(null) == null
-                && this.getConnectionPoint().getConnectsTo() == null;
+    protected AbstractElement getElementModel() {
+        return this.getConnectionPoint().getElementModel();
     }
+
+    protected SpaceModel getSpaceModel() {
+        return this.getElementModel().getSpaceModel();
+    }
+
+
+    public String toString() {
+        return this.getConnectionPoint().getId();
+    }
+
+    @Override
+    public boolean canDropDragComponent(String dragId) {
+        if (dragId != null && this.getConnectionPoint().getConnectsTo() == null) {
+            if (this.getElementModel().getConnectionPointById(dragId) == null) {
+                ConnectionPointModel dragConnectionPoint = this.getSpaceModel().getElementConnectionPointById(dragId);
+                if (dragConnectionPoint != null) {
+                    return this.getConnectionPoint().isAllowedToConnectTo(dragConnectionPoint);
+                }
+            }
+        }
+        return false;
+    }
+
 
     abstract public DataFlavor[] getAllowedDraggableFlags();
 

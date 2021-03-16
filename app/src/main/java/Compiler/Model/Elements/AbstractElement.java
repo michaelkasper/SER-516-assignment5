@@ -70,6 +70,15 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
         return spaceModel;
     }
 
+    public ConnectionPointModel getConnectionPointById(String id) {
+        for (ConnectionPointModel point : this.getAllConnectionPoints()) {
+            if (point.getId().equals(id)) {
+                return point;
+            }
+        }
+        return null;
+    }
+
     public ArrayList<ValidationError> validate() {
         this.errors.clear();
         this.errors.addAll(this.validateConnections());
