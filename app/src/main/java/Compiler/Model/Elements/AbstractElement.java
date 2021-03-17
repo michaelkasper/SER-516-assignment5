@@ -16,21 +16,6 @@ import java.util.HashMap;
 public abstract class AbstractElement extends AbstractModel implements Serializable {
 
     public static final String EVENT_POSITION_UPDATED = "event_position_updated";
-
-
-    /**
-     * TODO: Add ConnectionsIn ArrayList to other AbstractElements
-     * TODO: Add ConnectionsOut ArrayList to other AbstractElements
-     * TODO: Broadcast change to views when either list is updated
-     * TODO: Broadcast change when values is updated
-     * <p>
-     * TODO: Link to view???
-     * TODO: Update view???
-     * TODO: Update Space View???
-     * TODO: Draw Connections from the Space View???
-     * TODO: ????
-     */
-
     public String symbol;
     public int inputs;
     public int outputs;
