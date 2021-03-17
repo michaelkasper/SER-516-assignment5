@@ -115,7 +115,7 @@ public class SpaceModel extends AbstractModel {
             this.addError(new ValidationError(this, "Elements have errors"));
         }
 
-        return new ArrayList<>(childErrors);
+        return childErrors;
     }
 
     public void addError(ValidationError error) {
