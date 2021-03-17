@@ -89,6 +89,7 @@ public class SpaceModel extends AbstractModel {
 
         if (newConnectionPointModel.isAllowedToConnectTo(futureConnection)) {
             futureConnection.setConnectsTo(newConnectionPointModel);
+            this.support.firePropertyChange(EVENT_CONNECTION_STARTED, null, true);
             Timer.setTimeout(() -> {
                 switch (newConnectionPointModel.getType()) {
                     case IN -> this.createConnection(newConnectionPointModel, futureConnection);

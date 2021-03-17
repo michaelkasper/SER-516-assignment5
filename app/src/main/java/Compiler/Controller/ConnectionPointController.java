@@ -55,7 +55,9 @@ public class ConnectionPointController extends PropertyChangeDecorator implement
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        this.getSpaceModel().startConnection(this.connectionPointModel);
+        if(this.getConnectionPoint().getConnectsTo() == null){
+            this.getSpaceModel().startConnection(this.connectionPointModel);
+        }
     }
 
     @Override
