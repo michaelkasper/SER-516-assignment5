@@ -11,8 +11,6 @@ public class ElementController extends PropertyChangeDecorator implements MouseL
 
     private AbstractElement elementModel;
 
-    //TODO: Listen for double click, trigger popup for edit
-    //TODO: Listen for popup buttons and save results
     public ElementController(AbstractElement elementModel) {
         this.elementModel = elementModel;
 

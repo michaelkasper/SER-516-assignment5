@@ -12,10 +12,6 @@ public class SpaceConnections extends JPanel {
 
     private final SpaceController spaceController;
 
-    /**
-     * TODO: Listen for connection changes form AbstractElements
-     * TODO: Draw Connections
-     */
     public SpaceConnections(SpaceController spaceController) {
         this.spaceController = spaceController;
         this.setBorder(null);

@@ -16,10 +16,6 @@ public class Space extends JPanel implements DropInterface {
 
     private final SpaceController spaceController;
 
-    /**
-     * TODO: Listen for connection changes form AbstractElements
-     * TODO: Draw Connections
-     */
     public Space(SpaceModel spaceModel) {
         this.spaceController = new SpaceController(spaceModel);
         this.getDragAndDropInterface().registerDropComponent(this);
