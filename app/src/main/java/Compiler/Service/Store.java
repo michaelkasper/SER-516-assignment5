@@ -5,11 +5,10 @@ import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
 
-import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Store extends MouseAdapter {
+public class Store {
 
     private static Store instance = null;
     private HashMap<String, SpaceModel> spaces = new HashMap<>();
