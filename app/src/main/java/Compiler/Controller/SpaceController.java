@@ -3,6 +3,7 @@ package Compiler.Controller;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
 import Compiler.Service.PropertyChangeDecorator;
+import Compiler.Service.Store;
 import Compiler.View.Components.Element;
 
 import javax.swing.*;
@@ -26,7 +27,6 @@ public class SpaceController extends PropertyChangeDecorator {
             });
         }
 
-
         for (AbstractElement element : this.spaceModel.getElements()) {
             this.configureElement(element);
         }
@@ -34,22 +34,21 @@ public class SpaceController extends PropertyChangeDecorator {
 
     public boolean onElementDrop(TransferHandler.TransferSupport support) {
         try {
-            String[] data = (String[]) support.getTransferable().getTransferData(Element.DRAGGABLE_FLAG);
+            String id = (String) support.getTransferable().getTransferData(Element.DRAGGABLE_FLAG);
+            AbstractElement element = Store.getInstance().getElementById(id);
 
-            String id = data[0];
-            String className = data[1];
-
-            if (!this.spaceModel.hasElementId(id)) {
-                AbstractElement elementModel = AbstractElement.Factory(className);
-                elementModel.setPosition(support.getDropLocation().getDropPoint());
-                this.spaceModel.addElement(elementModel);
-
-                this.configureElement(elementModel);
-            } else {
-                AbstractElement elementModel = this.spaceModel.getElementById(id);
-                elementModel.setPosition(support.getDropLocation().getDropPoint());
+            if (element != null) {
+                if (element.getSpaceModel() == null) {
+                    AbstractElement newElement = AbstractElement.Factory(element.getClass().getSimpleName());
+                    newElement.setPosition(support.getDropLocation().getDropPoint());
+                    this.spaceModel.addElement(newElement);
+                    this.configureElement(newElement);
+                } else {
+                    element.setPosition(support.getDropLocation().getDropPoint());
+                }
+                return true;
             }
-            return true;
+            return false;
 
         } catch (UnsupportedFlavorException | IOException e) {
             e.printStackTrace();
@@ -58,11 +57,9 @@ public class SpaceController extends PropertyChangeDecorator {
         return false;
     }
 
-
     public SpaceModel getSpaceModel() {
         return this.spaceModel;
     }
-
 
     private void configureElement(AbstractElement element) {
         element.addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, e -> {

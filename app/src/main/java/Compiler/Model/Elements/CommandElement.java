@@ -1,5 +1,7 @@
 package Compiler.Model.Elements;
 
+import org.json.simple.JSONObject;
+
 public class CommandElement extends AbstractElement {
 
     /**
@@ -9,4 +11,7 @@ public class CommandElement extends AbstractElement {
         super("-", 1, 1);
     }
 
+    public CommandElement(JSONObject data) {
+        super(data);
+    }
 }

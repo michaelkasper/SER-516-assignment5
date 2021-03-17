@@ -2,6 +2,7 @@ package Compiler.Model.Elements;
 
 import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.Connections.LoopConnectionPointModel;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 
@@ -14,6 +15,9 @@ public class LoopElement extends AbstractElement {
         super("@", 2, 2);
     }
 
+    public LoopElement(JSONObject data) {
+        super(data);
+    }
 
     protected void createConnectionPoints() {
         inConnectionPoints = new ArrayList<>();

@@ -4,6 +4,7 @@ import Compiler.Model.AbstractModel;
 import Compiler.Model.Elements.*;
 import Compiler.Model.SpaceModel;
 import Compiler.Model.ValidationError;
+import Compiler.Service.Store;
 import Compiler.View.Components.ConnectionPoint.AbstractConnectionPoint;
 import Compiler.View.Components.ConnectionPoint.ConnectionPointIn;
 import Compiler.View.Components.ConnectionPoint.ConnectionPointOut;
@@ -25,6 +26,17 @@ public class ConnectionPointModel extends AbstractModel {
     public enum Type {IN, OUT}
 
     public ConnectionPointModel() {
+    }
+
+    public ConnectionPointModel(JSONObject data) {
+        super(data);
+        this.isDragging = (boolean) data.get("isDragging");
+        this.isHidden = (boolean) data.get("isHidden");
+
+        switch ((String) data.get("type")) {
+            case "IN" -> this.type = Type.IN;
+            case "OUT" -> this.type = Type.OUT;
+        }
     }
 
     public ConnectionPointModel(Type type, AbstractElement abstractElement) {
@@ -135,36 +147,27 @@ public class ConnectionPointModel extends AbstractModel {
     }
 
 
-    public void importJson(JSONObject json) {
-        this.id = (String) json.get("id");
-        this.isDragging = (boolean) json.get("isDragging");
-        this.isHidden = (boolean) json.get("isHidden");
-
-        switch ((String) json.get("type")) {
-            case "IN" -> this.type = Type.IN;
-            case "OUT" -> this.type = Type.OUT;
-        }
-    }
-
-    public void importRelationships(JSONObject json, HashMap<String, AbstractElement> elementsMap, HashMap<String, ConnectionPointModel> pointsMap) {
+    public void importRelationships(JSONObject json) {
+        Store store = Store.getInstance();
         String elementId = (String) json.get("elementId");
         if (elementId != null && !elementId.isEmpty()) {
-            this.abstractElement = elementsMap.get(elementId);
+            this.abstractElement = store.getElementById(elementId);
         }
 
         String connectsToPointId = (String) json.get("connectsToPointId");
         if (connectsToPointId != null && !connectsToPointId.isEmpty()) {
-            this.connectsToPoint = pointsMap.get(connectsToPointId);
+            this.connectsToPoint = store.getConnectionPointById(connectsToPointId);
         }
     }
 
 
-    public static ConnectionPointModel Factory(String className) {
+    public static ConnectionPointModel Factory(String className, JSONObject data) {
+        Boolean hasData = data != null;
         switch (className) {
             case "ConnectionPointModel":
-                return new ConnectionPointModel();
+                return hasData ? new ConnectionPointModel(data) : new ConnectionPointModel();
             case "LoopConnectionPointModel":
-                return new LoopConnectionPointModel();
+                return hasData ? new LoopConnectionPointModel(data) : new LoopConnectionPointModel();
         }
         return null;
     }

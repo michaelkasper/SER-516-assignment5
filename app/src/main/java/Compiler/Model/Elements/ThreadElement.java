@@ -2,6 +2,7 @@ package Compiler.Model.Elements;
 
 import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.ValidationError;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 
@@ -12,6 +13,10 @@ public class ThreadElement extends AbstractElement {
      */
     public ThreadElement() {
         super("||", -1, -1);
+    }
+
+    public ThreadElement(JSONObject data) {
+        super(data);
     }
 
 

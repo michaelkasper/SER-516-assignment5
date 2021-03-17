@@ -8,6 +8,7 @@ import Compiler.Model.SpaceModel;
 import Compiler.Service.DragAndDrop.DragAndDrop;
 import Compiler.Service.DragAndDrop.DragInterface;
 import Compiler.Service.DragAndDrop.DropInterface;
+import Compiler.Service.Store;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +19,7 @@ import java.awt.datatransfer.Transferable;
  * Individual pixel used in the grid
  */
 
-abstract public class  AbstractConnectionPoint extends JPanel implements DragInterface, DropInterface {
+abstract public class AbstractConnectionPoint extends JPanel implements DragInterface, DropInterface {
 
     public static DataFlavor DRAGGABLE_IN_FLAG = new DataFlavor(ConnectionPointIn.class, "Draggable In Connection Point");
     public static DataFlavor DRAGGABLE_OUT_FLAG = new DataFlavor(ConnectionPointOut.class, "Draggable Out Connection Point");
@@ -129,20 +130,15 @@ abstract public class  AbstractConnectionPoint extends JPanel implements DragInt
         return this.getConnectionPoint().getElementModel();
     }
 
-    protected SpaceModel getSpaceModel() {
-        return this.getElementModel().getSpaceModel();
-    }
-
-
     public String toString() {
         return this.getConnectionPoint().getId();
     }
 
     @Override
     public boolean canDropDragComponent(String dragId) {
-        if (dragId != null && this.getConnectionPoint().getConnectsTo() == null) {
-            if (this.getElementModel().getConnectionPointById(dragId) == null) {
-                ConnectionPointModel dragConnectionPoint = this.getSpaceModel().getElementConnectionPointById(dragId);
+        if (dragId != null && this.getConnectionPoint().getConnectsTo() == null && Store.getInstance().getConnectionPointById(dragId) != null) {
+            if (!Store.getInstance().getConnectionPointById(dragId).getElementModel().equals(this.getElementModel())) {
+                ConnectionPointModel dragConnectionPoint = Store.getInstance().getConnectionPointById(dragId);
                 if (dragConnectionPoint != null) {
                     return this.getConnectionPoint().isAllowedToConnectTo(dragConnectionPoint);
                 }

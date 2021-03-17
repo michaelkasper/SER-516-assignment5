@@ -3,12 +3,12 @@ package Compiler.Model;
 import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.Elements.ThreadElement;
+import Compiler.Service.Store;
 import Compiler.Service.Timer;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class SpaceModel extends AbstractModel {
 
@@ -26,32 +26,18 @@ public class SpaceModel extends AbstractModel {
         super();
     }
 
+    public SpaceModel(JSONObject data) {
+        super(data);
+        JSONArray errorsJson = (JSONArray) data.get("errors");
+        errorsJson.forEach(errorJson -> {
+            this.errors.add(new ValidationError(this, (String) errorJson));
+        });
+    }
+
     public void addElement(AbstractElement element) {
         element.setSpaceModel(this);
         this.elements.add(element);
         this.support.firePropertyChange(EVENT_ELEMENT_ADDED, null, element);// add to tabs
-    }
-
-    public boolean hasElementId(String id) {
-        return this.getElementById(id) != null;
-    }
-
-
-    public AbstractElement getElementById(String id) {
-        return this.elements.stream()
-                .filter(element -> id.equals(element.getId()))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public ConnectionPointModel getElementConnectionPointById(String id) {
-        for (AbstractElement element : this.elements) {
-            ConnectionPointModel point = element.getConnectionPointById(id);
-            if (point != null) {
-                return point;
-            }
-        }
-        return null;
     }
 
     public ArrayList<AbstractElement> getElements() {
@@ -59,11 +45,11 @@ public class SpaceModel extends AbstractModel {
     }
 
     public boolean createConnection(ConnectionPointModel inConnection, String outConnectionId) {
-        return this.createConnection(inConnection, this.getElementConnectionPointById(outConnectionId));
+        return this.createConnection(inConnection, Store.getInstance().getConnectionPointById(outConnectionId));
     }
 
     public boolean createConnection(String inConnectionId, ConnectionPointModel outConnection) {
-        return this.createConnection(this.getElementConnectionPointById(inConnectionId), outConnection);
+        return this.createConnection(Store.getInstance().getConnectionPointById(inConnectionId), outConnection);
     }
 
     public boolean createConnection(ConnectionPointModel inConnection, ConnectionPointModel outConnection) {
@@ -191,24 +177,16 @@ public class SpaceModel extends AbstractModel {
         return obj;
     }
 
-    public void importJson(JSONObject json) {
-        this.id = (String) json.get("id");
-
-        JSONArray errorsJson = (JSONArray) json.get("errors");
-        errorsJson.forEach(errorJson -> {
-            this.errors.add(new ValidationError(this, (String) errorJson));
-        });
-    }
-
-    public void importRelationships(JSONObject json, HashMap<String, AbstractElement> elementsMap, HashMap<String, ConnectionPointModel> pointsMap) {
+    public void importRelationships(JSONObject json) {
+        Store store = Store.getInstance();
         String futureConnectionId = (String) json.get("futureConnectionId");
         if (futureConnectionId != null && !futureConnectionId.isEmpty()) {
-            this.futureConnection = pointsMap.get(futureConnectionId);
+            this.futureConnection = store.getConnectionPointById(futureConnectionId);
         }
 
         JSONArray elementsJson = (JSONArray) json.get("elements");
         elementsJson.forEach(elementId -> {
-            this.elements.add(elementsMap.get(elementId));
+            this.elements.add(store.getElementById((String) elementId));
         });
     }
 }

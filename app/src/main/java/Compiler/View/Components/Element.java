@@ -12,7 +12,8 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 
-import static Compiler.Config.*;
+import static Compiler.Config.ELEMENT_COLOR;
+import static Compiler.Config.ELEMENT_ERROR_COLOR;
 
 public class Element extends JPanel implements DragInterface {
 
@@ -23,12 +24,8 @@ public class Element extends JPanel implements DragInterface {
 
     public Element(AbstractElement elementModel) {
         this.elementController = new ElementController(elementModel);
-        addMouseListener(this.elementController);
         this.getDragAndDropInterface().registerDragComponent(this);
 
-        if (elementModel.getPosition().x > -1 && elementModel.getPosition().y > -1) {
-            this.setBounds(new Rectangle(elementModel.getPosition(), new Dimension(150, 75)));
-        }
         this.setLayout(new GridLayout(1, 3));
         this.setBorder(BorderFactory.createLineBorder(Color.black));
         this.setBackground(ELEMENT_COLOR);
@@ -39,7 +36,6 @@ public class Element extends JPanel implements DragInterface {
         JLabel symbolLabel = new JLabel(this.getElementModel().symbol, SwingConstants.CENTER);
         symbolLabel.setFont(symbolLabel.getFont().deriveFont(25f));
 
-
         this.setComponentZOrder(inputsRepresentation, 0);
         this.setComponentZOrder(outputRepresentation, 0);
 
@@ -47,9 +43,14 @@ public class Element extends JPanel implements DragInterface {
         this.add(symbolLabel);
         this.add(outputRepresentation);
 
-        this.renderErrors();
 
         if (elementModel.getSpaceModel() != null) {
+            if (elementModel.getPosition().x > -1 && elementModel.getPosition().y > -1) {
+                this.setBounds(new Rectangle(elementModel.getPosition(), new Dimension(150, 75)));
+            }
+
+            this.renderErrors();
+            this.addMouseListener(this.elementController);
             elementModel.getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_UPDATE_ERRORS, event -> {
                 if (event.getNewValue() != null) {
                     this.renderErrors();
@@ -101,13 +102,8 @@ public class Element extends JPanel implements DragInterface {
 
     @Override
     public Object getTransferData(DataFlavor flavor) {
-
-        if (flavor.equals(DataFlavor.stringFlavor)) {
+        if (flavor.equals(Element.DRAGGABLE_FLAG) || flavor.equals(DataFlavor.stringFlavor)) {
             return this.getElementModel().getId();
-        }
-
-        if (flavor.equals(Element.DRAGGABLE_FLAG)) {
-            return new String[]{this.getElementModel().getId(), this.getElementModel().getClass().getSimpleName()};
         }
 
         return null;

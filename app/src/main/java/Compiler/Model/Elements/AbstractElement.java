@@ -5,6 +5,7 @@ import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.Connections.LoopConnectionPointModel;
 import Compiler.Model.SpaceModel;
 import Compiler.Model.ValidationError;
+import Compiler.Service.Store;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -35,14 +36,32 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
     public int inputs;
     public int outputs;
     protected SpaceModel spaceModel;
-    protected ArrayList<ConnectionPointModel> inConnectionPoints;
-    protected ArrayList<ConnectionPointModel> outConnectionPoints;
+    protected ArrayList<ConnectionPointModel> inConnectionPoints = new ArrayList<>();
+    protected ArrayList<ConnectionPointModel> outConnectionPoints = new ArrayList<>();
     protected ArrayList<ValidationError> errors = new ArrayList<>();
     protected Point position = new Point(-1, -1);
     private String value;
 
     public AbstractElement() {
         super();
+    }
+
+    public AbstractElement(JSONObject data) {
+        super(data);
+        this.id = (String) data.get("id");
+        this.symbol = (String) data.get("symbol");
+        this.value = (String) data.get("value");
+
+        this.inputs = ((Long) data.get("inputs")).intValue();
+        this.outputs = ((Long) data.get("outputs")).intValue();
+
+        JSONObject position = (JSONObject) data.get("position");
+        this.position = new Point(((Long) position.get("x")).intValue(), ((Long) position.get("y")).intValue());
+
+        JSONArray errorsJson = (JSONArray) data.get("errors");
+        errorsJson.forEach(errorJson -> {
+            this.errors.add(new ValidationError(this, (String) errorJson));
+        });
     }
 
     public AbstractElement(String symbol, int inputs, int outputs) {
@@ -69,15 +88,6 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
 
     public SpaceModel getSpaceModel() {
         return spaceModel;
-    }
-
-    public ConnectionPointModel getConnectionPointById(String id) {
-        for (ConnectionPointModel point : this.getAllConnectionPoints()) {
-            if (point.getId().equals(id)) {
-                return point;
-            }
-        }
-        return null;
     }
 
     public ArrayList<ValidationError> validate() {
@@ -136,12 +146,10 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
     }
 
     protected void createConnectionPoints() {
-        inConnectionPoints = new ArrayList<>();
         for (int i = 0; i < Math.abs(inputs); i++) {
             inConnectionPoints.add(new ConnectionPointModel(ConnectionPointModel.Type.IN, this));
         }
 
-        outConnectionPoints = new ArrayList<>();
         for (int i = 0; i < Math.abs(outputs); i++) {
             outConnectionPoints.add(new ConnectionPointModel(ConnectionPointModel.Type.OUT, this));
         }
@@ -212,63 +220,48 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
         return obj;
     }
 
-    public void importJson(JSONObject json) {
-        this.id = (String) json.get("id");
-        this.symbol = (String) json.get("symbol");
-        this.value = (String) json.get("value");
-
-        this.inputs = ((Long) json.get("inputs")).intValue();
-        this.outputs = ((Long) json.get("outputs")).intValue();
-
-        this.inConnectionPoints.clear();
-        this.outConnectionPoints.clear();
-
-        JSONObject position = (JSONObject) json.get("position");
-        this.position = new Point(((Long) position.get("x")).intValue(), ((Long) position.get("y")).intValue());
-
-        JSONArray errorsJson = (JSONArray) json.get("errors");
-        errorsJson.forEach(errorJson -> {
-            this.errors.add(new ValidationError(this, (String) errorJson));
-        });
-    }
-
-    public void importRelationships(JSONObject json, HashMap<String, SpaceModel> spacesMap, HashMap<String, ConnectionPointModel> pointsMap) {
+    public void importRelationships(JSONObject json) {
+        Store store = Store.getInstance();
         String spaceModelId = (String) json.get("spaceModelId");
         if (spaceModelId != null && !spaceModelId.isEmpty()) {
-            this.spaceModel = spacesMap.get(spaceModelId);
+            this.spaceModel = store.getSpaceById(spaceModelId);
         }
 
         JSONArray inConnectionPointsJson = (JSONArray) json.get("inConnectionPoints");
         inConnectionPointsJson.forEach(inConnectionPointId -> {
-            this.inConnectionPoints.add(pointsMap.get(inConnectionPointId));
+            this.inConnectionPoints.add(store.getConnectionPointById((String) inConnectionPointId));
         });
 
 
         JSONArray outConnectionPointsJson = (JSONArray) json.get("outConnectionPoints");
         outConnectionPointsJson.forEach(outConnectionPointId -> {
-            this.outConnectionPoints.add(pointsMap.get(outConnectionPointId));
+            this.outConnectionPoints.add(store.getConnectionPointById((String) outConnectionPointId));
         });
 
 
     }
 
-
     public static AbstractElement Factory(String className) {
+        return AbstractElement.Factory(className, null);
+    }
+
+    public static AbstractElement Factory(String className, JSONObject data) {
+        Boolean hasData = data != null;
         switch (className) {
             case "OpenIfElement":
-                return new OpenIfElement();
+                return hasData ? new OpenIfElement(data) : new OpenIfElement();
             case "CloseIfElement":
-                return new CloseIfElement();
+                return hasData ? new CloseIfElement(data) : new CloseIfElement();
             case "CommandElement":
-                return new CommandElement();
+                return hasData ? new CommandElement(data) : new CommandElement();
             case "LoopElement":
-                return new LoopElement();
+                return hasData ? new LoopElement(data) : new LoopElement();
             case "MethodEndElement":
-                return new MethodEndElement();
+                return hasData ? new MethodEndElement(data) : new MethodEndElement();
             case "MethodStartElement":
-                return new MethodStartElement();
+                return hasData ? new MethodStartElement(data) : new MethodStartElement();
             case "ThreadElement":
-                return new ThreadElement();
+                return hasData ? new ThreadElement(data) : new ThreadElement();
         }
         return null;
     }
