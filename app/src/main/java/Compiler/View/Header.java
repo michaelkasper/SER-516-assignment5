@@ -11,9 +11,7 @@ import static Compiler.Config.BLUE_BG_COLOR;
 public class Header extends JPanel {
 
     /**
-     * TODO: Added buttons here
-     * TODO: Create event listener for each button
-     *
+     * 
      * @param workspaceController
      */
     public Header(WorkspaceController workspaceController) {
