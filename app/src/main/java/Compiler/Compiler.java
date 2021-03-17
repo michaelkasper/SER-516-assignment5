@@ -11,9 +11,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
-import static Compiler.Config.FRAME_HEIGHT;
-import static Compiler.Config.FRAME_WIDTH;
-
 /**
  * Compiler is the main entity to the app.
  * <p>
@@ -23,10 +20,13 @@ import static Compiler.Config.FRAME_WIDTH;
  * @author Dragan Bogoevski (dbogoevs@asu.edu)
  * @author Kamal Penmetcha (kpenmetc@asu.edu)
  * @author Michael Kasper (mkasper@asu.edu)
- * @version 1.0
+ * @version 2.0
  */
 public class Compiler extends JFrame {
 
+	public static final int FRAME_WIDTH = 1220;
+    public static final int FRAME_HEIGHT = 800;
+    
     public Compiler() {
         super("Compiler");
         this.setLayout(new BorderLayout());
