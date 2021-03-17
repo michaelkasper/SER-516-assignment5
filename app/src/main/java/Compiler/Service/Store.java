@@ -29,15 +29,15 @@ public class Store extends MouseAdapter {
     }
 
     public ArrayList<SpaceModel> getAllSpaces() {
-        return new ArrayList<SpaceModel>(spaces.values());
+        return new ArrayList<>(spaces.values());
     }
 
     public ArrayList<AbstractElement> getAllElements() {
-        return new ArrayList<AbstractElement>(elements.values());
+        return new ArrayList<>(elements.values());
     }
 
     public ArrayList<ConnectionPointModel> getAllConnectionPoints() {
-        return new ArrayList<ConnectionPointModel>(points.values());
+        return new ArrayList<>(points.values());
     }
 
     public SpaceModel getSpaceById(String id) {
