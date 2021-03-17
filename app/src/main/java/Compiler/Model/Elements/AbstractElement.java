@@ -12,7 +12,6 @@ import org.json.simple.JSONObject;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public abstract class AbstractElement extends AbstractModel implements Serializable {
 
@@ -102,45 +101,6 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
         return outConnectionPoints;
     }
 
-    public ArrayList<ConnectionPointModel> getAllConnectionPoints() {
-        ArrayList<ConnectionPointModel> points = new ArrayList<>();
-        points.addAll(this.getInConnectionPoints());
-        points.addAll(this.getOutConnectionPoints());
-
-        return points;
-    }
-
-
-    protected ArrayList<ValidationError> validateConnections() {
-        ArrayList<ValidationError> errors = new ArrayList<>();
-
-        for (ConnectionPointModel connectionPoint : this.inConnectionPoints) {
-            if (connectionPoint.getConnectsTo() == null) {
-                errors.add(new ValidationError(this, "Missing In Connections"));
-                break;
-            }
-        }
-
-        for (ConnectionPointModel connectionPoint : this.outConnectionPoints) {
-            if (connectionPoint.getConnectsTo() == null) {
-                errors.add(new ValidationError(this, "Missing Out Connections"));
-                break;
-            }
-        }
-        return errors;
-    }
-
-    protected void createConnectionPoints() {
-        for (int i = 0; i < Math.abs(inputs); i++) {
-            inConnectionPoints.add(new ConnectionPointModel(ConnectionPointModel.Type.IN, this));
-        }
-
-        for (int i = 0; i < Math.abs(outputs); i++) {
-            outConnectionPoints.add(new ConnectionPointModel(ConnectionPointModel.Type.OUT, this));
-        }
-    }
-
-
     public boolean verifyNoLoop(ConnectionPointModel toPoint) {
         for (ConnectionPointModel connectionPoint : this.getInConnectionPoints()) {
             if (connectionPoint.getConnectsTo() != null) {
@@ -226,6 +186,45 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
 
     }
 
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return this.value;
+    }
+
+
+    protected ArrayList<ValidationError> validateConnections() {
+        ArrayList<ValidationError> errors = new ArrayList<>();
+
+        for (ConnectionPointModel connectionPoint : this.inConnectionPoints) {
+            if (connectionPoint.getConnectsTo() == null) {
+                errors.add(new ValidationError(this, "Missing In Connections"));
+                break;
+            }
+        }
+
+        for (ConnectionPointModel connectionPoint : this.outConnectionPoints) {
+            if (connectionPoint.getConnectsTo() == null) {
+                errors.add(new ValidationError(this, "Missing Out Connections"));
+                break;
+            }
+        }
+        return errors;
+    }
+
+    protected void createConnectionPoints() {
+        for (int i = 0; i < Math.abs(inputs); i++) {
+            inConnectionPoints.add(new ConnectionPointModel(ConnectionPointModel.Type.IN, this));
+        }
+
+        for (int i = 0; i < Math.abs(outputs); i++) {
+            outConnectionPoints.add(new ConnectionPointModel(ConnectionPointModel.Type.OUT, this));
+        }
+    }
+
+
     public static AbstractElement Factory(String className) {
         return AbstractElement.Factory(className, null);
     }
@@ -251,11 +250,4 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
         return null;
     }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return this.value;
-    }
 }

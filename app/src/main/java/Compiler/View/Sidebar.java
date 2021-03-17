@@ -12,18 +12,14 @@ import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.util.Arrays;
 
-import static Compiler.Config.BLUE_BG_COLOR;
-import static Compiler.Config.GRAY_BG_COLOR;
-
-
 public class Sidebar extends JPanel {
 
     public Sidebar(WorkspaceController workspaceController) {
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         this.setPreferredSize(new Dimension(250, getHeight()));
 
-        this.setBackground(GRAY_BG_COLOR);
-        this.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(10, 20, 20, 10, BLUE_BG_COLOR), new CompoundBorder(new LineBorder(Color.gray), new EmptyBorder(20, 20, 0, 20))));
+        this.setBackground(new Color(229, 225, 230));
+        this.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(10, 20, 20, 10, new Color(219, 225, 243)), new CompoundBorder(new LineBorder(Color.gray), new EmptyBorder(20, 20, 0, 20))));
 
         for (AbstractElement elementModel : Arrays.asList(
                 new OpenIfElement(),

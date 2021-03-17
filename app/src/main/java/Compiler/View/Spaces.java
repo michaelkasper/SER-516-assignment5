@@ -8,16 +8,16 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
 
-import static Compiler.Config.*;
-
 public class Spaces extends JPanel {
+
+    public static final Color TAB_ERROR_COLOR = new Color(255, 146, 146);
 
     public Spaces(WorkspaceController workspaceController) {
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
         this.setSize(new Dimension(getWidth(), getHeight()));
-        this.setBackground(GRAY_BG_COLOR);
-        this.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(10, 10, 20, 10, BLUE_BG_COLOR), new LineBorder(Color.gray)));
+        this.setBackground(new Color(229, 225, 230));
+        this.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(10, 10, 20, 10, new Color(219, 225, 243)), new LineBorder(Color.gray)));
 
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.setBounds(0, 0, getWidth(), getHeight());

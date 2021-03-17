@@ -11,9 +11,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
-import static Compiler.Config.FRAME_HEIGHT;
-import static Compiler.Config.FRAME_WIDTH;
-
 /**
  * Compiler is the main entity to the app.
  * <p>
@@ -26,6 +23,9 @@ import static Compiler.Config.FRAME_WIDTH;
  * @version 1.0
  */
 public class Compiler extends JFrame {
+
+    public static final int FRAME_WIDTH = 1220;
+    public static final int FRAME_HEIGHT = 800;
 
     public Compiler() {
         super("Compiler");
@@ -70,11 +70,11 @@ public class Compiler extends JFrame {
 
         return null;
     }
-    
+
     public JFileChooser showOpenFileDialog() {
-    	final JFileChooser fileChooser = new JFileChooser();
-    	fileChooser.setFileFilter(new FileNameExtensionFilter("JSON", "json"));
-    	return fileChooser;
+        final JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new FileNameExtensionFilter("JSON", "json"));
+        return fileChooser;
     }
 
     public static void main(String[] args) {

@@ -12,12 +12,11 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 
-import static Compiler.Config.ELEMENT_COLOR;
-import static Compiler.Config.ELEMENT_ERROR_COLOR;
-
 public class Element extends JPanel implements DragInterface {
 
     public static DataFlavor DRAGGABLE_FLAG = new DataFlavor(Element.class, "Draggable Element");
+    public static final Color ELEMENT_COLOR = new Color(238, 238, 238);
+    public static final Color ELEMENT_ERROR_COLOR = new Color(240, 204, 204);
 
     private final ElementController elementController;
     private boolean moving = false;
