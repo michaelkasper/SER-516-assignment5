@@ -105,41 +105,21 @@ public class SpaceModel extends AbstractModel {
 
     public ArrayList<ValidationError> validate() {
         this.errors.clear();
-        ArrayList<ValidationError> errors = new ArrayList<>();
         ArrayList<ValidationError> childErrors = new ArrayList<>();
 
-        int startCount = 0;
         for (AbstractElement element : this.elements) {
-            if (element.inputs == 0) {
-                startCount++;
-            }
             childErrors.addAll(element.validate());
         }
-        if (startCount > 1) {
-            errors.add(new ValidationError(this, "Multiple Start Commands"));
-        }
-        if (startCount == 0 && this.elements.size() > 0) {
-            errors.add(new ValidationError(this, "No Start Command"));
-        }
 
-        this.addErrors(errors);
         if (childErrors.size() > 0) {
             this.addError(new ValidationError(this, "Elements have errors"));
         }
 
-        errors.addAll(childErrors);
-        return errors;
+        return new ArrayList<>(childErrors);
     }
-
 
     public void addError(ValidationError error) {
         this.errors.add(error);
-    }
-
-    public void addErrors(ArrayList<ValidationError> errors) {
-        for (ValidationError error : errors) {
-            this.addError(error);
-        }
     }
 
     public boolean hasErrors() {
