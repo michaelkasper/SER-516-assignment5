@@ -26,7 +26,6 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
     protected ArrayList<ValidationError> errors = new ArrayList<>();
     protected Point position = new Point(-1, -1);
     private String value;
-    private Element view;
 
     public AbstractElement() {
         super();
@@ -259,13 +258,5 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
                 return hasData ? new ThreadElement(data) : new ThreadElement();
         }
         return null;
-    }
-
-    public void setView(Element view) {
-        this.view = view;
-    }
-
-    public Element getView() {
-        return view;
     }
 }

@@ -11,6 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.beans.PropertyChangeEvent;
 
 public class Element extends JPanel implements DragInterface {
 
@@ -21,58 +22,31 @@ public class Element extends JPanel implements DragInterface {
     private final ElementController elementController;
     private boolean moving = false;
 
-    public Element(AbstractElement elementModel) {
-        elementModel.setView(this);
-        this.elementController = new ElementController(elementModel);
+    public Element(ElementController elementController) {
+        this.elementController = elementController;
         this.getDragAndDropInterface().registerDragComponent(this);
 
         this.setLayout(new GridLayout(1, 1));
         this.setBorder(BorderFactory.createLineBorder(Color.black));
         this.setBackground(ELEMENT_COLOR);
 
-
-//        IoRepresentation inputsRepresentation = new IoRepresentation(ConnectionPointModel.Type.IN, elementModel);
-//        IoRepresentation outputRepresentation = new IoRepresentation(ConnectionPointModel.Type.OUT, elementModel);
-
         JLabel symbolLabel = new JLabel(this.getElementModel().symbol, SwingConstants.CENTER);
         symbolLabel.setFont(symbolLabel.getFont().deriveFont(25f));
 
-//        this.setComponentZOrder(inputsRepresentation, 0);
-//        this.setComponentZOrder(outputRepresentation, 0);
-
-//        this.add(inputsRepresentation);
         this.add(symbolLabel);
-//        this.add(outputRepresentation);
 
-
-        if (elementModel.getSpaceModel() != null) {
-            if (elementModel.getPosition().x > -1 && elementModel.getPosition().y > -1) {
-                this.setBounds(new Rectangle(elementModel.getPosition(), new Dimension(150, 75)));
+        if (this.elementController.getElementModel().getSpaceModel() != null) {
+            if (this.elementController.getElementModel().getPosition().x > -1 && this.elementController.getElementModel().getPosition().y > -1) {
+                this.setBounds(new Rectangle(this.elementController.getElementModel().getPosition(), new Dimension(150, 75)));
             }
 
-            this.renderErrors();
             this.addMouseListener(this.elementController);
-            elementModel.getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_UPDATE_ERRORS, event -> {
-                if (event.getNewValue() != null) {
-                    this.renderErrors();
-                }
-            });
-
-            elementModel.getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_CREATED, e -> {
-                if (e.getNewValue() != null) {
-                    this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                }
-            });
-
-
-            elementModel.getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_STARTED, e -> {
-                if (e.getNewValue() != null) {
-                    this.highlight();
-                }
-            });
+            this.renderErrors(null);
+            this.elementController.getElementModel().getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_UPDATE_ERRORS, this::renderErrors);
+            this.elementController.getElementModel().getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_CREATED, this::highlight);
+            this.elementController.getElementModel().getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_STARTED, this::highlight);
+            this.elementController.addPropertyChangeListener(ElementController.EVENT_CONNECTION_ERROR, this::showConnectionError);
         }
-
-
     }
 
     @Override
@@ -131,7 +105,7 @@ public class Element extends JPanel implements DragInterface {
     }
 
 
-    private void renderErrors() {
+    private void renderErrors(PropertyChangeEvent e) {
         if (this.elementController.getElementModel().hasErrors()) {
             this.setBackground(ELEMENT_ERROR_COLOR);
             this.setToolTipText(this.elementController.getElementModel().getErrorsAsString());
@@ -142,31 +116,46 @@ public class Element extends JPanel implements DragInterface {
         }
     }
 
-
-    private void highlight() {
-        ConnectionPointModel futureConnectionPoint1 = this.elementController.getSpaceModel().getFutureConnection();
-
-        if (futureConnectionPoint1 != null) {
-            ConnectionPointModel futureConnectionPoint2 = this.elementController.getSpaceModel().getFutureConnection().getConnectsTo();
-            if (futureConnectionPoint1.getElementModel().equals(this.getElementModel())) {
-                this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-                return;
-            }
-
-            if (futureConnectionPoint2 != null && futureConnectionPoint2.getElementModel().equals(this.getElementModel())) {
-                this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-                return;
-            }
-
-
-            ConnectionPointModel potentialConnectionPoint = this.getElementModel().getOpenInConnectionPoints();
-            if (potentialConnectionPoint != null && futureConnectionPoint1.isAllowedToConnectTo(potentialConnectionPoint)) {
-                this.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
-                return;
-            }
+    private void showConnectionError(PropertyChangeEvent e) {
+        if (e.getNewValue() != null) {
+            JOptionPane.showMessageDialog(this, e.getNewValue());
         }
+    }
 
-        this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
+    private void showInputPopup(PropertyChangeEvent e) {
+        if (e.getNewValue() != null) {
+            String value = JOptionPane.showInputDialog(this, "Input", e.getNewValue());
+            this.elementController.saveValue(value);
+        }
+    }
+
+    private void highlight(PropertyChangeEvent e) {
+        if (e.getNewValue() != null) {
+
+            ConnectionPointModel futureConnectionPoint1 = this.elementController.getSpaceModel().getFutureConnection();
+
+            if (futureConnectionPoint1 != null) {
+                ConnectionPointModel futureConnectionPoint2 = this.elementController.getSpaceModel().getFutureConnection().getConnectsTo();
+                if (futureConnectionPoint1.getElementModel().equals(this.getElementModel())) {
+                    this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+                    return;
+                }
+
+                if (futureConnectionPoint2 != null && futureConnectionPoint2.getElementModel().equals(this.getElementModel())) {
+                    this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+                    return;
+                }
+
+
+                ConnectionPointModel potentialConnectionPoint = this.getElementModel().getOpenInConnectionPoints();
+                if (potentialConnectionPoint != null && futureConnectionPoint1.isAllowedToConnectTo(potentialConnectionPoint)) {
+                    this.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
+                    return;
+                }
+            }
+
+            this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        }
     }
 }

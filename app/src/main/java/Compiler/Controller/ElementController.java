@@ -12,6 +12,8 @@ import java.awt.event.MouseListener;
 
 public class ElementController extends PropertyChangeDecorator implements MouseListener {
 
+    public final static String EVENT_CONNECTION_ERROR = "event_connection_error";
+    public final static String EVENT_SHOW_INPUT_POPUP = "event_show_input_popup";
     private final static int clickInterval = (Integer) Toolkit.getDefaultToolkit().getDesktopProperty("awt.multiClickInterval");
     private AbstractElement elementModel;
     private Timer timer;
@@ -69,10 +71,10 @@ public class ElementController extends PropertyChangeDecorator implements MouseL
 
 
     private void onDoubleClick() {
-        String value = JOptionPane.showInputDialog(this.getElementModel().getView(), "Input",
-                this.elementModel.getValue() == null ? "Enter a Value" : this.elementModel.getValue()
-        );
-        elementModel.setValue(value);
+        this.support.firePropertyChange(EVENT_SHOW_INPUT_POPUP, null,
+                this.elementModel.getValue() == null
+                        ? "Enter a Value"
+                        : this.elementModel.getValue());
     }
 
 
@@ -84,7 +86,7 @@ public class ElementController extends PropertyChangeDecorator implements MouseL
             if (outPoint != null) {
                 this.getSpaceModel().startConnection(outPoint);
             } else {
-                JOptionPane.showMessageDialog(this.getElementModel().getView(),
+                this.support.firePropertyChange(EVENT_CONNECTION_ERROR, null,
                         this.getElementModel().getOutConnectionPoints().size() > 0
                                 ? "The element can't create any more out connections"
                                 : "The element doesn't allow out connections");
@@ -95,14 +97,19 @@ public class ElementController extends PropertyChangeDecorator implements MouseL
                 try {
                     this.getSpaceModel().finishConnection(inPoint);
                 } catch (Exception err) {
-                    JOptionPane.showMessageDialog(this.getElementModel().getView(), err.getMessage());
+                    this.support.firePropertyChange(EVENT_CONNECTION_ERROR, null, err.getMessage());
                 }
             } else {
-                JOptionPane.showMessageDialog(this.getElementModel().getView(), this.getElementModel().getInConnectionPoints().size() > 0
-                        ? "The element can't create any more in connections"
-                        : "The element doesn't allow in connections");
+                this.support.firePropertyChange(EVENT_CONNECTION_ERROR, null,
+                        this.getElementModel().getInConnectionPoints().size() > 0
+                                ? "The element can't create any more in connections"
+                                : "The element doesn't allow in connections");
             }
         }
 
+    }
+
+    public void saveValue(String value) {
+        this.elementModel.setValue(value);
     }
 }

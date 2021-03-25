@@ -1,19 +1,19 @@
 package Compiler.View.Components;
 
-import Compiler.Controller.SpaceController;
 import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.Elements.AbstractElement;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.util.HashMap;
 
 public class SpaceConnections extends JPanel {
 
-    private final SpaceController spaceController;
+    private final HashMap<String, Element> elementViewsMap;
 
-    public SpaceConnections(SpaceController spaceController) {
-        this.spaceController = spaceController;
+    public SpaceConnections(HashMap<String, Element> elementViewsMap) {
+        this.elementViewsMap = elementViewsMap;
         this.setBorder(null);
         this.setLayout(null);
         this.setOpaque(false);
@@ -42,22 +42,20 @@ public class SpaceConnections extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Point spacePosition = this.getLocationOnScreen();
-        for (AbstractElement elementModel : this.spaceController.getSpaceModel().getElements()) {
+        for (Element fromView : this.elementViewsMap.values()) {
+            AbstractElement elementModel = fromView.getElementModel();
             int position = 1;
             int outCount = elementModel.getOutConnectionPoints().size();
 
-
             for (ConnectionPointModel fromPoint : elementModel.getOutConnectionPoints()) {
-
                 ConnectionPointModel toPoint = fromPoint.getConnectsTo();
                 if (toPoint != null) {
-                    Element fromView = fromPoint.getElementModel().getView();
-                    Element toView = toPoint.getElementModel().getView();
+                    Element toView = this.elementViewsMap.get(toPoint.getElementModel().getId());
 
-                    if (fromView != null && toView != null) {
+                    if (toView != null) {
                         int outSectionHeight = fromView.getHeight() / outCount;
 
-                        if (fromPoint.getElementModel().getView().isShowing() && toPoint.getElementModel().getView().isShowing()) {
+                        if (fromView.isShowing() && toView.isShowing()) {
 
 
                             double fromX = fromView.getLocationOnScreen().getX() - spacePosition.getX() + fromView.getWidth();

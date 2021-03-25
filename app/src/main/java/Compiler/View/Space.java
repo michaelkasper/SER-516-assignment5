@@ -1,5 +1,6 @@
 package Compiler.View;
 
+import Compiler.Controller.ElementController;
 import Compiler.Controller.SpaceController;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
@@ -11,34 +12,38 @@ import Compiler.View.Components.SpaceConnections;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
+import java.util.HashMap;
 
 public class Space extends JPanel implements DropInterface {
 
     private final SpaceController spaceController;
 
-    public Space(SpaceModel spaceModel) {
-        this.spaceController = new SpaceController(spaceModel);
+    public Space(SpaceController spaceController) {
+        this.spaceController = spaceController;
         this.getDragAndDropInterface().registerDropComponent(this);
         this.setBorder(null);
         this.setLayout(null);
 
         this.spaceController.addPropertyChangeListener(SpaceController.EVENT_REBUILD_MAP, e -> {
             if (e.getNewValue() != null) {
-                this.rebuildMap(this.spaceController.getSpaceModel());
+                this.rebuildMap();
             }
         });
     }
 
-    public void rebuildMap(SpaceModel spaceModel) {
+    public void rebuildMap() {
         this.removeAll();
-        SpaceConnections spaceConnectionsLayer = new SpaceConnections(this.spaceController);
+        HashMap<String, Element> elementViewsMap = new HashMap<>();
 
-        this.add(spaceConnectionsLayer);
-
-        for (AbstractElement elementModel : spaceModel.getElements()) {
-            Element elementView = new Element(elementModel);
+        for (AbstractElement elementModel : this.spaceController.spaceModel.getElements()) {
+            Element elementView = new Element(new ElementController(elementModel));
+            elementViewsMap.put(elementModel.getId(), elementView);
             this.add(elementView);
         }
+
+        SpaceConnections spaceConnectionsLayer = new SpaceConnections(elementViewsMap);
+        this.add(spaceConnectionsLayer);
+        this.setComponentZOrder(spaceConnectionsLayer, 0);
 
         this.repaint();
         this.revalidate();

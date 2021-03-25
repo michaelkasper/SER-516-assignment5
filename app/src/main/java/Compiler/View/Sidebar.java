@@ -1,5 +1,6 @@
 package Compiler.View;
 
+import Compiler.Controller.ElementController;
 import Compiler.Controller.WorkspaceController;
 import Compiler.Model.Elements.*;
 import Compiler.View.Components.Element;
@@ -30,7 +31,7 @@ public class Sidebar extends JPanel {
                 new ThreadElement(),
                 new CommandElement()
         )) {
-            this.add(new Element(elementModel));
+            this.add(new Element(new ElementController(elementModel)));
             this.add(Box.createRigidArea(new Dimension(getWidth(), 20)));
         }
     }

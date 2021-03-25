@@ -1,5 +1,6 @@
 package Compiler.View;
 
+import Compiler.Controller.SpaceController;
 import Compiler.Controller.WorkspaceController;
 import Compiler.Model.SpaceModel;
 
@@ -26,7 +27,7 @@ public class Spaces extends JPanel {
         workspaceController.addPropertyChangeListener(WorkspaceController.EVENT_SPACE_ADDED, e -> {
             if (e.getNewValue() != null) {
                 SpaceModel spaceModel = (SpaceModel) e.getNewValue();
-                Space newSpace = new Space(spaceModel);
+                Space newSpace = new Space(new SpaceController(spaceModel));
                 int index = tabbedPane.getTabCount();
                 tabbedPane.add("Space " + (index + 1), newSpace);
                 tabbedPane.setBackgroundAt(index, Color.WHITE);
@@ -51,7 +52,7 @@ public class Spaces extends JPanel {
                     }
                 });
 
-                newSpace.rebuildMap(spaceModel);
+                newSpace.rebuildMap();
                 renderErrors.run();
             }
         });

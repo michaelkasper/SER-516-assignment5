@@ -9,7 +9,6 @@ public class ConnectionPointModel extends AbstractModel {
 
     private Type type;
     private AbstractElement abstractElement;
-    private boolean isDragging = false;
     private ConnectionPointModel connectsToPoint;
 
     public enum Type {IN, OUT}
@@ -19,7 +18,6 @@ public class ConnectionPointModel extends AbstractModel {
 
     public ConnectionPointModel(JSONObject data) {
         super(data);
-        this.isDragging = (boolean) data.get("isDragging");
 
         switch ((String) data.get("type")) {
             case "IN" -> this.type = Type.IN;
@@ -35,15 +33,6 @@ public class ConnectionPointModel extends AbstractModel {
     public AbstractElement getElementModel() {
         return abstractElement;
     }
-
-    public boolean isDragging() {
-        return isDragging;
-    }
-
-    public void setDragging(boolean dragging) {
-        isDragging = dragging;
-    }
-
 
     public ConnectionPointModel.Type getType() {
         return type;
@@ -89,7 +78,6 @@ public class ConnectionPointModel extends AbstractModel {
         obj.put("class", this.getClass().getSimpleName());
         obj.put("type", type.toString());
         obj.put("elementId", abstractElement.getId());
-        obj.put("isDragging", isDragging);
         obj.put("connectsToPointId", connectsToPoint != null ? connectsToPoint.getId() : null);
 
         return obj;
