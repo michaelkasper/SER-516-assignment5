@@ -44,22 +44,14 @@ public class SpaceModel extends AbstractModel {
         return this.elements;
     }
 
-    public boolean createConnection(ConnectionPointModel inConnection, String outConnectionId) {
-        return this.createConnection(inConnection, Store.getInstance().getConnectionPointById(outConnectionId));
-    }
-
-    public boolean createConnection(String inConnectionId, ConnectionPointModel outConnection) {
-        return this.createConnection(Store.getInstance().getConnectionPointById(inConnectionId), outConnection);
-    }
-
     public boolean createConnection(ConnectionPointModel inConnection, ConnectionPointModel outConnection) {
         if (inConnection.isAllowedToConnectTo(outConnection)) {
             if (inConnection.getElementModel().getClass() == ThreadElement.class) {
-                inConnection = new ConnectionPointModel(inConnection.getType(), inConnection.getElementModel(), inConnection.getConnectionPointView());
+                inConnection = new ConnectionPointModel(inConnection.getType(), inConnection.getElementModel());
             }
 
             if (outConnection.getElementModel().getClass() == ThreadElement.class) {
-                outConnection = new ConnectionPointModel(outConnection.getType(), outConnection.getElementModel(), outConnection.getConnectionPointView());
+                outConnection = new ConnectionPointModel(outConnection.getType(), outConnection.getElementModel());
             }
 
             inConnection.setConnectsTo(outConnection);
@@ -73,19 +65,25 @@ public class SpaceModel extends AbstractModel {
     }
 
     public void startConnection(ConnectionPointModel newConnectionPointModel) {
-        if (futureConnection == null) {
-            futureConnection = newConnectionPointModel;
-            this.support.firePropertyChange(EVENT_CONNECTION_STARTED, null, true);
+        if (futureConnection != null) {
             return;
         }
 
+        futureConnection = newConnectionPointModel;
+        this.support.firePropertyChange(EVENT_CONNECTION_STARTED, null, true);
+    }
 
-        if (newConnectionPointModel.equals(futureConnection)) {
+
+    public void finishConnection(ConnectionPointModel newConnectionPointModel) throws Exception {
+        if (futureConnection == null) {
+            return;
+        }
+
+        if (newConnectionPointModel.getElementModel().equals(futureConnection.getElementModel())) {
             futureConnection = null;
             this.support.firePropertyChange(EVENT_CONNECTION_STARTED, null, true);
             return;
         }
-
 
         if (newConnectionPointModel.isAllowedToConnectTo(futureConnection)) {
             futureConnection.setConnectsTo(newConnectionPointModel);
@@ -96,9 +94,12 @@ public class SpaceModel extends AbstractModel {
                     case OUT -> this.createConnection(futureConnection, newConnectionPointModel);
                 }
                 futureConnection = null;
-            }, 150);
+            }, 100);
+        } else {
+            throw new Exception("The elements can connect");
         }
     }
+
 
     public ConnectionPointModel getFutureConnection() {
         return futureConnection;

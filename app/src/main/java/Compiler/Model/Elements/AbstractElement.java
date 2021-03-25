@@ -6,6 +6,7 @@ import Compiler.Model.Connections.LoopConnectionPointModel;
 import Compiler.Model.SpaceModel;
 import Compiler.Model.ValidationError;
 import Compiler.Service.Store;
+import Compiler.View.Components.Element;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -25,6 +26,7 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
     protected ArrayList<ValidationError> errors = new ArrayList<>();
     protected Point position = new Point(-1, -1);
     private String value;
+    private Element view;
 
     public AbstractElement() {
         super();
@@ -100,6 +102,15 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
     public ArrayList<ConnectionPointModel> getOutConnectionPoints() {
         return outConnectionPoints;
     }
+
+    public ConnectionPointModel getOpenOutConnectionPoints() {
+        return outConnectionPoints.stream().filter(point -> point.getConnectsTo() == null).findFirst().orElse(null);
+    }
+
+    public ConnectionPointModel getOpenInConnectionPoints() {
+        return inConnectionPoints.stream().filter(point -> point.getConnectsTo() == null).findFirst().orElse(null);
+    }
+
 
     public boolean verifyNoLoop(ConnectionPointModel toPoint) {
         for (ConnectionPointModel connectionPoint : this.getInConnectionPoints()) {
@@ -250,4 +261,11 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
         return null;
     }
 
+    public void setView(Element view) {
+        this.view = view;
+    }
+
+    public Element getView() {
+        return view;
+    }
 }

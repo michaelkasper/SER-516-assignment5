@@ -22,25 +22,27 @@ public class Element extends JPanel implements DragInterface {
     private boolean moving = false;
 
     public Element(AbstractElement elementModel) {
+        elementModel.setView(this);
         this.elementController = new ElementController(elementModel);
         this.getDragAndDropInterface().registerDragComponent(this);
 
-        this.setLayout(new GridLayout(1, 3));
+        this.setLayout(new GridLayout(1, 1));
         this.setBorder(BorderFactory.createLineBorder(Color.black));
         this.setBackground(ELEMENT_COLOR);
 
-        IoRepresentation inputsRepresentation = new IoRepresentation(ConnectionPointModel.Type.IN, elementModel);
-        IoRepresentation outputRepresentation = new IoRepresentation(ConnectionPointModel.Type.OUT, elementModel);
+
+//        IoRepresentation inputsRepresentation = new IoRepresentation(ConnectionPointModel.Type.IN, elementModel);
+//        IoRepresentation outputRepresentation = new IoRepresentation(ConnectionPointModel.Type.OUT, elementModel);
 
         JLabel symbolLabel = new JLabel(this.getElementModel().symbol, SwingConstants.CENTER);
         symbolLabel.setFont(symbolLabel.getFont().deriveFont(25f));
 
-        this.setComponentZOrder(inputsRepresentation, 0);
-        this.setComponentZOrder(outputRepresentation, 0);
+//        this.setComponentZOrder(inputsRepresentation, 0);
+//        this.setComponentZOrder(outputRepresentation, 0);
 
-        this.add(inputsRepresentation);
+//        this.add(inputsRepresentation);
         this.add(symbolLabel);
-        this.add(outputRepresentation);
+//        this.add(outputRepresentation);
 
 
         if (elementModel.getSpaceModel() != null) {
@@ -55,7 +57,22 @@ public class Element extends JPanel implements DragInterface {
                     this.renderErrors();
                 }
             });
+
+            elementModel.getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_CREATED, e -> {
+                if (e.getNewValue() != null) {
+                    this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                }
+            });
+
+
+            elementModel.getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_STARTED, e -> {
+                if (e.getNewValue() != null) {
+                    this.highlight();
+                }
+            });
         }
+
+
     }
 
     @Override
@@ -123,5 +140,33 @@ public class Element extends JPanel implements DragInterface {
             this.setBackground(ELEMENT_COLOR);
             this.setToolTipText(null);
         }
+    }
+
+
+    private void highlight() {
+        ConnectionPointModel futureConnectionPoint1 = this.elementController.getSpaceModel().getFutureConnection();
+
+        if (futureConnectionPoint1 != null) {
+            ConnectionPointModel futureConnectionPoint2 = this.elementController.getSpaceModel().getFutureConnection().getConnectsTo();
+            if (futureConnectionPoint1.getElementModel().equals(this.getElementModel())) {
+                this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+                return;
+            }
+
+            if (futureConnectionPoint2 != null && futureConnectionPoint2.getElementModel().equals(this.getElementModel())) {
+                this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+                return;
+            }
+
+
+            ConnectionPointModel potentialConnectionPoint = this.getElementModel().getOpenInConnectionPoints();
+            if (potentialConnectionPoint != null && futureConnectionPoint1.isAllowedToConnectTo(potentialConnectionPoint)) {
+                this.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
+                return;
+            }
+        }
+
+        this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
     }
 }

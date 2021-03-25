@@ -1,27 +1,16 @@
 package Compiler.Model.Connections;
 
 import Compiler.Model.AbstractModel;
-import Compiler.Model.Elements.*;
-import Compiler.Model.SpaceModel;
-import Compiler.Model.ValidationError;
+import Compiler.Model.Elements.AbstractElement;
 import Compiler.Service.Store;
-import Compiler.View.Components.ConnectionPoint.AbstractConnectionPoint;
-import Compiler.View.Components.ConnectionPoint.ConnectionPointIn;
-import Compiler.View.Components.ConnectionPoint.ConnectionPointOut;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
-import java.awt.*;
-import java.util.HashMap;
 
 public class ConnectionPointModel extends AbstractModel {
 
     private Type type;
     private AbstractElement abstractElement;
     private boolean isDragging = false;
-    private AbstractConnectionPoint connectionPointView;
     private ConnectionPointModel connectsToPoint;
-    private boolean isHidden = false;
 
     public enum Type {IN, OUT}
 
@@ -31,7 +20,6 @@ public class ConnectionPointModel extends AbstractModel {
     public ConnectionPointModel(JSONObject data) {
         super(data);
         this.isDragging = (boolean) data.get("isDragging");
-        this.isHidden = (boolean) data.get("isHidden");
 
         switch ((String) data.get("type")) {
             case "IN" -> this.type = Type.IN;
@@ -42,21 +30,6 @@ public class ConnectionPointModel extends AbstractModel {
     public ConnectionPointModel(Type type, AbstractElement abstractElement) {
         this.type = type;
         this.abstractElement = abstractElement;
-    }
-
-    public ConnectionPointModel(Type type, AbstractElement elementModel, AbstractConnectionPoint connectionPointView) {
-        this(type, elementModel);
-        this.connectionPointView = connectionPointView;
-        this.isHidden = true;
-        elementModel.addConnectionPoint(this);
-    }
-
-    public boolean isHidden() {
-        return isHidden;
-    }
-
-    public boolean isInSpace() {
-        return this.getElementModel().getSpaceModel() != null;
     }
 
     public AbstractElement getElementModel() {
@@ -71,32 +44,9 @@ public class ConnectionPointModel extends AbstractModel {
         isDragging = dragging;
     }
 
-    public void setView(AbstractConnectionPoint connectionPointView) {
-        this.connectionPointView = connectionPointView;
-
-        if (this.getElementModel().getClass() == ThreadElement.class) {
-            switch (type) {
-                case IN -> {
-                    for (ConnectionPointModel connectionPoint : this.getElementModel().getInConnectionPoints()) {
-                        connectionPoint.connectionPointView = connectionPointView;
-                    }
-                }
-                case OUT -> {
-                    for (ConnectionPointModel connectionPoint : this.getElementModel().getOutConnectionPoints()) {
-                        connectionPoint.connectionPointView = connectionPointView;
-                    }
-                }
-            }
-        }
-
-    }
 
     public ConnectionPointModel.Type getType() {
         return type;
-    }
-
-    public AbstractConnectionPoint getConnectionPointView() {
-        return connectionPointView;
     }
 
     public void setConnectsTo(ConnectionPointModel connectsToPoint) {
@@ -140,7 +90,6 @@ public class ConnectionPointModel extends AbstractModel {
         obj.put("type", type.toString());
         obj.put("elementId", abstractElement.getId());
         obj.put("isDragging", isDragging);
-        obj.put("isHidden", isHidden);
         obj.put("connectsToPointId", connectsToPoint != null ? connectsToPoint.getId() : null);
 
         return obj;

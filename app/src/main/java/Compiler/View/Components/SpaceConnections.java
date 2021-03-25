@@ -43,20 +43,32 @@ public class SpaceConnections extends JPanel {
         super.paintComponent(g);
         Point spacePosition = this.getLocationOnScreen();
         for (AbstractElement elementModel : this.spaceController.getSpaceModel().getElements()) {
+            int position = 1;
+            int outCount = elementModel.getOutConnectionPoints().size();
+
+
             for (ConnectionPointModel fromPoint : elementModel.getOutConnectionPoints()) {
 
                 ConnectionPointModel toPoint = fromPoint.getConnectsTo();
+                if (toPoint != null) {
+                    Element fromView = fromPoint.getElementModel().getView();
+                    Element toView = toPoint.getElementModel().getView();
 
-                if (fromPoint.getConnectionPointView() != null && toPoint != null && toPoint.getConnectionPointView() != null) {
-                    if (fromPoint.getConnectionPointView().isShowing() && toPoint.getConnectionPointView().isShowing()) {
+                    if (fromView != null && toView != null) {
+                        int outSectionHeight = fromView.getHeight() / outCount;
 
-                        double fromX = fromPoint.getConnectionPointView().getLocationOnScreen().getX() - spacePosition.getX();
-                        double fromY = fromPoint.getConnectionPointView().getLocationOnScreen().getY() - spacePosition.getY();
+                        if (fromPoint.getElementModel().getView().isShowing() && toPoint.getElementModel().getView().isShowing()) {
 
-                        double toX = toPoint.getConnectionPointView().getLocationOnScreen().getX() - spacePosition.getX();
-                        double toY = toPoint.getConnectionPointView().getLocationOnScreen().getY() - spacePosition.getY();
 
-                        drawArrow(g, (int) fromX, (int) fromY, (int) toX, (int) toY);
+                            double fromX = fromView.getLocationOnScreen().getX() - spacePosition.getX() + fromView.getWidth();
+                            double fromY = fromView.getLocationOnScreen().getY() - spacePosition.getY() + (outSectionHeight * position) - (outSectionHeight / 2);
+
+                            double toX = toView.getLocationOnScreen().getX() - spacePosition.getX();
+                            double toY = toView.getLocationOnScreen().getY() - spacePosition.getY() + (toView.getHeight() / 2);
+
+                            drawArrow(g, (int) fromX, (int) fromY, (int) toX, (int) toY);
+                            position++;
+                        }
                     }
                 }
             }
