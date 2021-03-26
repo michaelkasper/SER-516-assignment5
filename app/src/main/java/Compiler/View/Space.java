@@ -22,6 +22,7 @@ public class Space extends JPanel implements DropInterface {
         this.setBorder(null);
         this.setLayout(null);
         this.spaceController.getChangeSupport().addPropertyChangeListener(SpaceController.EVENT_REBUILD_MAP, this::onRebuildMap);
+        this.spaceController.initializeIfElements();
     }
 
     private void onRebuildMap(PropertyChangeEvent e) {

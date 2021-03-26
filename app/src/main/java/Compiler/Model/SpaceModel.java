@@ -6,6 +6,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import javax.swing.Timer;
+import java.awt.*;
 import java.util.ArrayList;
 
 public class SpaceModel extends AbstractModel {
@@ -14,6 +15,7 @@ public class SpaceModel extends AbstractModel {
     public final static String EVENT_CONNECTION_CREATED = "event_connection_created";
     public final static String EVENT_CONNECTION_STARTED = "event_connection_started";
     public final static String EVENT_UPDATE_ERRORS = "event_update_errors";
+    public final static String EVENT_REBUILD_MAP = "event_rebuild_map";
 
     private final ArrayList<AbstractElement> elements = new ArrayList<>();
     private final ArrayList<String> errors = new ArrayList<>();

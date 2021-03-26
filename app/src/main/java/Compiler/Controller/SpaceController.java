@@ -6,6 +6,7 @@ import Compiler.Service.Store;
 import Compiler.View.Element;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
@@ -67,5 +68,19 @@ public class SpaceController {
         if (e.getNewValue() != null) {
             this.getChangeSupport().firePropertyChange(EVENT_REBUILD_MAP, null, this.spaceModel);
         }
+    }
+
+    public void initializeIfElements() {
+        AbstractElement newOpenIfElement = AbstractElement.Factory("OpenIfElement");
+        newOpenIfElement.setPosition(new Point(20, 20));
+        this.spaceModel.addElement(newOpenIfElement);
+        newOpenIfElement.getChangeSupport().addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, this::onUpdateSpace);
+
+        AbstractElement newCloseIfElement = AbstractElement.Factory("CloseIfElement");
+        newCloseIfElement.setPosition(new Point(750, 550));
+        this.spaceModel.addElement(newCloseIfElement);
+        newCloseIfElement.getChangeSupport().addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, this::onUpdateSpace);
+
+        this.getChangeSupport().firePropertyChange(EVENT_REBUILD_MAP, null, this.spaceModel);
     }
 }
