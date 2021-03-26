@@ -1,21 +1,21 @@
 package Compiler.Controller;
 
-import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
-import Compiler.Service.PropertyChangeDecorator;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.PropertyChangeSupport;
 
-public class ElementController extends PropertyChangeDecorator implements MouseListener {
+public class ElementController implements MouseListener {
 
     public final static String EVENT_CONNECTION_ERROR = "event_connection_error";
     public final static String EVENT_SHOW_INPUT_POPUP = "event_show_input_popup";
     private final static int clickInterval = (Integer) Toolkit.getDefaultToolkit().getDesktopProperty("awt.multiClickInterval");
-    private AbstractElement elementModel;
+    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private final AbstractElement elementModel;
     private Timer timer;
 
     public ElementController(AbstractElement elementModel) {
@@ -25,6 +25,10 @@ public class ElementController extends PropertyChangeDecorator implements MouseL
             timer.stop();
             this.onSingleClick();
         });
+    }
+
+    public PropertyChangeSupport getChangeSupport() {
+        return propertyChangeSupport;
     }
 
     public AbstractElement getElementModel() {
@@ -71,7 +75,7 @@ public class ElementController extends PropertyChangeDecorator implements MouseL
 
 
     private void onDoubleClick() {
-        this.support.firePropertyChange(EVENT_SHOW_INPUT_POPUP, null,
+        this.getChangeSupport().firePropertyChange(EVENT_SHOW_INPUT_POPUP, null,
                 this.elementModel.getValue() == null
                         ? "Enter a Value"
                         : this.elementModel.getValue());
@@ -79,37 +83,76 @@ public class ElementController extends PropertyChangeDecorator implements MouseL
 
 
     private void onSingleClick() {
-        ConnectionPointModel futureConnectionPoint1 = this.getSpaceModel().getFutureConnection();
+        AbstractElement selectedFromElement = this.getSpaceModel().getSelectedFromElement();
 
-        if (futureConnectionPoint1 == null) {
-            ConnectionPointModel outPoint = this.getElementModel().getOpenOutConnectionPoints();
-            if (outPoint != null) {
-                this.getSpaceModel().startConnection(outPoint);
-            } else {
-                this.support.firePropertyChange(EVENT_CONNECTION_ERROR, null,
-                        this.getElementModel().getOutConnectionPoints().size() > 0
+        if (selectedFromElement == null) {
+            if (!this.getElementModel().hasOpenOutConnections()) {
+                this.getChangeSupport().firePropertyChange(EVENT_CONNECTION_ERROR, null,
+                        this.getElementModel().getOutCount() > 0
                                 ? "The element can't create any more out connections"
                                 : "The element doesn't allow out connections");
+                return;
             }
-        } else {
-            ConnectionPointModel inPoint = this.getElementModel().getOpenInConnectionPoints();
-            if (inPoint != null) {
-                try {
-                    this.getSpaceModel().finishConnection(inPoint);
-                } catch (Exception err) {
-                    this.support.firePropertyChange(EVENT_CONNECTION_ERROR, null, err.getMessage());
-                }
-            } else {
-                this.support.firePropertyChange(EVENT_CONNECTION_ERROR, null,
-                        this.getElementModel().getInConnectionPoints().size() > 0
-                                ? "The element can't create any more in connections"
-                                : "The element doesn't allow in connections");
-            }
+
+            this.startConnection(this.getElementModel());
+            return;
         }
 
+
+        if (this.getElementModel().equals(selectedFromElement)) {
+            this.getSpaceModel().clearSelected();
+            return;
+        }
+
+
+        if (!this.getElementModel().hasOpenInConnections()) {
+            this.getChangeSupport().firePropertyChange(EVENT_CONNECTION_ERROR, null,
+                    this.getElementModel().getInCount() > 0
+                            ? "The element can't create any more in connections"
+                            : "The element doesn't allow in connections");
+            return;
+        }
+
+        try {
+            this.finishConnection(this.getElementModel());
+        } catch (Exception err) {
+            this.getChangeSupport().firePropertyChange(EVENT_CONNECTION_ERROR, null, err.getMessage());
+        }
     }
 
     public void saveValue(String value) {
         this.elementModel.setValue(value);
     }
+
+
+    private void startConnection(AbstractElement fromElement) {
+        if (this.getSpaceModel().getSelectedFromElement() != null) {
+            return;
+        }
+
+        this.getSpaceModel().setSelectedFromElement(fromElement);
+    }
+
+
+    private void finishConnection(AbstractElement toElement) throws Exception {
+        if (this.getSpaceModel().getSelectedFromElement() == null) {
+            return;
+        }
+
+        if (this.getSpaceModel().getSelectedFromElement().isAllowedToConnectTo(toElement)) {
+            this.getSpaceModel().setSelectedToElement(toElement);
+
+            Timer timer = new Timer(100, event -> {
+                this.getSpaceModel().getSelectedFromElement().addToConnections(this.getSpaceModel().getSelectedToElement());
+                this.getSpaceModel().getSelectedToElement().addFromConnections(this.getSpaceModel().getSelectedFromElement());
+                this.getSpaceModel().clearSelected();
+            });
+            timer.setRepeats(false);
+            timer.start();
+
+        } else {
+            throw new Exception("The elements can connect");
+        }
+    }
+
 }

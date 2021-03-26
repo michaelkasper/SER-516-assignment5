@@ -2,35 +2,37 @@ package Compiler.Controller;
 
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
-import Compiler.Service.PropertyChangeDecorator;
 import Compiler.Service.Store;
-import Compiler.View.Components.Element;
+import Compiler.View.Element;
 
 import javax.swing.*;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 
 
-public class SpaceController extends PropertyChangeDecorator {
-    public final static String EVENT_REBUILD_MAP = "event_rebuild_map";
+public class SpaceController {
 
-    public SpaceModel spaceModel;
+    public final static String EVENT_REBUILD_MAP = "event_rebuild_map";
+    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private final SpaceModel spaceModel;
 
     public SpaceController(SpaceModel spaceModel) {
         this.spaceModel = spaceModel;
 
-        for (String property : new String[]{SpaceModel.EVENT_ELEMENT_ADDED, SpaceModel.EVENT_CONNECTION_CREATED}) {
-            this.spaceModel.addPropertyChangeListener(property, e -> {
-                if (e.getNewValue() != null) {
-                    this.support.firePropertyChange(EVENT_REBUILD_MAP, null, this.spaceModel);
-                }
-            });
-        }
+        this.spaceModel.getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_ELEMENT_ADDED, this::onUpdateSpace);
+        this.spaceModel.getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_CREATED, this::onUpdateSpace);
 
         for (AbstractElement element : this.spaceModel.getElements()) {
-            this.configureElement(element);
+            element.getChangeSupport().addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, this::onUpdateSpace);
         }
     }
+
+    public PropertyChangeSupport getChangeSupport() {
+        return propertyChangeSupport;
+    }
+
 
     public boolean onElementDrop(TransferHandler.TransferSupport support) {
         try {
@@ -42,7 +44,7 @@ public class SpaceController extends PropertyChangeDecorator {
                     AbstractElement newElement = AbstractElement.Factory(element.getClass().getSimpleName());
                     newElement.setPosition(support.getDropLocation().getDropPoint());
                     this.spaceModel.addElement(newElement);
-                    this.configureElement(newElement);
+                    newElement.getChangeSupport().addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, this::onUpdateSpace);
                 } else {
                     element.setPosition(support.getDropLocation().getDropPoint());
                 }
@@ -61,9 +63,9 @@ public class SpaceController extends PropertyChangeDecorator {
         return this.spaceModel;
     }
 
-    private void configureElement(AbstractElement element) {
-        element.addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, e -> {
-            this.support.firePropertyChange(EVENT_REBUILD_MAP, null, this.spaceModel);
-        });
+    private void onUpdateSpace(PropertyChangeEvent e) {
+        if (e.getNewValue() != null) {
+            this.getChangeSupport().firePropertyChange(EVENT_REBUILD_MAP, null, this.spaceModel);
+        }
     }
 }

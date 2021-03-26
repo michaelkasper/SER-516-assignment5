@@ -8,8 +8,8 @@ import java.util.ArrayList;
 public class DragAndDrop extends MouseAdapter {
 
     private static DragAndDrop instance = null;
-    private final TransferHandler transferHandler;
-    private ArrayList<DropInterface> dropZones = new ArrayList<>();
+    private final TransferHandler transferHandler = new TransferHandler();
+    private final ArrayList<DropInterface> dropZones = new ArrayList<>();
 
     public static DragAndDrop getInstance() {
         if (instance == null) {
@@ -18,17 +18,11 @@ public class DragAndDrop extends MouseAdapter {
         return instance;
     }
 
-    public DragAndDrop() {
-        this.transferHandler = new TransferHandler();
-    }
-
-
     public <T extends JPanel & DropInterface> void registerDropComponent(T component) {
         dropZones.add(component);
         component.setTransferHandler(this.transferHandler);
 
     }
-
 
     public void registerDragComponent(JComponent component) {
         component.addMouseMotionListener(this);

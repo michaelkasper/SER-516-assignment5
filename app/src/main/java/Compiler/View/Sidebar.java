@@ -1,9 +1,7 @@
 package Compiler.View;
 
 import Compiler.Controller.ElementController;
-import Compiler.Controller.WorkspaceController;
 import Compiler.Model.Elements.*;
-import Compiler.View.Components.Element;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -15,7 +13,7 @@ import java.util.Arrays;
 
 public class Sidebar extends JPanel {
 
-    public Sidebar(WorkspaceController workspaceController) {
+    public Sidebar() {
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         this.setPreferredSize(new Dimension(250, getHeight()));
 

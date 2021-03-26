@@ -1,7 +1,6 @@
 package Compiler.Service;
 
 import Compiler.Model.AbstractModel;
-import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
 
@@ -11,20 +10,14 @@ import java.util.HashMap;
 public class Store {
 
     private static Store instance = null;
-    private HashMap<String, SpaceModel> spaces = new HashMap<>();
-    private HashMap<String, AbstractElement> elements = new HashMap<>();
-    private HashMap<String, ConnectionPointModel> points = new HashMap<>();
-
+    private final HashMap<String, SpaceModel> spaces = new HashMap<>();
+    private final HashMap<String, AbstractElement> elements = new HashMap<>();
 
     public static Store getInstance() {
         if (instance == null) {
             instance = new Store();
         }
         return instance;
-    }
-
-    public Store() {
-
     }
 
     public ArrayList<SpaceModel> getAllSpaces() {
@@ -35,10 +28,6 @@ public class Store {
         return new ArrayList<>(elements.values());
     }
 
-    public ArrayList<ConnectionPointModel> getAllConnectionPoints() {
-        return new ArrayList<>(points.values());
-    }
-
     public SpaceModel getSpaceById(String id) {
         return spaces.get(id);
     }
@@ -47,20 +36,12 @@ public class Store {
         return elements.get(id);
     }
 
-    public ConnectionPointModel getConnectionPointById(String id) {
-        return points.get(id);
-    }
-
     public void register(SpaceModel space) {
         spaces.put(space.getId(), space);
     }
 
     public void register(AbstractElement element) {
         elements.put(element.getId(), element);
-    }
-
-    public void register(ConnectionPointModel point) {
-        points.put(point.getId(), point);
     }
 
     public void register(AbstractModel model) {
@@ -73,16 +54,17 @@ public class Store {
             this.register((AbstractElement) model);
             return;
         }
-
-        if (model instanceof ConnectionPointModel) {
-            this.register((ConnectionPointModel) model);
-            return;
-        }
     }
 
-    public void clear() {
-        spaces.clear();
-        elements.clear();
-        points.clear();
+    public void remove(SpaceModel space) {
+        for (AbstractElement element : space.getElements()) {
+            this.remove(element);
+        }
+
+        this.spaces.remove(space.getId());
+    }
+
+    public void remove(AbstractElement element) {
+        this.elements.remove(element.getId());
     }
 }

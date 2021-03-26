@@ -3,7 +3,7 @@ package Compiler;
 import Compiler.Controller.WorkspaceController;
 import Compiler.View.Header;
 import Compiler.View.Sidebar;
-import Compiler.View.Spaces;
+import Compiler.View.SpacesContainer;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -37,8 +37,8 @@ public class Compiler extends JFrame {
         WorkspaceController workspaceController = new WorkspaceController(this);
 
         Header headerView = new Header(workspaceController);
-        Sidebar sidebarView = new Sidebar(workspaceController);
-        Spaces spacesView = new Spaces(workspaceController);
+        SpacesContainer spacesView = new SpacesContainer(workspaceController);
+        Sidebar sidebarView = new Sidebar();
 
         this.add(headerView, BorderLayout.PAGE_START);
         this.add(sidebarView, BorderLayout.LINE_START);

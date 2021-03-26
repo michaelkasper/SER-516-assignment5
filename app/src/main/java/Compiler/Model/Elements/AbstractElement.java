@@ -1,12 +1,8 @@
 package Compiler.Model.Elements;
 
 import Compiler.Model.AbstractModel;
-import Compiler.Model.Connections.ConnectionPointModel;
-import Compiler.Model.Connections.LoopConnectionPointModel;
 import Compiler.Model.SpaceModel;
-import Compiler.Model.ValidationError;
 import Compiler.Service.Store;
-import Compiler.View.Components.Element;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -17,15 +13,16 @@ import java.util.ArrayList;
 public abstract class AbstractElement extends AbstractModel implements Serializable {
 
     public static final String EVENT_POSITION_UPDATED = "event_position_updated";
-    public String symbol;
-    public int inputs;
-    public int outputs;
-    protected SpaceModel spaceModel;
-    protected ArrayList<ConnectionPointModel> inConnectionPoints = new ArrayList<>();
-    protected ArrayList<ConnectionPointModel> outConnectionPoints = new ArrayList<>();
-    protected ArrayList<ValidationError> errors = new ArrayList<>();
-    protected Point position = new Point(-1, -1);
+    private String symbol;
+    private int inCount;
+    private int outCount;
     private String value;
+    private SpaceModel spaceModel;
+    private Point position = new Point(-1, -1);
+    private final ArrayList<AbstractElement> fromConnections = new ArrayList<>();
+    private final ArrayList<AbstractElement> toConnections = new ArrayList<>();
+    private final ArrayList<String> errors = new ArrayList<>();
+
 
     public AbstractElement() {
         super();
@@ -33,34 +30,35 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
 
     public AbstractElement(JSONObject data) {
         super(data);
-        this.id = (String) data.get("id");
         this.symbol = (String) data.get("symbol");
         this.value = (String) data.get("value");
 
-        this.inputs = ((Long) data.get("inputs")).intValue();
-        this.outputs = ((Long) data.get("outputs")).intValue();
+        this.inCount = ((Long) data.get("inCount")).intValue();
+        this.outCount = ((Long) data.get("outCount")).intValue();
 
         JSONObject position = (JSONObject) data.get("position");
         this.position = new Point(((Long) position.get("x")).intValue(), ((Long) position.get("y")).intValue());
 
         JSONArray errorsJson = (JSONArray) data.get("errors");
         errorsJson.forEach(errorJson -> {
-            this.errors.add(new ValidationError(this, (String) errorJson));
+            this.errors.add((String) errorJson);
         });
     }
 
-    public AbstractElement(String symbol, int inputs, int outputs) {
+    public AbstractElement(String symbol, int inCount, int outCount) {
         super();
         this.symbol = symbol;
-        this.inputs = inputs;
-        this.outputs = outputs;
+        this.inCount = inCount;
+        this.outCount = outCount;
+    }
 
-        this.createConnectionPoints();
+    public String getSymbol() {
+        return symbol;
     }
 
     public void setPosition(Point dropPoint) {
         this.position = dropPoint;
-        this.support.firePropertyChange(AbstractElement.EVENT_POSITION_UPDATED, null, this);
+        this.getChangeSupport().firePropertyChange(AbstractElement.EVENT_POSITION_UPDATED, null, this);
     }
 
     public Point getPosition() {
@@ -75,7 +73,7 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
         return spaceModel;
     }
 
-    public ArrayList<ValidationError> validate() {
+    public ArrayList<String> validate() {
         this.errors.clear();
         this.errors.addAll(this.validateConnections());
         return this.errors;
@@ -87,82 +85,104 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
 
     public String getErrorsAsString() {
         String errorMsg = "Errors:";
-        for (ValidationError error : this.errors) {
-            errorMsg += " " + error.getErrMessage() + ";";
+        for (String error : this.errors) {
+            errorMsg += " " + error + ";";
         }
 
         return errorMsg;
     }
 
-    public ArrayList<ConnectionPointModel> getInConnectionPoints() {
-        return inConnectionPoints;
+    public int getInCount() {
+        return inCount;
     }
 
-    public ArrayList<ConnectionPointModel> getOutConnectionPoints() {
-        return outConnectionPoints;
+    public int getOutCount() {
+        return outCount;
     }
 
-    public ConnectionPointModel getOpenOutConnectionPoints() {
-        return outConnectionPoints.stream().filter(point -> point.getConnectsTo() == null).findFirst().orElse(null);
+    public ArrayList<AbstractElement> getFromConnections() {
+        return fromConnections;
     }
 
-    public ConnectionPointModel getOpenInConnectionPoints() {
-        return inConnectionPoints.stream().filter(point -> point.getConnectsTo() == null).findFirst().orElse(null);
+    public ArrayList<AbstractElement> getToConnections() {
+        return toConnections;
     }
 
 
-    public boolean verifyNoLoop(ConnectionPointModel toPoint) {
-        for (ConnectionPointModel connectionPoint : this.getInConnectionPoints()) {
-            if (connectionPoint.getConnectsTo() != null) {
-                if (connectionPoint.getConnectsTo().getElementModel().equals(toPoint.getElementModel())) {
-                    if (connectionPoint.getConnectsTo().getClass() == LoopConnectionPointModel.class && toPoint.getClass() == LoopConnectionPointModel.class) {
-                        return true;
-                    }
-                    return false;
-                } else {
-                    return connectionPoint.getConnectsTo().getElementModel().verifyNoLoop(toPoint);
-                }
+    public void addFromConnections(AbstractElement fromElement) {
+        fromConnections.add(fromElement);
+    }
+
+    public void addToConnections(AbstractElement toElement) {
+        toConnections.add(toElement);
+    }
+
+
+    public boolean hasOpenInConnections() {
+        return this.fromConnections.size() < this.inCount;
+    }
+
+    public boolean hasOpenOutConnections() {
+        return this.toConnections.size() < this.outCount;
+    }
+
+
+    public boolean isAllowedToConnectTo(AbstractElement toElement) {
+        //check if same element
+        if (this.equals(toElement)) {
+            return false;
+        }
+
+        //check if same connection type
+        if (!this.hasOpenOutConnections() || !toElement.hasOpenInConnections()) {
+            return false;
+        }
+
+        //Check for loop
+        return this.verifyNoLoop(toElement);
+    }
+
+
+    public boolean verifyNoLoop(AbstractElement toElement) {
+        for (AbstractElement parentElement : this.fromConnections) {
+            if (parentElement.equals(toElement)) {
+                //TODO: LOOP LOGIC HERE??
+                return false;
+            } else {
+                return parentElement.verifyNoLoop(toElement);
             }
         }
         return true;
     }
 
-    public void addConnectionPoint(ConnectionPointModel connectionPointModel) {
-        switch (connectionPointModel.getType()) {
-            case IN -> this.inConnectionPoints.add(connectionPointModel);
-            case OUT -> this.outConnectionPoints.add(connectionPointModel);
-        }
-    }
-
 
     public JSONObject export() {
-        JSONObject obj = new JSONObject();
+        JSONObject obj = super.export();
 
-        obj.put("id", id);
         obj.put("class", this.getClass().getSimpleName());
         obj.put("symbol", symbol);
         obj.put("value", value);
-        obj.put("inputs", inputs);
-        obj.put("outputs", outputs);
+        obj.put("inCount", inCount);
+        obj.put("outCount", outCount);
         obj.put("spaceModelId", spaceModel.getId());
 
-        JSONArray inConnectionPoints = new JSONArray();
-        for (ConnectionPointModel point : this.inConnectionPoints) {
-            inConnectionPoints.add(point.getId());
+        JSONArray fromConnections = new JSONArray();
+        for (AbstractElement element : this.fromConnections) {
+            fromConnections.add(element.getId());
         }
-        obj.put("inConnectionPoints", inConnectionPoints);
+        obj.put("fromConnections", fromConnections);
 
 
-        JSONArray outConnectionPoints = new JSONArray();
-        for (ConnectionPointModel point : this.outConnectionPoints) {
-            outConnectionPoints.add(point.getId());
+        JSONArray toConnections = new JSONArray();
+        for (AbstractElement element : this.toConnections) {
+            toConnections.add(element.getId());
         }
-        obj.put("outConnectionPoints", outConnectionPoints);
+        obj.put("toConnections", toConnections);
 
 
         JSONArray errors = new JSONArray();
-        for (ValidationError error : this.errors) {
-            errors.add(error.getErrMessage());
+        for (String error : this.errors) {
+            errors.add(error);
         }
         obj.put("errors", errors);
 
@@ -176,21 +196,20 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
     }
 
     public void importRelationships(JSONObject json) {
-        Store store = Store.getInstance();
         String spaceModelId = (String) json.get("spaceModelId");
         if (spaceModelId != null && !spaceModelId.isEmpty()) {
-            this.spaceModel = store.getSpaceById(spaceModelId);
+            this.spaceModel = Store.getInstance().getSpaceById(spaceModelId);
         }
 
-        JSONArray inConnectionPointsJson = (JSONArray) json.get("inConnectionPoints");
-        inConnectionPointsJson.forEach(inConnectionPointId -> {
-            this.inConnectionPoints.add(store.getConnectionPointById((String) inConnectionPointId));
+        JSONArray fromConnectionsJson = (JSONArray) json.get("fromConnections");
+        fromConnectionsJson.forEach(elementId -> {
+            this.fromConnections.add(Store.getInstance().getElementById((String) elementId));
         });
 
 
-        JSONArray outConnectionPointsJson = (JSONArray) json.get("outConnectionPoints");
-        outConnectionPointsJson.forEach(outConnectionPointId -> {
-            this.outConnectionPoints.add(store.getConnectionPointById((String) outConnectionPointId));
+        JSONArray toConnectionsJson = (JSONArray) json.get("toConnections");
+        toConnectionsJson.forEach(elementId -> {
+            this.toConnections.add(Store.getInstance().getElementById((String) elementId));
         });
 
 
@@ -205,33 +224,17 @@ public abstract class AbstractElement extends AbstractModel implements Serializa
     }
 
 
-    protected ArrayList<ValidationError> validateConnections() {
-        ArrayList<ValidationError> errors = new ArrayList<>();
+    protected ArrayList<String> validateConnections() {
+        ArrayList<String> errors = new ArrayList<>();
 
-        for (ConnectionPointModel connectionPoint : this.inConnectionPoints) {
-            if (connectionPoint.getConnectsTo() == null) {
-                errors.add(new ValidationError(this, "Missing In Connections"));
-                break;
-            }
+        if (this.hasOpenInConnections()) {
+            errors.add("Missing In Connections");
         }
 
-        for (ConnectionPointModel connectionPoint : this.outConnectionPoints) {
-            if (connectionPoint.getConnectsTo() == null) {
-                errors.add(new ValidationError(this, "Missing Out Connections"));
-                break;
-            }
+        if (this.hasOpenOutConnections()) {
+            errors.add("Missing Out Connections");
         }
         return errors;
-    }
-
-    protected void createConnectionPoints() {
-        for (int i = 0; i < Math.abs(inputs); i++) {
-            inConnectionPoints.add(new ConnectionPointModel(ConnectionPointModel.Type.IN, this));
-        }
-
-        for (int i = 0; i < Math.abs(outputs); i++) {
-            outConnectionPoints.add(new ConnectionPointModel(ConnectionPointModel.Type.OUT, this));
-        }
     }
 
 

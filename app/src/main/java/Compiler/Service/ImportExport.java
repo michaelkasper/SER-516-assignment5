@@ -1,6 +1,5 @@
 package Compiler.Service;
 
-import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
 import org.json.simple.JSONArray;
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 public class ImportExport {
     private static FileWriter file;
 
-    public static boolean saveTo(ArrayList<SpaceModel> spaces, File saveLocation) {
+    public static boolean saveTo(File saveLocation) {
 
         if (saveLocation != null) {
 
@@ -25,7 +24,6 @@ public class ImportExport {
 
             JSONArray spacesJson = new JSONArray();
             JSONArray elementsJson = new JSONArray();
-            JSONArray pointsJson = new JSONArray();
 
             Store store = Store.getInstance();
 
@@ -39,15 +37,8 @@ public class ImportExport {
                 }
             }
 
-            for (ConnectionPointModel pointModel : store.getAllConnectionPoints()) {
-                if (pointModel.getElementModel().getSpaceModel() != null) {
-                    pointsJson.add(pointModel.export());
-                }
-            }
-
             obj.put("spaces", spacesJson);
             obj.put("elements", elementsJson);
-            obj.put("points", pointsJson);
 
             try {
                 file = new FileWriter(saveLocation);
@@ -76,9 +67,8 @@ public class ImportExport {
         if (fileLocation != null) {
 
             Store store = Store.getInstance();
-            store.clear();
-
             JSONParser jsonParser = new JSONParser();
+            ArrayList<SpaceModel> spaces = new ArrayList<>();
 
             try (FileReader reader = new FileReader(fileLocation)) {
                 //Read JSON file
@@ -86,11 +76,10 @@ public class ImportExport {
 
                 JSONArray spacesJson = (JSONArray) data.get("spaces");
                 JSONArray elementsJson = (JSONArray) data.get("elements");
-                JSONArray pointsJson = (JSONArray) data.get("points");
 
                 spacesJson.forEach(spaceJson -> {
                     JSONObject json = (JSONObject) spaceJson;
-                    new SpaceModel(json);
+                    spaces.add(new SpaceModel(json));
                 });
 
                 elementsJson.forEach(elementJson -> {
@@ -99,14 +88,6 @@ public class ImportExport {
                     AbstractElement.Factory(className, json);
                 });
 
-                pointsJson.forEach(pointJson -> {
-                    JSONObject json = (JSONObject) pointJson;
-                    String className = (String) json.get("class");
-                    ConnectionPointModel.Factory(className, json);
-                });
-
-
-                System.out.println(store.getAllSpaces().size());
                 spacesJson.forEach(spaceJson -> {
                     JSONObject json = (JSONObject) spaceJson;
                     String id = (String) json.get("id");
@@ -123,15 +104,7 @@ public class ImportExport {
                     element.importRelationships(json);
                 });
 
-                pointsJson.forEach(pointJson -> {
-                    JSONObject json = (JSONObject) pointJson;
-                    String id = (String) json.get("id");
-
-                    ConnectionPointModel point = store.getConnectionPointById(id);
-                    point.importRelationships(json);
-                });
-
-                return store.getAllSpaces();
+                return spaces;
 
             } catch (IOException | ParseException e) {
                 e.printStackTrace();

@@ -1,7 +1,6 @@
-package Compiler.View.Components;
+package Compiler.View;
 
 import Compiler.Controller.ElementController;
-import Compiler.Model.Connections.ConnectionPointModel;
 import Compiler.Model.Elements.AbstractElement;
 import Compiler.Model.SpaceModel;
 import Compiler.Service.DragAndDrop.DragAndDrop;
@@ -15,7 +14,7 @@ import java.beans.PropertyChangeEvent;
 
 public class Element extends JPanel implements DragInterface {
 
-    public static DataFlavor DRAGGABLE_FLAG = new DataFlavor(Element.class, "Draggable Element");
+    public static final DataFlavor DRAGGABLE_FLAG = new DataFlavor(Element.class, "Draggable Element");
     public static final Color ELEMENT_COLOR = new Color(238, 238, 238);
     public static final Color ELEMENT_ERROR_COLOR = new Color(240, 204, 204);
 
@@ -30,7 +29,7 @@ public class Element extends JPanel implements DragInterface {
         this.setBorder(BorderFactory.createLineBorder(Color.black));
         this.setBackground(ELEMENT_COLOR);
 
-        JLabel symbolLabel = new JLabel(this.getElementModel().symbol, SwingConstants.CENTER);
+        JLabel symbolLabel = new JLabel(this.getElementModel().getSymbol(), SwingConstants.CENTER);
         symbolLabel.setFont(symbolLabel.getFont().deriveFont(25f));
 
         this.add(symbolLabel);
@@ -42,10 +41,10 @@ public class Element extends JPanel implements DragInterface {
 
             this.addMouseListener(this.elementController);
             this.renderErrors(null);
-            this.elementController.getElementModel().getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_UPDATE_ERRORS, this::renderErrors);
-            this.elementController.getElementModel().getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_CREATED, this::highlight);
-            this.elementController.getElementModel().getSpaceModel().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_STARTED, this::highlight);
-            this.elementController.addPropertyChangeListener(ElementController.EVENT_CONNECTION_ERROR, this::showConnectionError);
+            this.elementController.getElementModel().getSpaceModel().getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_UPDATE_ERRORS, this::renderErrors);
+            this.elementController.getElementModel().getSpaceModel().getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_CREATED, this::highlight);
+            this.elementController.getElementModel().getSpaceModel().getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_STARTED, this::highlight);
+            this.elementController.getChangeSupport().addPropertyChangeListener(ElementController.EVENT_CONNECTION_ERROR, this::showConnectionError);
         }
     }
 
@@ -133,26 +132,25 @@ public class Element extends JPanel implements DragInterface {
     private void highlight(PropertyChangeEvent e) {
         if (e.getNewValue() != null) {
 
-            ConnectionPointModel futureConnectionPoint1 = this.elementController.getSpaceModel().getFutureConnection();
+            AbstractElement selectedFromElement = this.elementController.getSpaceModel().getSelectedFromElement();
+            AbstractElement selectedToElement = this.elementController.getSpaceModel().getSelectedToElement();
 
-            if (futureConnectionPoint1 != null) {
-                ConnectionPointModel futureConnectionPoint2 = this.elementController.getSpaceModel().getFutureConnection().getConnectsTo();
-                if (futureConnectionPoint1.getElementModel().equals(this.getElementModel())) {
+            if (selectedFromElement != null) {
+                if (selectedFromElement.equals(this.getElementModel())) {
                     this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
                     return;
                 }
 
-                if (futureConnectionPoint2 != null && futureConnectionPoint2.getElementModel().equals(this.getElementModel())) {
-                    this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-                    return;
-                }
-
-
-                ConnectionPointModel potentialConnectionPoint = this.getElementModel().getOpenInConnectionPoints();
-                if (potentialConnectionPoint != null && futureConnectionPoint1.isAllowedToConnectTo(potentialConnectionPoint)) {
+                if (this.getElementModel().hasOpenInConnections() && selectedFromElement.isAllowedToConnectTo(this.getElementModel())) {
                     this.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
                     return;
                 }
+            }
+
+
+            if (selectedToElement != null && selectedToElement.equals(this.getElementModel())) {
+                this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+                return;
             }
 
             this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
