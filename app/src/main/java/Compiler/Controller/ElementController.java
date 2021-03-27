@@ -20,11 +20,6 @@ public class ElementController implements MouseListener {
 
     public ElementController(AbstractElement elementModel) {
         this.elementModel = elementModel;
-
-        this.timer = new Timer(clickInterval, event -> {
-            timer.stop();
-            this.onSingleClick();
-        });
     }
 
     public PropertyChangeSupport getChangeSupport() {
@@ -44,6 +39,13 @@ public class ElementController implements MouseListener {
         if (e.getClickCount() > 2) return;
 
         if (e.getButton() == MouseEvent.BUTTON1) {
+            if (this.timer == null) {
+                this.timer = new Timer(clickInterval, event -> {
+                    timer.stop();
+                    this.onSingleClick();
+                });
+            }
+
             if (this.timer.isRunning()) {
                 timer.stop();
                 this.onDoubleClick();
