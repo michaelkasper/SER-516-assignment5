@@ -28,6 +28,7 @@ public class Element extends JPanel implements DragInterface {
         this.setLayout(new GridLayout(1, 1));
         this.setBorder(BorderFactory.createLineBorder(Color.black));
         this.setBackground(ELEMENT_COLOR);
+        this.setMaximumSize(new Dimension(150, 75));
 
         JLabel symbolLabel = new JLabel(this.getElementModel().getSymbol(), SwingConstants.CENTER);
         symbolLabel.setFont(symbolLabel.getFont().deriveFont(25f));

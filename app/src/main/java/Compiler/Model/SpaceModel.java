@@ -1,11 +1,12 @@
 package Compiler.Model;
 
 import Compiler.Model.Elements.AbstractElement;
+import Compiler.Model.Elements.CloseIfElement;
+import Compiler.Model.Elements.OpenIfElement;
 import Compiler.Service.Store;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import javax.swing.Timer;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -15,15 +16,18 @@ public class SpaceModel extends AbstractModel {
     public final static String EVENT_CONNECTION_CREATED = "event_connection_created";
     public final static String EVENT_CONNECTION_STARTED = "event_connection_started";
     public final static String EVENT_UPDATE_ERRORS = "event_update_errors";
-    public final static String EVENT_REBUILD_MAP = "event_rebuild_map";
 
-    private final ArrayList<AbstractElement> elements = new ArrayList<>();
+    private final ArrayList<AbstractElement> elements = new ArrayList<>() {
+
+    };
     private final ArrayList<String> errors = new ArrayList<>();
     private AbstractElement selectedFromElement = null;
     private AbstractElement selectedToElement = null;
 
     public SpaceModel() {
         super();
+        this.addElement(new OpenIfElement(new Point(20, 20)));
+        this.addElement(new CloseIfElement(new Point(750, 550)));
     }
 
     public SpaceModel(JSONObject data) {

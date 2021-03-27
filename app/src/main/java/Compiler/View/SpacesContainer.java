@@ -10,6 +10,9 @@ import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 
+import static Compiler.Controller.SpaceController.EVENT_REBUILD_MAP;
+import static Compiler.Model.SpaceModel.EVENT_UPDATE_ERRORS;
+
 public class SpacesContainer extends JPanel {
 
     public static final Color TAB_ERROR_COLOR = new Color(255, 146, 146);
@@ -35,13 +38,16 @@ public class SpacesContainer extends JPanel {
     private void onSpaceAdded(PropertyChangeEvent e) {
         if (e.getNewValue() != null) {
             SpaceModel spaceModel = (SpaceModel) e.getNewValue();
-            Space newSpace = new Space(new SpaceController(spaceModel));
+            SpaceController newController = new SpaceController(spaceModel);
+            Space newSpace = new Space(newController);
             int index = tabbedPane.getTabCount();
             tabbedPane.add("Space " + (index + 1), newSpace);
             tabbedPane.setBackgroundAt(index, Color.WHITE);
             tabbedPane.setSelectedIndex(index);
 
             spaceModel.getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_UPDATE_ERRORS, event -> this.onUpdateErrors(spaceModel, index, event));
+            spaceModel.getChangeSupport().firePropertyChange(EVENT_UPDATE_ERRORS, null, true);
+            newController.getChangeSupport().firePropertyChange(EVENT_REBUILD_MAP, null, newSpace);
         }
     }
 

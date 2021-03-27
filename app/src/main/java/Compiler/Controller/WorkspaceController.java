@@ -65,8 +65,6 @@ public class WorkspaceController {
                 this.getChangeSupport().firePropertyChange(EVENT_CLEAR_SPACES, null, true);
                 for (SpaceModel space : newSpaces) {
                     this.getChangeSupport().firePropertyChange(EVENT_SPACE_ADDED, null, space);
-                    space.getChangeSupport().firePropertyChange(EVENT_ELEMENT_ADDED, null, true);
-                    space.getChangeSupport().firePropertyChange(EVENT_UPDATE_ERRORS, null, true);
                 }
                 return;
             }

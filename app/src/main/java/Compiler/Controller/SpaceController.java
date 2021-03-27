@@ -6,14 +6,15 @@ import Compiler.Service.Store;
 import Compiler.View.Element;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 
 
-public class SpaceController {
+public class SpaceController implements MouseListener {
 
     public final static String EVENT_REBUILD_MAP = "event_rebuild_map";
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -64,23 +65,39 @@ public class SpaceController {
         return this.spaceModel;
     }
 
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() > 2) return;
+
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            this.spaceModel.clearSelected();
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
     private void onUpdateSpace(PropertyChangeEvent e) {
         if (e.getNewValue() != null) {
             this.getChangeSupport().firePropertyChange(EVENT_REBUILD_MAP, null, this.spaceModel);
         }
     }
 
-    public void initializeIfElements() {
-        AbstractElement newOpenIfElement = AbstractElement.Factory("OpenIfElement");
-        newOpenIfElement.setPosition(new Point(20, 20));
-        this.spaceModel.addElement(newOpenIfElement);
-        newOpenIfElement.getChangeSupport().addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, this::onUpdateSpace);
-
-        AbstractElement newCloseIfElement = AbstractElement.Factory("CloseIfElement");
-        newCloseIfElement.setPosition(new Point(750, 550));
-        this.spaceModel.addElement(newCloseIfElement);
-        newCloseIfElement.getChangeSupport().addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, this::onUpdateSpace);
-
-        this.getChangeSupport().firePropertyChange(EVENT_REBUILD_MAP, null, this.spaceModel);
-    }
 }
