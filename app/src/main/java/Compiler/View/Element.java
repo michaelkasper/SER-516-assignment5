@@ -46,6 +46,7 @@ public class Element extends JPanel implements DragInterface {
             this.elementController.getElementModel().getSpaceModel().getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_CREATED, this::highlight);
             this.elementController.getElementModel().getSpaceModel().getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_STARTED, this::highlight);
             this.elementController.getChangeSupport().addPropertyChangeListener(ElementController.EVENT_CONNECTION_ERROR, this::showConnectionError);
+            this.elementController.getChangeSupport().addPropertyChangeListener(ElementController.EVENT_SHOW_INPUT_POPUP, this::showInputPopup);
         }
     }
 
