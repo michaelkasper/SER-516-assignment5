@@ -9,10 +9,9 @@ import java.util.HashMap;
 
 public class ConnectionsLayer extends JPanel {
 
-    private final HashMap<String, Element> elementViewsMap;
+    private HashMap<String, Element> elementViewsMap;
 
-    public ConnectionsLayer(HashMap<String, Element> elementViewsMap) {
-        this.elementViewsMap = elementViewsMap;
+    public ConnectionsLayer() {
         this.setBorder(null);
         this.setLayout(null);
         this.setOpaque(false);
@@ -42,7 +41,7 @@ public class ConnectionsLayer extends JPanel {
         super.paintComponent(g);
         Point spacePosition = this.getLocationOnScreen();
         for (Element fromView : this.elementViewsMap.values()) {
-            AbstractElement elementModel = fromView.getElementModel();
+            AbstractElement elementModel = fromView.getController().getElementModel();
             int position = 1;
             int toCount = elementModel.getOutCount();
 
@@ -53,7 +52,6 @@ public class ConnectionsLayer extends JPanel {
                     int outSectionHeight = fromView.getHeight() / toCount;
 
                     if (fromView.isShowing() && toView.isShowing()) {
-
 
                         double fromX = fromView.getLocationOnScreen().getX() - spacePosition.getX() + fromView.getWidth();
                         double fromY = fromView.getLocationOnScreen().getY() - spacePosition.getY() + (outSectionHeight * position) - (outSectionHeight / 2);
@@ -69,4 +67,9 @@ public class ConnectionsLayer extends JPanel {
         }
     }
 
+    public void rebuild(HashMap<String, Element> elementViewsMap) {
+        this.elementViewsMap = elementViewsMap;
+        this.repaint();
+        this.revalidate();
+    }
 }

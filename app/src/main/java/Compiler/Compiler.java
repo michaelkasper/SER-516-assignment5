@@ -20,7 +20,7 @@ import java.io.File;
  * @author Dragan Bogoevski (dbogoevs@asu.edu)
  * @author Kamal Penmetcha (kpenmetc@asu.edu)
  * @author Michael Kasper (mkasper@asu.edu)
- * @version 2.0
+ * @version 3.0
  */
 public class Compiler extends JFrame {
 

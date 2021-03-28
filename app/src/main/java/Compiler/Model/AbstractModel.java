@@ -9,7 +9,7 @@ import java.util.UUID;
 abstract public class AbstractModel {
 
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-    private String id;
+    private final String id;
 
     public AbstractModel() {
         this.id = UUID.randomUUID().toString();

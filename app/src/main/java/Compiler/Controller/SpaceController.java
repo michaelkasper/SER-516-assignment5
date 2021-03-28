@@ -9,32 +9,15 @@ import javax.swing.*;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 
 
 public class SpaceController implements MouseListener {
-
-    public final static String EVENT_REBUILD_MAP = "event_rebuild_map";
-    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private final SpaceModel spaceModel;
 
     public SpaceController(SpaceModel spaceModel) {
         this.spaceModel = spaceModel;
-
-        this.spaceModel.getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_ELEMENT_ADDED, this::onUpdateSpace);
-        this.spaceModel.getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_CREATED, this::onUpdateSpace);
-
-        for (AbstractElement element : this.spaceModel.getElements()) {
-            element.getChangeSupport().addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, this::onUpdateSpace);
-        }
     }
-
-    public PropertyChangeSupport getChangeSupport() {
-        return propertyChangeSupport;
-    }
-
 
     public boolean onElementDrop(TransferHandler.TransferSupport support) {
         try {
@@ -46,7 +29,6 @@ public class SpaceController implements MouseListener {
                     AbstractElement newElement = AbstractElement.Factory(element.getClass().getSimpleName());
                     newElement.setPosition(support.getDropLocation().getDropPoint());
                     this.spaceModel.addElement(newElement);
-                    newElement.getChangeSupport().addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, this::onUpdateSpace);
                 } else {
                     element.setPosition(support.getDropLocation().getDropPoint());
                 }
@@ -93,11 +75,4 @@ public class SpaceController implements MouseListener {
     public void mouseExited(MouseEvent e) {
 
     }
-
-    private void onUpdateSpace(PropertyChangeEvent e) {
-        if (e.getNewValue() != null) {
-            this.getChangeSupport().firePropertyChange(EVENT_REBUILD_MAP, null, this.spaceModel);
-        }
-    }
-
 }

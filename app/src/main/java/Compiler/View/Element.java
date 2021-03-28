@@ -2,7 +2,6 @@ package Compiler.View;
 
 import Compiler.Controller.ElementController;
 import Compiler.Model.Elements.AbstractElement;
-import Compiler.Model.SpaceModel;
 import Compiler.Service.DragAndDrop.DragAndDrop;
 import Compiler.Service.DragAndDrop.DragInterface;
 
@@ -30,21 +29,21 @@ public class Element extends JPanel implements DragInterface {
         this.setBackground(ELEMENT_COLOR);
         this.setMaximumSize(new Dimension(150, 75));
 
-        JLabel symbolLabel = new JLabel(this.getElementModel().getSymbol(), SwingConstants.CENTER);
+        JLabel symbolLabel = new JLabel(this.elementController.getElementModel().getSymbol(), SwingConstants.CENTER);
         symbolLabel.setFont(symbolLabel.getFont().deriveFont(25f));
 
         this.add(symbolLabel);
 
         if (this.elementController.getElementModel().getSpaceModel() != null) {
-            if (this.elementController.getElementModel().getPosition().x > -1 && this.elementController.getElementModel().getPosition().y > -1) {
-                this.setBounds(new Rectangle(this.elementController.getElementModel().getPosition(), new Dimension(150, 75)));
-            }
-
             this.addMouseListener(this.elementController);
             this.renderErrors(null);
-            this.elementController.getElementModel().getSpaceModel().getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_UPDATE_ERRORS, this::renderErrors);
-            this.elementController.getElementModel().getSpaceModel().getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_CREATED, this::highlight);
-            this.elementController.getElementModel().getSpaceModel().getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_STARTED, this::highlight);
+            this.highlight(null);
+            this.updatePosition(null);
+
+            this.elementController.getElementModel().getChangeSupport().addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, this::updatePosition);
+            this.elementController.getElementModel().getChangeSupport().addPropertyChangeListener(AbstractElement.EVENT_STATE_UPDATED, this::highlight);
+            this.elementController.getElementModel().getChangeSupport().addPropertyChangeListener(AbstractElement.EVENT_UPDATE_ERRORS, this::renderErrors);
+
             this.elementController.getChangeSupport().addPropertyChangeListener(ElementController.EVENT_CONNECTION_ERROR, this::showConnectionError);
             this.elementController.getChangeSupport().addPropertyChangeListener(ElementController.EVENT_SHOW_INPUT_POPUP, this::showInputPopup);
         }
@@ -75,7 +74,7 @@ public class Element extends JPanel implements DragInterface {
     @Override
     public void onDragStart() {
         this.moving = true;
-        if (this.getElementModel().getSpaceModel() != null) {
+        if (this.elementController.getElementModel().getSpaceModel() != null) {
             this.setVisible(false);
             this.revalidate();
         }
@@ -94,17 +93,11 @@ public class Element extends JPanel implements DragInterface {
     @Override
     public Object getTransferData(DataFlavor flavor) {
         if (flavor.equals(Element.DRAGGABLE_FLAG) || flavor.equals(DataFlavor.stringFlavor)) {
-            return this.getElementModel().getId();
+            return this.elementController.getElementModel().getId();
         }
 
         return null;
     }
-
-
-    public AbstractElement getElementModel() {
-        return this.elementController.getElementModel();
-    }
-
 
     private void renderErrors(PropertyChangeEvent e) {
         if (this.elementController.getElementModel().hasErrors()) {
@@ -118,9 +111,7 @@ public class Element extends JPanel implements DragInterface {
     }
 
     private void showConnectionError(PropertyChangeEvent e) {
-        if (e.getNewValue() != null) {
-            JOptionPane.showMessageDialog(this, e.getNewValue());
-        }
+        JOptionPane.showMessageDialog(this, e.getNewValue());
     }
 
 
@@ -131,31 +122,21 @@ public class Element extends JPanel implements DragInterface {
         }
     }
 
-    private void highlight(PropertyChangeEvent e) {
-        if (e.getNewValue() != null) {
-
-            AbstractElement selectedFromElement = this.elementController.getSpaceModel().getSelectedFromElement();
-            AbstractElement selectedToElement = this.elementController.getSpaceModel().getSelectedToElement();
-
-            if (selectedFromElement != null) {
-                if (selectedFromElement.equals(this.getElementModel())) {
-                    this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-                    return;
-                }
-
-                if (this.getElementModel().hasOpenInConnections() && selectedFromElement.isAllowedToConnectTo(this.getElementModel())) {
-                    this.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
-                    return;
-                }
-            }
-
-
-            if (selectedToElement != null && selectedToElement.equals(this.getElementModel())) {
-                this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-                return;
-            }
-
-            this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    private void updatePosition(PropertyChangeEvent e) {
+        if (this.elementController.getElementModel().getPosition().x > -1 && this.elementController.getElementModel().getPosition().y > -1) {
+            this.setBounds(new Rectangle(this.elementController.getElementModel().getPosition(), new Dimension(150, 75)));
         }
+    }
+
+    private void highlight(PropertyChangeEvent e) {
+        switch (this.elementController.getElementModel().getState()) {
+            case SELECTED -> this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+            case HIGHLIGHTED -> this.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
+            default -> this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        }
+    }
+
+    public ElementController getController() {
+        return this.elementController;
     }
 }

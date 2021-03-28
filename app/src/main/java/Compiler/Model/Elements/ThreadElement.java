@@ -14,7 +14,7 @@ public class ThreadElement extends AbstractElement {
         super(data);
     }
 
-    protected ArrayList<String> validateConnections() {
+    protected ArrayList<String> validateCompileConnections() {
         ArrayList<String> errors = new ArrayList<>();
 
         if (this.getToConnections().size() == 0) {

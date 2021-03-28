@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Header extends JPanel {
-    
+
     public Header(WorkspaceController workspaceController) {
         this.setLayout(new FlowLayout());
         this.setPreferredSize(new Dimension(getWidth(), 50));

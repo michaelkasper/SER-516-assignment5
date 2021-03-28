@@ -3,8 +3,10 @@ package Compiler.View;
 import Compiler.Controller.ElementController;
 import Compiler.Controller.SpaceController;
 import Compiler.Model.Elements.AbstractElement;
+import Compiler.Model.SpaceModel;
 import Compiler.Service.DragAndDrop.DragAndDrop;
 import Compiler.Service.DragAndDrop.DropInterface;
+import Compiler.Service.Store;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,6 +17,8 @@ import java.util.HashMap;
 public class Space extends JPanel implements DropInterface {
 
     private final SpaceController spaceController;
+    private final HashMap<String, Element> elementViewsMap = new HashMap<>();
+    private final ConnectionsLayer spaceConnectionsLayer = new ConnectionsLayer();
 
     public Space(SpaceController spaceController) {
         this.spaceController = spaceController;
@@ -22,31 +26,39 @@ public class Space extends JPanel implements DropInterface {
         this.setBorder(null);
         this.setLayout(null);
         this.addMouseListener(this.spaceController);
-        this.spaceController.getChangeSupport().addPropertyChangeListener(SpaceController.EVENT_REBUILD_MAP, this::onRebuildMap);
+
+        this.spaceController.getSpaceModel().getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_ELEMENT_ADDED, this::onElementAdded);
+        this.spaceController.getSpaceModel().getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_CONNECTION_CREATED, this::onRebuildConnections);
+
+        this.add(this.spaceConnectionsLayer);
+
+
+        for (AbstractElement elementModel : this.spaceController.getSpaceModel().getElements()) {
+            this.onElementAdded(new PropertyChangeEvent(elementModel, SpaceModel.EVENT_ELEMENT_ADDED, null, elementModel.getId()));
+        }
     }
 
-    private void onRebuildMap(PropertyChangeEvent e) {
+    private void onElementAdded(PropertyChangeEvent e) {
         if (e.getNewValue() != null) {
-            this.removeAll();
-            HashMap<String, Element> elementViewsMap = new HashMap<>();
+            String elementModelId = (String) e.getNewValue();
 
-            for (AbstractElement elementModel : this.spaceController.getSpaceModel().getElements()) {
+            if (!this.elementViewsMap.containsKey(elementModelId)) {
+                AbstractElement elementModel = Store.getInstance().getElementById(elementModelId);
                 Element elementView = new Element(new ElementController(elementModel));
-                elementViewsMap.put(elementModel.getId(), elementView);
+                this.elementViewsMap.put(elementModel.getId(), elementView);
+                elementModel.getChangeSupport().addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, this::onRebuildConnections);
                 this.add(elementView);
+                this.onRebuildConnections(null);
             }
-
-            ConnectionsLayer spaceConnectionsLayer = new ConnectionsLayer(elementViewsMap);
-            this.add(spaceConnectionsLayer);
-            this.setComponentZOrder(spaceConnectionsLayer, 0);
-
-            this.repaint();
-            this.revalidate();
-
-            spaceConnectionsLayer.setBounds(0, 0, this.getWidth(), this.getHeight());
-            spaceConnectionsLayer.repaint();
-            spaceConnectionsLayer.revalidate();
         }
+    }
+
+    private void onRebuildConnections(PropertyChangeEvent e) {
+        this.repaint();
+        this.revalidate();
+        this.setComponentZOrder(this.spaceConnectionsLayer, 0);
+        this.spaceConnectionsLayer.setBounds(0, 0, this.getWidth(), this.getHeight());
+        this.spaceConnectionsLayer.rebuild(this.elementViewsMap);
     }
 
     public DataFlavor[] getAllowedDraggableFlags() {

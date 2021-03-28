@@ -6,19 +6,21 @@ import Compiler.Service.ImportExport;
 import Compiler.Service.Store;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.util.ArrayList;
-
-import static Compiler.Model.SpaceModel.EVENT_ELEMENT_ADDED;
-import static Compiler.Model.SpaceModel.EVENT_UPDATE_ERRORS;
-
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 public class WorkspaceController {
 
     public static final String EVENT_SPACE_ADDED = "event_space_added";
     public static final String EVENT_CLEAR_SPACES = "event_clear_spaces";
+    public static final String EVENT_SELECT_TAB = "event_select_tab";
+
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private final Compiler frame;
 
@@ -55,17 +57,25 @@ public class WorkspaceController {
             File fileLocation = fileChooser.getSelectedFile();
 
             ArrayList<SpaceModel> oldSpaces = Store.getInstance().getAllSpaces();
-            ArrayList<SpaceModel> newSpaces = ImportExport.loadFrom(fileLocation);
+            HashMap<String, SpaceModel> newSpaces = ImportExport.loadFrom(fileLocation);
 
             if (newSpaces != null) {
                 for (SpaceModel space : oldSpaces) {
-                    Store.getInstance().remove(space);
+                    if (!newSpaces.containsKey(space.getId())) {
+                        Store.getInstance().remove(space);
+                    }
                 }
 
+                List<SpaceModel> spaces = new ArrayList<>(newSpaces.values());
+                spaces.sort(Comparator.comparingInt(SpaceModel::getIndex));
+                int selectedTab = spaces.stream().filter(SpaceModel::isTabSelected).findFirst().map(SpaceModel::getIndex).orElse(0);
+
                 this.getChangeSupport().firePropertyChange(EVENT_CLEAR_SPACES, null, true);
-                for (SpaceModel space : newSpaces) {
+                for (SpaceModel space : spaces) {
                     this.getChangeSupport().firePropertyChange(EVENT_SPACE_ADDED, null, space);
                 }
+
+                this.getChangeSupport().firePropertyChange(EVENT_SELECT_TAB, null, selectedTab);
                 return;
             }
 
@@ -78,7 +88,6 @@ public class WorkspaceController {
         ArrayList<String> errors = new ArrayList<>();
         for (SpaceModel space : Store.getInstance().getAllSpaces()) {
             errors.addAll(space.validate());
-            space.getChangeSupport().firePropertyChange(EVENT_UPDATE_ERRORS, null, true);
         }
 
         if (errors.size() == 0) {
@@ -87,6 +96,19 @@ public class WorkspaceController {
             this.frame.showDialog(errors.size() + " error found");
         } else {
             this.frame.showDialog(errors.size() + " errors found");
+        }
+    }
+
+
+    public void onTabSelected(ChangeEvent e) {
+        if (e.getSource() instanceof JTabbedPane) {
+            JTabbedPane pane = (JTabbedPane) e.getSource();
+            int selectedIndex = pane.getSelectedIndex();
+
+            for (SpaceModel space : Store.getInstance().getAllSpaces()) {
+                space.setTabSelected(selectedIndex == space.getIndex());
+            }
+
         }
     }
 

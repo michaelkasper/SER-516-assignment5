@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ImportExport {
     private static FileWriter file;
@@ -63,12 +63,12 @@ public class ImportExport {
     }
 
 
-    public static ArrayList<SpaceModel> loadFrom(File fileLocation) {
+    public static HashMap<String, SpaceModel> loadFrom(File fileLocation) {
         if (fileLocation != null) {
 
             Store store = Store.getInstance();
             JSONParser jsonParser = new JSONParser();
-            ArrayList<SpaceModel> spaces = new ArrayList<>();
+            HashMap<String, SpaceModel> spaces = new HashMap<>();
 
             try (FileReader reader = new FileReader(fileLocation)) {
                 //Read JSON file
@@ -79,7 +79,8 @@ public class ImportExport {
 
                 spacesJson.forEach(spaceJson -> {
                     JSONObject json = (JSONObject) spaceJson;
-                    spaces.add(new SpaceModel(json));
+                    SpaceModel spaceModel = new SpaceModel(json);
+                    spaces.put(spaceModel.getId(), spaceModel);
                 });
 
                 elementsJson.forEach(elementJson -> {

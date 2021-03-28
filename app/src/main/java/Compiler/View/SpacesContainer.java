@@ -10,8 +10,7 @@ import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 
-import static Compiler.Controller.SpaceController.EVENT_REBUILD_MAP;
-import static Compiler.Model.SpaceModel.EVENT_UPDATE_ERRORS;
+import static Compiler.Model.SpaceModel.EVENT_CONNECTION_CREATED;
 
 public class SpacesContainer extends JPanel {
 
@@ -27,30 +26,39 @@ public class SpacesContainer extends JPanel {
 
         tabbedPane.setBounds(0, 0, getWidth(), getHeight());
         tabbedPane.setTabPlacement(JTabbedPane.TOP);
+        tabbedPane.addChangeListener(workspaceController::onTabSelected);
 
+        workspaceController.getChangeSupport().addPropertyChangeListener(WorkspaceController.EVENT_SELECT_TAB, this::onSelectTab);
         workspaceController.getChangeSupport().addPropertyChangeListener(WorkspaceController.EVENT_SPACE_ADDED, this::onSpaceAdded);
         workspaceController.getChangeSupport().addPropertyChangeListener(WorkspaceController.EVENT_CLEAR_SPACES, this::onResetTabs);
 
         this.add(tabbedPane);
     }
 
-
     private void onSpaceAdded(PropertyChangeEvent e) {
         if (e.getNewValue() != null) {
+            int index = tabbedPane.getTabCount();
+
             SpaceModel spaceModel = (SpaceModel) e.getNewValue();
+            spaceModel.setIndex(index);
+
             SpaceController newController = new SpaceController(spaceModel);
             Space newSpace = new Space(newController);
-            int index = tabbedPane.getTabCount();
             tabbedPane.add("Space " + (index + 1), newSpace);
             tabbedPane.setBackgroundAt(index, Color.WHITE);
             tabbedPane.setSelectedIndex(index);
 
             spaceModel.getChangeSupport().addPropertyChangeListener(SpaceModel.EVENT_UPDATE_ERRORS, event -> this.onUpdateErrors(spaceModel, index, event));
-            spaceModel.getChangeSupport().firePropertyChange(EVENT_UPDATE_ERRORS, null, true);
-            newController.getChangeSupport().firePropertyChange(EVENT_REBUILD_MAP, null, newSpace);
+            spaceModel.getChangeSupport().firePropertyChange(EVENT_CONNECTION_CREATED, null, true);
         }
     }
 
+    private void onSelectTab(PropertyChangeEvent e) {
+        if (e.getNewValue() != null) {
+            int selectedTab = (int) e.getNewValue();
+            tabbedPane.setSelectedIndex(selectedTab);
+        }
+    }
 
     private void onResetTabs(PropertyChangeEvent e) {
         tabbedPane.removeAll();

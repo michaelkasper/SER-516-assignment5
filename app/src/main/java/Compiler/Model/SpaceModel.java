@@ -17,12 +17,12 @@ public class SpaceModel extends AbstractModel {
     public final static String EVENT_CONNECTION_STARTED = "event_connection_started";
     public final static String EVENT_UPDATE_ERRORS = "event_update_errors";
 
-    private final ArrayList<AbstractElement> elements = new ArrayList<>() {
-
-    };
+    private final ArrayList<AbstractElement> elements = new ArrayList<>();
     private final ArrayList<String> errors = new ArrayList<>();
     private AbstractElement selectedFromElement = null;
     private AbstractElement selectedToElement = null;
+    private int index = 0;
+    private boolean tabSelected = false;
 
     public SpaceModel() {
         super();
@@ -32,16 +32,35 @@ public class SpaceModel extends AbstractModel {
 
     public SpaceModel(JSONObject data) {
         super(data);
+        this.index = ((Long) data.get("index")).intValue();
+        this.tabSelected = (boolean) data.get("tabSelected");
+        
         JSONArray errorsJson = (JSONArray) data.get("errors");
         errorsJson.forEach(errorJson -> {
             this.errors.add((String) errorJson);
         });
     }
 
+    public int getIndex() {
+        return this.index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public void setTabSelected(boolean tabSelected) {
+        this.tabSelected = tabSelected;
+    }
+
+    public boolean isTabSelected() {
+        return this.tabSelected;
+    }
+
     public void addElement(AbstractElement element) {
         element.setSpaceModel(this);
         this.elements.add(element);
-        this.getChangeSupport().firePropertyChange(EVENT_ELEMENT_ADDED, null, element);
+        this.getChangeSupport().firePropertyChange(EVENT_ELEMENT_ADDED, null, element.getId());
     }
 
     public ArrayList<AbstractElement> getElements() {
@@ -78,18 +97,15 @@ public class SpaceModel extends AbstractModel {
         ArrayList<String> childErrors = new ArrayList<>();
 
         for (AbstractElement element : this.elements) {
-            childErrors.addAll(element.validate());
+            childErrors.addAll(element.validateCompile());
         }
 
         if (childErrors.size() > 0) {
-            this.addError("Elements have errors");
+            this.errors.add("Elements have errors");
+            this.getChangeSupport().firePropertyChange(EVENT_UPDATE_ERRORS, null, true);
         }
 
         return childErrors;
-    }
-
-    public void addError(String error) {
-        this.errors.add(error);
     }
 
     public boolean hasErrors() {
@@ -97,18 +113,20 @@ public class SpaceModel extends AbstractModel {
     }
 
     public String getErrorsAsString() {
-        String errorMsg = "Errors:";
+        StringBuilder errorMsg = new StringBuilder("Errors:");
         for (String error : this.errors) {
-            errorMsg += " " + error + ";";
+            errorMsg.append(" ").append(error).append(";");
         }
 
-        return errorMsg;
+        return errorMsg.toString();
     }
 
 
     public JSONObject export() {
         JSONObject obj = super.export();
 
+        obj.put("index", this.index);
+        obj.put("tabSelected", this.tabSelected);
         obj.put("selectedFromElement", selectedFromElement != null ? selectedFromElement.getId() : null);
         obj.put("selectedToElement", selectedToElement != null ? selectedToElement.getId() : null);
 
