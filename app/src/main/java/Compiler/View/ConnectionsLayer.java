@@ -42,25 +42,18 @@ public class ConnectionsLayer extends JPanel {
         Point spacePosition = this.getLocationOnScreen();
         for (Element fromView : this.elementViewsMap.values()) {
             AbstractElement elementModel = fromView.getController().getElementModel();
-            int position = 1;
-            int toCount = elementModel.getOutCount() > 0 ? elementModel.getOutCount() : 1;
-
             for (AbstractElement toElement : elementModel.getToConnections()) {
                 Element toView = this.elementViewsMap.get(toElement.getId());
 
                 if (toView != null) {
-                    int outSectionHeight = fromView.getHeight() / toCount;
-
                     if (fromView.isShowing() && toView.isShowing()) {
-
                         double fromX = fromView.getLocationOnScreen().getX() - spacePosition.getX() + fromView.getWidth();
-                        double fromY = fromView.getLocationOnScreen().getY() - spacePosition.getY() + (outSectionHeight * position) - (outSectionHeight / 2);
+                        double fromY = fromView.getLocationOnScreen().getY() - spacePosition.getY() + (fromView.getHeight() / 2);
 
                         double toX = toView.getLocationOnScreen().getX() - spacePosition.getX();
                         double toY = toView.getLocationOnScreen().getY() - spacePosition.getY() + (toView.getHeight() / 2);
 
                         drawArrow(g, (int) fromX, (int) fromY, (int) toX, (int) toY);
-                        position++;
                     }
                 }
             }
