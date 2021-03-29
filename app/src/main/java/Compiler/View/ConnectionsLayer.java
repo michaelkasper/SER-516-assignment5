@@ -43,7 +43,7 @@ public class ConnectionsLayer extends JPanel {
         for (Element fromView : this.elementViewsMap.values()) {
             AbstractElement elementModel = fromView.getController().getElementModel();
             int position = 1;
-            int toCount = elementModel.getOutCount();
+            int toCount = elementModel.getOutCount() > 0 ? elementModel.getOutCount() : 1;
 
             for (AbstractElement toElement : elementModel.getToConnections()) {
                 Element toView = this.elementViewsMap.get(toElement.getId());

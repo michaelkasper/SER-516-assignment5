@@ -1,6 +1,7 @@
 package Compiler;
 
 import Compiler.Controller.WorkspaceController;
+import Compiler.View.HeaderMenu;
 import Compiler.View.Sidebar;
 import Compiler.View.SpacesContainer;
 
@@ -37,26 +38,7 @@ public class Compiler extends JFrame {
 
         SpacesContainer spacesView = new SpacesContainer(workspaceController);
         Sidebar sidebarView = new Sidebar();
-
-        JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = new JMenu("File");
-        JMenu spaceMenu = new JMenu("Space");
-
-        JMenuItem load = new JMenuItem("Load");
-        JMenuItem save = new JMenuItem("Save");
-        JMenuItem newSpace = new JMenuItem("New Space");
-        JMenuItem compile = new JMenuItem("Compile");
-        load.addActionListener(workspaceController::onImport);
-        save.addActionListener(workspaceController::onSave);
-        newSpace.addActionListener(workspaceController::onAddSpace);
-        compile.addActionListener(workspaceController::onCompile);
-
-        fileMenu.add(load);
-        fileMenu.add(save);
-        spaceMenu.add(newSpace);
-        spaceMenu.add(compile);
-        menuBar.add(fileMenu);
-        menuBar.add(spaceMenu);
+        JMenuBar menuBar = new HeaderMenu(workspaceController);
 
         this.setJMenuBar(menuBar);
         this.add(sidebarView, BorderLayout.LINE_START);
@@ -66,7 +48,6 @@ public class Compiler extends JFrame {
 
         workspaceController.onAddSpace(new ActionEvent(this, 0, ""));
     }
-
 
 
     public void showDialog(String message) {

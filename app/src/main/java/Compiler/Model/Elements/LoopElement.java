@@ -20,13 +20,8 @@ public class LoopElement extends AbstractElement {
     }
 
     public void verifyNoLoop(AbstractElement toElement) throws Exception {
-        ArrayList<String> priorConnections = new ArrayList<>();
-        priorConnections.add(toElement.getId());
-        priorConnections.add(this.getId());
-
         try {
-            this.verifyNoLoop(priorConnections, AbstractElement::getToConnections);
-            this.verifyNoLoop(priorConnections, AbstractElement::getFromConnections);
+            super.verifyNoLoop(toElement);
         } catch (Exception e) {
             if (!this.isLoopAllowed()) {
                 throw e;
@@ -34,8 +29,8 @@ public class LoopElement extends AbstractElement {
         }
     }
 
-    protected void verifyNoLoop(ArrayList<String> priorConnections, Function<AbstractElement, ArrayList<AbstractElement>> getCollection) throws Exception {
-        for (AbstractElement element : getCollection.apply(this)) {
+    protected void verifyNoLoop(ArrayList<String> priorConnections) throws Exception {
+        for (AbstractElement element : this.getFromConnections()) {
             if (this.isLoopAllowed() || !this.loopConnections.contains(element)) {
                 String flag = element.getId();
                 if (priorConnections.contains(flag)) {
@@ -45,7 +40,7 @@ public class LoopElement extends AbstractElement {
                 } else {
                     element.verifyNoLoop(new ArrayList<>(priorConnections) {{
                         add(flag);
-                    }}, getCollection);
+                    }});
                 }
             }
         }

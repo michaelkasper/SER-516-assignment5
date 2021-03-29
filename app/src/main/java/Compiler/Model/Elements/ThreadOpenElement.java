@@ -4,13 +4,13 @@ import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 
-public class ThreadElement extends AbstractElement {
+public class ThreadOpenElement extends AbstractElement {
 
-    public ThreadElement() {
-        super("||", -1, -1);
+    public ThreadOpenElement() {
+        super("-|", 1, -1);
     }
 
-    public ThreadElement(JSONObject data) {
+    public ThreadOpenElement(JSONObject data) {
         super(data);
     }
 
@@ -18,7 +18,7 @@ public class ThreadElement extends AbstractElement {
         ArrayList<String> errors = new ArrayList<>();
 
         if (this.getToConnections().size() == 0) {
-            errors.add("Missing Out Connections");
+            errors.add("Missing In Connection");
         }
 
         if (this.getFromConnections().size() == 0) {
@@ -26,5 +26,14 @@ public class ThreadElement extends AbstractElement {
         }
 
         return errors;
+    }
+
+    public boolean hasOpenOutConnections() {
+        return true;
+    }
+
+    public void addToConnections(AbstractElement toElement) {
+        super.addToConnections(toElement);
+        this.outCount++;
     }
 }

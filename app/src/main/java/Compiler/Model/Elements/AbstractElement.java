@@ -19,12 +19,12 @@ public abstract class AbstractElement extends AbstractModel {
     public final static String EVENT_UPDATE_ERRORS = "event_update_errors";
 
     private String symbol;
-    private int inCount;
-    private int outCount;
     private String value;
     private SpaceModel spaceModel;
     private Point position = new Point(-1, -1);
     private ElementState state = ElementState.DEFAULT;
+    protected int inCount;
+    protected int outCount;
     protected final ArrayList<AbstractElement> fromConnections = new ArrayList<>();
     protected final ArrayList<AbstractElement> toConnections = new ArrayList<>();
     protected final ArrayList<String> errors = new ArrayList<>();
@@ -174,12 +174,15 @@ public abstract class AbstractElement extends AbstractModel {
         priorConnections.add(toElement.getId());
         priorConnections.add(this.getId());
 
-        this.verifyNoLoop(priorConnections, AbstractElement::getToConnections);
-        this.verifyNoLoop(priorConnections, AbstractElement::getFromConnections);
+        for (AbstractElement fromElement : toElement.getFromConnections()) {
+            priorConnections.add(fromElement.getId());
+        }
+
+        this.verifyNoLoop(priorConnections);
     }
 
-    protected void verifyNoLoop(ArrayList<String> priorConnections, Function<AbstractElement, ArrayList<AbstractElement>> getCollection) throws Exception {
-        for (AbstractElement element : getCollection.apply(this)) {
+    protected void verifyNoLoop(ArrayList<String> priorConnections) throws Exception {
+        for (AbstractElement element : this.getFromConnections()) {
             String flag = element.getId();
             if (priorConnections.contains(flag)) {
                 if (!this.isLoopAllowed() && !element.isLoopAllowed()) {
@@ -188,7 +191,7 @@ public abstract class AbstractElement extends AbstractModel {
             } else {
                 element.verifyNoLoop(new ArrayList<>(priorConnections) {{
                     add(flag);
-                }}, getCollection);
+                }});
             }
         }
     }
@@ -266,11 +269,11 @@ public abstract class AbstractElement extends AbstractModel {
         ArrayList<String> errors = new ArrayList<>();
 
         if (this.hasOpenInConnections()) {
-            errors.add("Missing In Connections");
+            errors.add(this.inCount - this.toConnections.size() > 1 ? "Missing In Connections" : "Missing In Connection");
         }
 
         if (this.hasOpenOutConnections()) {
-            errors.add("Missing Out Connections");
+            errors.add(this.outCount - this.fromConnections.size() > 1 ? "Missing Out Connections" : "Missing Out Connection");
         }
         return errors;
     }
@@ -307,10 +310,10 @@ public abstract class AbstractElement extends AbstractModel {
     public static AbstractElement Factory(String className, JSONObject data) {
         Boolean hasData = data != null;
         switch (className) {
-            case "OpenIfElement":
-                return hasData ? new OpenIfElement(data) : new OpenIfElement();
-            case "CloseIfElement":
-                return hasData ? new CloseIfElement(data) : new CloseIfElement();
+            case "IfEndElement":
+                return hasData ? new IfEndElement(data) : new IfEndElement();
+            case "IfStartElement":
+                return hasData ? new IfStartElement(data) : new IfStartElement();
             case "CommandElement":
                 return hasData ? new CommandElement(data) : new CommandElement();
             case "LoopElement":
@@ -319,8 +322,10 @@ public abstract class AbstractElement extends AbstractModel {
                 return hasData ? new MethodEndElement(data) : new MethodEndElement();
             case "MethodStartElement":
                 return hasData ? new MethodStartElement(data) : new MethodStartElement();
-            case "ThreadElement":
-                return hasData ? new ThreadElement(data) : new ThreadElement();
+            case "ThreadCloseElement":
+                return hasData ? new ThreadCloseElement(data) : new ThreadCloseElement();
+            case "ThreadOpenElement":
+                return hasData ? new ThreadOpenElement(data) : new ThreadOpenElement();
         }
         return null;
     }

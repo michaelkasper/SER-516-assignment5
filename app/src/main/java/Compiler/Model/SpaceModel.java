@@ -1,8 +1,6 @@
 package Compiler.Model;
 
-import Compiler.Model.Elements.AbstractElement;
-import Compiler.Model.Elements.CloseIfElement;
-import Compiler.Model.Elements.OpenIfElement;
+import Compiler.Model.Elements.*;
 import Compiler.Service.Store;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,15 +24,15 @@ public class SpaceModel extends AbstractModel {
 
     public SpaceModel() {
         super();
-        this.addElement(new OpenIfElement(new Point(20, 20)));
-        this.addElement(new CloseIfElement(new Point(750, 550)));
+        this.addElement(new MethodStartElement(new Point(20, 20)));
+        this.addElement(new MethodEndElement(new Point(750, 550)));
     }
 
     public SpaceModel(JSONObject data) {
         super(data);
         this.index = ((Long) data.get("index")).intValue();
         this.tabSelected = (boolean) data.get("tabSelected");
-        
+
         JSONArray errorsJson = (JSONArray) data.get("errors");
         errorsJson.forEach(errorJson -> {
             this.errors.add((String) errorJson);

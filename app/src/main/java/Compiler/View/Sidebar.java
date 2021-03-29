@@ -21,10 +21,11 @@ public class Sidebar extends JPanel {
         this.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(10, 20, 20, 10, new Color(219, 225, 243)), new CompoundBorder(new LineBorder(Color.gray), new EmptyBorder(20, 20, 0, 20))));
 
         for (AbstractElement elementModel : Arrays.asList(
-                new MethodStartElement(),
-                new MethodEndElement(),
+                new IfEndElement(),
+                new IfStartElement(),
                 new LoopElement(),
-                new ThreadElement(),
+                new ThreadOpenElement(),
+                new ThreadCloseElement(),
                 new CommandElement()
         )) {
             this.add(new Element(new ElementController(elementModel)));
