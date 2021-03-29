@@ -29,11 +29,8 @@ public class ConnectionsLayer extends JPanel {
         at.concatenate(AffineTransform.getRotateInstance(angle));
         g.transform(at);
 
-        // Draw horizontal arrow starting in (0, 0)
-
         g.drawLine(0, 0, len, 0);
-        g.fillPolygon(new int[]{len, len - ARR_SIZE, len - ARR_SIZE, len},
-                new int[]{0, -ARR_SIZE, ARR_SIZE, 0}, 4);
+        g.fillPolygon(new int[]{len, len - ARR_SIZE, len - ARR_SIZE, len}, new int[]{0, -ARR_SIZE, ARR_SIZE, 0}, 4);
     }
 
     @Override
