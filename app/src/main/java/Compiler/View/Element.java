@@ -46,19 +46,22 @@ public class Element extends JPanel implements DragInterface {
             this.elementController.getChangeSupport().addPropertyChangeListener(ElementController.EVENT_SHOW_INPUT_POPUP, this::showInputPopup);
         }
     }
-    
+
     @Override
     protected void paintComponent(Graphics g) {
         int width = getWidth();
         int height = getHeight();
-        Dimension arcs = new Dimension(120, 120);
-    	Graphics2D graphics = (Graphics2D) g;
-    	
-        graphics.setColor(getBackground());
-        graphics.fillRoundRect(0, 0, width, height, arcs.width, arcs.height);
-        graphics.setColor(getForeground());
-        graphics.setStroke(new BasicStroke(3));
-        graphics.drawRoundRect(0, 0, width, height, arcs.width, arcs.height);
+
+        g.setColor(Color.WHITE);
+        g.fillOval(0, 0, width, height);
+
+        switch (this.elementController.getElementModel().getState()) {
+            case SELECTED -> g.setColor(Color.GREEN);
+            case HIGHLIGHTED -> g.setColor(Color.ORANGE);
+            default -> g.setColor(Color.BLACK);
+        }
+
+        g.drawOval(0, 0, width, height);
     }
 
     @Override
@@ -141,11 +144,8 @@ public class Element extends JPanel implements DragInterface {
     }
 
     private void highlight(PropertyChangeEvent e) {
-        switch (this.elementController.getElementModel().getState()) {
-            case SELECTED -> this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-            case HIGHLIGHTED -> this.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
-            //default -> this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        }
+        this.repaint();
+        this.revalidate();
     }
 
     public ElementController getController() {
