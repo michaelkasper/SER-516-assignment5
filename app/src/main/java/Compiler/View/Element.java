@@ -48,25 +48,6 @@ public class Element extends JPanel implements DragInterface {
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
-        int width = getWidth();
-        int height = getHeight();
-
-        g.setColor(Color.WHITE);
-        g.fillOval(0, 0, width, height);
-
-        g.setColor(
-                switch (this.elementController.getElementModel().getState()) {
-                    case SELECTED -> Color.GREEN;
-                    case HIGHLIGHTED -> Color.ORANGE;
-                    default -> Color.BLACK;
-                }
-        );
-
-        g.drawOval(0, 0, width, height);
-    }
-
-    @Override
     public boolean canDrag() {
         return !this.moving;
     }
@@ -114,6 +95,25 @@ public class Element extends JPanel implements DragInterface {
         }
 
         return null;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        int width = getWidth();
+        int height = getHeight();
+
+        g.setColor(Color.WHITE);
+        g.fillOval(0, 0, width, height);
+
+        g.setColor(
+                switch (this.elementController.getElementModel().getState()) {
+                    case SELECTED -> Color.GREEN;
+                    case HIGHLIGHTED -> Color.ORANGE;
+                    default -> Color.BLACK;
+                }
+        );
+
+        g.drawOval(0, 0, width, height);
     }
 
     private void renderErrors(PropertyChangeEvent e) {

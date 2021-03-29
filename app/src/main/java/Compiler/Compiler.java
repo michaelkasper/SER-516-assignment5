@@ -38,7 +38,7 @@ public class Compiler extends JFrame {
 
         SpacesContainer spacesView = new SpacesContainer(workspaceController);
         Sidebar sidebarView = new Sidebar();
-        JMenuBar menuBar = new HeaderMenu(workspaceController);
+        HeaderMenu menuBar = new HeaderMenu(workspaceController);
 
         this.setJMenuBar(menuBar);
         this.add(sidebarView, BorderLayout.LINE_START);

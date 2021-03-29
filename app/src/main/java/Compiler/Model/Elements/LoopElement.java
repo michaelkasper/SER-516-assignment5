@@ -60,10 +60,6 @@ public class LoopElement extends AbstractElement {
         }
     }
 
-    protected boolean isLoopAllowed() {
-        return this.loopConnections.size() == 0;
-    }
-
     public void updateLoopFlag(String flag, Function<AbstractElement, ArrayList<AbstractElement>> getCollection) {
         for (AbstractElement element : getCollection.apply(this)) {
             if (this.getId().equals(flag)) {
@@ -95,6 +91,10 @@ public class LoopElement extends AbstractElement {
         loopConnectionsJson.forEach(elementId -> {
             this.loopConnections.add(Store.getInstance().getElementById((String) elementId));
         });
+    }
+
+    protected boolean isLoopAllowed() {
+        return this.loopConnections.size() == 0;
     }
 
 }

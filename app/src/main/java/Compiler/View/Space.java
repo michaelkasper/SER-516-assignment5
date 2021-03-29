@@ -38,29 +38,6 @@ public class Space extends JPanel implements DropInterface {
         }
     }
 
-    private void onElementAdded(PropertyChangeEvent e) {
-        if (e.getNewValue() != null) {
-            String elementModelId = (String) e.getNewValue();
-
-            if (!this.elementViewsMap.containsKey(elementModelId)) {
-                AbstractElement elementModel = Store.getInstance().getElementById(elementModelId);
-                Element elementView = new Element(new ElementController(elementModel));
-                this.elementViewsMap.put(elementModel.getId(), elementView);
-                elementModel.getChangeSupport().addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, this::onRebuildConnections);
-                this.add(elementView);
-                this.onRebuildConnections(null);
-            }
-        }
-    }
-
-    private void onRebuildConnections(PropertyChangeEvent e) {
-        this.repaint();
-        this.revalidate();
-        this.setComponentZOrder(this.spaceConnectionsLayer, 0);
-        this.spaceConnectionsLayer.setBounds(0, 0, this.getWidth(), this.getHeight());
-        this.spaceConnectionsLayer.rebuild(this.elementViewsMap);
-    }
-
     public DataFlavor[] getAllowedDraggableFlags() {
         return new DataFlavor[]{Element.DRAGGABLE_FLAG};
     }
@@ -88,5 +65,28 @@ public class Space extends JPanel implements DropInterface {
     @Override
     public boolean onDrop(TransferHandler.TransferSupport support) {
         return this.spaceController.onElementDrop(support);
+    }
+
+    private void onElementAdded(PropertyChangeEvent e) {
+        if (e.getNewValue() != null) {
+            String elementModelId = (String) e.getNewValue();
+
+            if (!this.elementViewsMap.containsKey(elementModelId)) {
+                AbstractElement elementModel = Store.getInstance().getElementById(elementModelId);
+                Element elementView = new Element(new ElementController(elementModel));
+                this.elementViewsMap.put(elementModel.getId(), elementView);
+                elementModel.getChangeSupport().addPropertyChangeListener(AbstractElement.EVENT_POSITION_UPDATED, this::onRebuildConnections);
+                this.add(elementView);
+                this.onRebuildConnections(null);
+            }
+        }
+    }
+
+    private void onRebuildConnections(PropertyChangeEvent e) {
+        this.repaint();
+        this.revalidate();
+        this.setComponentZOrder(this.spaceConnectionsLayer, 0);
+        this.spaceConnectionsLayer.setBounds(0, 0, this.getWidth(), this.getHeight());
+        this.spaceConnectionsLayer.rebuild(this.elementViewsMap);
     }
 }

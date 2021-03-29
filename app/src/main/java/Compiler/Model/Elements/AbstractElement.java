@@ -16,7 +16,7 @@ public abstract class AbstractElement extends AbstractModel {
 
     public static final String EVENT_POSITION_UPDATED = "event_position_updated";
     public static final String EVENT_STATE_UPDATED = "event_state_updated";
-    public final static String EVENT_UPDATE_ERRORS = "event_update_errors";
+    public static final String EVENT_UPDATE_ERRORS = "event_update_errors";
 
     private String symbol;
     private String value;
@@ -189,25 +189,6 @@ public abstract class AbstractElement extends AbstractModel {
         this.verifyNoLoop(priorConnections);
     }
 
-    protected void verifyNoLoop(ArrayList<String> priorConnections) throws Exception {
-        for (AbstractElement element : this.getFromConnections()) {
-            String flag = element.getId();
-            if (priorConnections.contains(flag)) {
-                if (!this.isLoopAllowed() && !element.isLoopAllowed()) {
-                    throw new Exception("loop found");
-                }
-            } else {
-                element.verifyNoLoop(new ArrayList<>(priorConnections) {{
-                    add(flag);
-                }});
-            }
-        }
-    }
-
-    protected boolean isLoopAllowed() {
-        return false;
-    }
-
     public void updateLoopFlag(String flag, Function<AbstractElement, ArrayList<AbstractElement>> getCollection) {
         for (AbstractElement fromElement : getCollection.apply(this)) {
             fromElement.updateLoopFlag(flag, getCollection);
@@ -272,6 +253,24 @@ public abstract class AbstractElement extends AbstractModel {
         });
     }
 
+    protected void verifyNoLoop(ArrayList<String> priorConnections) throws Exception {
+        for (AbstractElement element : this.getFromConnections()) {
+            String flag = element.getId();
+            if (priorConnections.contains(flag)) {
+                if (!this.isLoopAllowed() && !element.isLoopAllowed()) {
+                    throw new Exception("loop found");
+                }
+            } else {
+                element.verifyNoLoop(new ArrayList<>(priorConnections) {{
+                    add(flag);
+                }});
+            }
+        }
+    }
+
+    protected boolean isLoopAllowed() {
+        return false;
+    }
 
     protected ArrayList<String> validateCompileConnections() {
         ArrayList<String> errors = new ArrayList<>();

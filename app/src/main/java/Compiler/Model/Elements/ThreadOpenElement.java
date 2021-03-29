@@ -14,6 +14,15 @@ public class ThreadOpenElement extends AbstractElement {
         super(data);
     }
 
+    public boolean hasOpenOutConnections() {
+        return true;
+    }
+
+    public void addToConnections(AbstractElement toElement) {
+        super.addToConnections(toElement);
+        this.outCount++;
+    }
+
     protected ArrayList<String> validateCompileConnections() {
         ArrayList<String> errors = new ArrayList<>();
 
@@ -26,14 +35,5 @@ public class ThreadOpenElement extends AbstractElement {
         }
 
         return errors;
-    }
-
-    public boolean hasOpenOutConnections() {
-        return true;
-    }
-
-    public void addToConnections(AbstractElement toElement) {
-        super.addToConnections(toElement);
-        this.outCount++;
     }
 }

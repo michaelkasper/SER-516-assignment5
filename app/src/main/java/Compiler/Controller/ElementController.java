@@ -1,7 +1,6 @@
 package Compiler.Controller;
 
 import Compiler.Model.Elements.AbstractElement;
-import Compiler.Model.SpaceModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +12,7 @@ public class ElementController implements MouseListener {
 
     public final static String EVENT_CONNECTION_ERROR = "event_connection_error";
     public final static String EVENT_SHOW_INPUT_POPUP = "event_show_input_popup";
-    private final static int clickInterval = (Integer) Toolkit.getDefaultToolkit().getDesktopProperty("awt.multiClickInterval");
+    private final static int CLICK_INTERVAL = (Integer) Toolkit.getDefaultToolkit().getDesktopProperty("awt.multiClickInterval");
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private final AbstractElement elementModel;
     private Timer timer;
@@ -30,17 +29,13 @@ public class ElementController implements MouseListener {
         return elementModel;
     }
 
-    public SpaceModel getSpaceModel() {
-        return this.getElementModel().getSpaceModel();
-    }
-
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getClickCount() > 2) return;
 
         if (e.getButton() == MouseEvent.BUTTON1) {
             if (this.timer == null) {
-                this.timer = new Timer(clickInterval, event -> {
+                this.timer = new Timer(CLICK_INTERVAL, event -> {
                     timer.stop();
                     this.onSingleClick();
                 });
@@ -75,6 +70,9 @@ public class ElementController implements MouseListener {
 
     }
 
+    public void saveValue(String value) {
+        this.elementModel.setValue(value);
+    }
 
     private void onDoubleClick() {
         this.getChangeSupport().firePropertyChange(EVENT_SHOW_INPUT_POPUP, null,
@@ -85,7 +83,7 @@ public class ElementController implements MouseListener {
 
 
     private void onSingleClick() {
-        AbstractElement selectedFromElement = this.getSpaceModel().getSelectedFromElement();
+        AbstractElement selectedFromElement = this.getElementModel().getSpaceModel().getSelectedFromElement();
 
         if (selectedFromElement == null) {
             if (!this.getElementModel().hasOpenOutConnections()) {
@@ -102,7 +100,7 @@ public class ElementController implements MouseListener {
 
 
         if (this.getElementModel().equals(selectedFromElement)) {
-            this.getSpaceModel().clearSelected();
+            this.getElementModel().getSpaceModel().clearSelected();
             return;
         }
 
@@ -122,32 +120,27 @@ public class ElementController implements MouseListener {
         }
     }
 
-    public void saveValue(String value) {
-        this.elementModel.setValue(value);
-    }
-
-
     private void startConnection(AbstractElement fromElement) {
-        if (this.getSpaceModel().getSelectedFromElement() != null) {
+        if (this.getElementModel().getSpaceModel().getSelectedFromElement() != null) {
             return;
         }
 
-        this.getSpaceModel().setSelectedFromElement(fromElement);
+        this.getElementModel().getSpaceModel().setSelectedFromElement(fromElement);
     }
 
 
     private void finishConnection(AbstractElement toElement) throws Exception {
-        if (this.getSpaceModel().getSelectedFromElement() == null) {
+        if (this.getElementModel().getSpaceModel().getSelectedFromElement() == null) {
             return;
         }
 
-        if (this.getSpaceModel().getSelectedFromElement().isAllowedToConnectTo(toElement)) {
-            this.getSpaceModel().setSelectedToElement(toElement);
+        if (this.getElementModel().getSpaceModel().getSelectedFromElement().isAllowedToConnectTo(toElement)) {
+            this.getElementModel().getSpaceModel().setSelectedToElement(toElement);
 
             Timer timer = new Timer(100, event -> {
-                this.getSpaceModel().getSelectedFromElement().addToConnections(this.getSpaceModel().getSelectedToElement());
-                this.getSpaceModel().getSelectedToElement().addFromConnections(this.getSpaceModel().getSelectedFromElement());
-                this.getSpaceModel().clearSelected();
+                this.getElementModel().getSpaceModel().getSelectedFromElement().addToConnections(this.getElementModel().getSpaceModel().getSelectedToElement());
+                this.getElementModel().getSpaceModel().getSelectedToElement().addFromConnections(this.getElementModel().getSpaceModel().getSelectedFromElement());
+                this.getElementModel().getSpaceModel().clearSelected();
             });
             timer.setRepeats(false);
             timer.start();

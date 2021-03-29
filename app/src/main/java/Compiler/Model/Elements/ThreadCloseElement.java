@@ -14,6 +14,15 @@ public class ThreadCloseElement extends AbstractElement {
         super(data);
     }
 
+    public boolean hasOpenInConnections() {
+        return true;
+    }
+
+    public void addFromConnections(AbstractElement fromElement) {
+        super.addFromConnections(fromElement);
+        this.inCount++;
+    }
+
     protected ArrayList<String> validateCompileConnections() {
         ArrayList<String> errors = new ArrayList<>();
 
@@ -28,12 +37,4 @@ public class ThreadCloseElement extends AbstractElement {
         return errors;
     }
 
-    public boolean hasOpenInConnections() {
-        return true;
-    }
-
-    public void addFromConnections(AbstractElement fromElement) {
-        super.addFromConnections(fromElement);
-        this.inCount++;
-    }
 }
