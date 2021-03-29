@@ -45,10 +45,10 @@ public class ConnectionsLayer extends JPanel {
                 if (toView != null) {
                     if (fromView.isShowing() && toView.isShowing()) {
                         double fromX = fromView.getLocationOnScreen().getX() - spacePosition.getX() + fromView.getWidth();
-                        double fromY = fromView.getLocationOnScreen().getY() - spacePosition.getY() + (fromView.getHeight() / 2);
+                        double fromY = fromView.getLocationOnScreen().getY() - spacePosition.getY() + (fromView.getHeight() >> 1);
 
                         double toX = toView.getLocationOnScreen().getX() - spacePosition.getX();
-                        double toY = toView.getLocationOnScreen().getY() - spacePosition.getY() + (toView.getHeight() / 2);
+                        double toY = toView.getLocationOnScreen().getY() - spacePosition.getY() + (toView.getHeight() >> 1);
 
                         drawArrow(g, (int) fromX, (int) fromY, (int) toX, (int) toY);
                     }

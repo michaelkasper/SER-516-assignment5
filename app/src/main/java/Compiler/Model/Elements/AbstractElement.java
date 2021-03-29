@@ -174,8 +174,8 @@ public abstract class AbstractElement extends AbstractModel {
         priorConnections.add(toElement.getId());
         priorConnections.add(this.getId());
 
-        for (AbstractElement fromElement : toElement.getFromConnections()) {
-            priorConnections.add(fromElement.getId());
+        for (AbstractElement element : toElement.getToConnections()) {
+            priorConnections.add(element.getId());
         }
 
         this.verifyNoLoop(priorConnections);
