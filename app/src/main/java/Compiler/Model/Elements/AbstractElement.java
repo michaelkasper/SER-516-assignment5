@@ -160,6 +160,10 @@ public abstract class AbstractElement extends AbstractModel {
             return false;
         }
 
+        if (!toElement.isAllowedToConnectFrom(this)) {
+            return false;
+        }
+
         //Check for loop
         try {
             this.verifyNoLoop(toElement);
@@ -167,6 +171,10 @@ public abstract class AbstractElement extends AbstractModel {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public boolean isAllowedToConnectFrom(AbstractElement fromElement) {
+        return true;
     }
 
     public void verifyNoLoop(AbstractElement toElement) throws Exception {

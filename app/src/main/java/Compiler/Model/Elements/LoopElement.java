@@ -19,6 +19,20 @@ public class LoopElement extends AbstractElement {
         super(data);
     }
 
+    public boolean isAllowedToConnectTo(AbstractElement toElement) {
+        boolean isAllowed = super.isAllowedToConnectTo(toElement);
+
+        if (this.toConnections.contains(toElement)) {
+            return false;
+        }
+
+        return isAllowed;
+    }
+
+    public boolean isAllowedToConnectFrom(AbstractElement fromElement) {
+        return !this.fromConnections.contains(fromElement);
+    }
+
     public void verifyNoLoop(AbstractElement toElement) throws Exception {
         try {
             super.verifyNoLoop(toElement);
