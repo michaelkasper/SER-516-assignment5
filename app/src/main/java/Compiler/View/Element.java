@@ -55,11 +55,13 @@ public class Element extends JPanel implements DragInterface {
         g.setColor(Color.WHITE);
         g.fillOval(0, 0, width, height);
 
-        switch (this.elementController.getElementModel().getState()) {
-            case SELECTED -> g.setColor(Color.GREEN);
-            case HIGHLIGHTED -> g.setColor(Color.ORANGE);
-            default -> g.setColor(Color.BLACK);
-        }
+        g.setColor(
+                switch (this.elementController.getElementModel().getState()) {
+                    case SELECTED -> Color.GREEN;
+                    case HIGHLIGHTED -> Color.ORANGE;
+                    default -> Color.BLACK;
+                }
+        );
 
         g.drawOval(0, 0, width, height);
     }

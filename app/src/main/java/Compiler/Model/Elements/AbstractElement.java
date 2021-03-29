@@ -308,25 +308,17 @@ public abstract class AbstractElement extends AbstractModel {
     }
 
     public static AbstractElement Factory(String className, JSONObject data) {
-        Boolean hasData = data != null;
-        switch (className) {
-            case "IfEndElement":
-                return hasData ? new IfEndElement(data) : new IfEndElement();
-            case "IfStartElement":
-                return hasData ? new IfStartElement(data) : new IfStartElement();
-            case "CommandElement":
-                return hasData ? new CommandElement(data) : new CommandElement();
-            case "LoopElement":
-                return hasData ? new LoopElement(data) : new LoopElement();
-            case "MethodEndElement":
-                return hasData ? new MethodEndElement(data) : new MethodEndElement();
-            case "MethodStartElement":
-                return hasData ? new MethodStartElement(data) : new MethodStartElement();
-            case "ThreadCloseElement":
-                return hasData ? new ThreadCloseElement(data) : new ThreadCloseElement();
-            case "ThreadOpenElement":
-                return hasData ? new ThreadOpenElement(data) : new ThreadOpenElement();
-        }
-        return null;
+        boolean hasData = data != null;
+        return switch (className) {
+            case "IfEndElement" -> hasData ? new IfEndElement(data) : new IfEndElement();
+            case "IfStartElement" -> hasData ? new IfStartElement(data) : new IfStartElement();
+            case "CommandElement" -> hasData ? new CommandElement(data) : new CommandElement();
+            case "LoopElement" -> hasData ? new LoopElement(data) : new LoopElement();
+            case "MethodEndElement" -> hasData ? new MethodEndElement(data) : new MethodEndElement();
+            case "MethodStartElement" -> hasData ? new MethodStartElement(data) : new MethodStartElement();
+            case "ThreadCloseElement" -> hasData ? new ThreadCloseElement(data) : new ThreadCloseElement();
+            case "ThreadOpenElement" -> hasData ? new ThreadOpenElement(data) : new ThreadOpenElement();
+            default -> null;
+        };
     }
 }
