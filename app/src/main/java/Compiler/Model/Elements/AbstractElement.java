@@ -173,6 +173,12 @@ public abstract class AbstractElement extends AbstractModel {
         }
     }
 
+    /**
+     * Method to determine if elements can connect. Stand alone method so child classes can override when needed.
+     *
+     * @param fromElement
+     * @return boolean
+     */
     public boolean isAllowedToConnectFrom(AbstractElement fromElement) {
         return true;
     }
@@ -268,6 +274,11 @@ public abstract class AbstractElement extends AbstractModel {
         }
     }
 
+    /**
+     * Method to determine if element can create loop. Stand alone method so child classes can override when needed.
+     *
+     * @return boolean
+     */
     protected boolean isLoopAllowed() {
         return false;
     }

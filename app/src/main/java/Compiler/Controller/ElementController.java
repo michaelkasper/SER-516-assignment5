@@ -146,7 +146,7 @@ public class ElementController implements MouseListener {
             timer.start();
 
         } else {
-            throw new Exception("The elements can connect");
+            throw new Exception("The elements can't connect");
         }
     }
 
