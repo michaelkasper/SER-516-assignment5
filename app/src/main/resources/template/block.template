@@ -1,0 +1,11 @@
+    subgraph {spaceName} {
+        style=filled;
+        color=lightgray;
+        node [style=filled,color=lightblue];
+        label="process {spaceName}";
+
+{connections}
+
+{nodes}
+    }
+

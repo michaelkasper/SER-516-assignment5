@@ -2,6 +2,7 @@ package Compiler.Controller;
 
 import Compiler.Compiler;
 import Compiler.Model.SpaceModel;
+import Compiler.Service.Code;
 import Compiler.Service.ImportExport;
 import Compiler.Service.Store;
 
@@ -10,6 +11,8 @@ import javax.swing.event.ChangeEvent;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -91,11 +94,28 @@ public class WorkspaceController {
         }
 
         if (errors.size() == 0) {
-            this.frame.showDialog("No errors found");
+            JOptionPane.showMessageDialog(this.frame, "No errors found", "Compile", JOptionPane.PLAIN_MESSAGE);
+
+            try {
+                // create a JTextArea
+                JTextArea textArea = new JTextArea(50, 40);
+                textArea.setText(Code.Generate());
+                textArea.setEditable(false);
+
+                // wrap a scrollpane around it
+                JScrollPane scrollPane = new JScrollPane(textArea);
+
+                // display them in a message dialog
+                JOptionPane.showMessageDialog(this.frame, scrollPane, "Generated Code", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException | URISyntaxException ioException) {
+                ioException.printStackTrace();
+            }
+
+
         } else if (errors.size() == 1) {
-            this.frame.showDialog(errors.size() + " error found");
+            JOptionPane.showMessageDialog(this.frame, errors.size() + " errors found", "Compile", JOptionPane.ERROR_MESSAGE);
         } else {
-            this.frame.showDialog(errors.size() + " errors found");
+            JOptionPane.showMessageDialog(this.frame, errors.size() + " errors found", "Compile", JOptionPane.ERROR_MESSAGE);
         }
     }
 

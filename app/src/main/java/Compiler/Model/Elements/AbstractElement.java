@@ -201,6 +201,10 @@ public abstract class AbstractElement extends AbstractModel {
         }
     }
 
+    public String getType(){
+        return  this.getClass().getSimpleName().replace("Element", "");
+    }
+
     public JSONObject export() {
         JSONObject obj = super.export();
 

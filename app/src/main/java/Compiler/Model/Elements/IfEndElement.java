@@ -5,7 +5,7 @@ import org.json.simple.JSONObject;
 public class IfEndElement extends AbstractElement {
 
     public IfEndElement() {
-        super("<", 1, 2);
+        super(">", 2, 1);
     }
 
     public IfEndElement(JSONObject data) {

@@ -1,0 +1,1 @@
+{tabs}"{spaceName}[{nodeId}] {nodeType}" [label=<<u>{nodeType}</u><br/>{spaceName}[{nodeId}]>];

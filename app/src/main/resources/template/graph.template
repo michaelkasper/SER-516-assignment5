@@ -1,0 +1,11 @@
+digraph G {
+
+{blocks}
+
+{startConnections}
+{endConnections}
+
+    {startNode} [shape=Mdiamond];
+    {endNode} [shape=Msquare];
+
+}
