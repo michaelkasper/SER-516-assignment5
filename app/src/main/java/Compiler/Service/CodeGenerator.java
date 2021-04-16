@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Queue;
 
-public class Code {
+public class CodeGenerator {
 
     static String START_NODE = "Start";
     static String END_NODE = "End";
@@ -38,7 +38,7 @@ public class Code {
 
         for (SpaceModel space : Store.getInstance().getAllSpaces()) {
 
-            String spaceName = Code.indexToAlphabetic(currentSpaceIndex).toLowerCase(Locale.ROOT);
+            String spaceName = CodeGenerator.indexToAlphabetic(currentSpaceIndex).toLowerCase(Locale.ROOT);
             String connections = "";
             String nodes = "";
 

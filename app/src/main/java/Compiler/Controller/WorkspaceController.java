@@ -2,7 +2,7 @@ package Compiler.Controller;
 
 import Compiler.Compiler;
 import Compiler.Model.SpaceModel;
-import Compiler.Service.Code;
+import Compiler.Service.CodeGenerator;
 import Compiler.Service.ImportExport;
 import Compiler.Service.Store;
 
@@ -99,7 +99,7 @@ public class WorkspaceController {
             try {
                 // create a JTextArea
                 JTextArea textArea = new JTextArea(50, 40);
-                textArea.setText(Code.Generate());
+                textArea.setText(CodeGenerator.Generate());
                 textArea.setEditable(false);
 
                 // wrap a scrollpane around it
