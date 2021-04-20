@@ -6,10 +6,12 @@ import Compiler.Model.Elements.MethodStartElement;
 import Compiler.Model.SpaceModel;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -22,13 +24,13 @@ public class CodeGenerator {
     static String TAB = "    ";
 
     static public String Generate() throws IOException, URISyntaxException {
-
-        String graphTemplate = Files.readString(Path.of(ClassLoader.getSystemClassLoader().getResource("template/graph.template").toURI().getPath()), StandardCharsets.UTF_8);
-        String blockTemplate = Files.readString(Path.of(ClassLoader.getSystemClassLoader().getResource("template/block.template").toURI().getPath()), StandardCharsets.UTF_8);
-        String connectionTemplate = Files.readString(Path.of(ClassLoader.getSystemClassLoader().getResource("template/connection.template").toURI().getPath()), StandardCharsets.UTF_8);
-        String startConnectionTemplate = Files.readString(Path.of(ClassLoader.getSystemClassLoader().getResource("template/startConnection.template").toURI().getPath()), StandardCharsets.UTF_8);
-        String endConnectionTemplate = Files.readString(Path.of(ClassLoader.getSystemClassLoader().getResource("template/endConnection.template").toURI().getPath()), StandardCharsets.UTF_8);
-        String nodeTemplate = Files.readString(Path.of(ClassLoader.getSystemClassLoader().getResource("template/node.template").toURI().getPath()), StandardCharsets.UTF_8);
+        
+        String graphTemplate = Files.readString(Paths.get(ClassLoader.getSystemResource("template/graph.template").toURI()), StandardCharsets.UTF_8);
+        String blockTemplate = Files.readString(Paths.get(ClassLoader.getSystemResource("template/block.template").toURI()), StandardCharsets.UTF_8);
+        String connectionTemplate = Files.readString(Paths.get(ClassLoader.getSystemResource("template/connection.template").toURI()), StandardCharsets.UTF_8);
+        String startConnectionTemplate = Files.readString(Paths.get(ClassLoader.getSystemResource("template/startConnection.template").toURI()), StandardCharsets.UTF_8);
+        String endConnectionTemplate = Files.readString(Paths.get(ClassLoader.getSystemResource("template/endConnection.template").toURI()), StandardCharsets.UTF_8);
+        String nodeTemplate = Files.readString(Paths.get(ClassLoader.getSystemResource("template/node.template").toURI()), StandardCharsets.UTF_8);
 
         String blocks = "";
         String startConnections = "";
